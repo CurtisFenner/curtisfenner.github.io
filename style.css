@@ -1,0 +1,45 @@
+/* todo: pick my own colors. These are from Atom's One Dark theme */
+body {
+	background: #21252B;
+	margin: 0;
+	padding: 0;
+	color: #B3B3B3;
+	font-family: "Verdana";
+}
+
+h1, h2, h3, h4, h5, h6 {
+	padding: 0;
+	margin: 0;
+}
+
+section {
+	max-width: 7.5in;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 32px;
+	margin-bottom: 0;
+	background: #282C34;
+	padding: 32px;
+	border-radius: 3px;
+	border: 1px solid #181A1F;
+}
+
+
+p {
+	margin: 0;
+	margin-top: 8px;
+	padding: 0;
+	text-align: justify;
+}
+
+ul, li {
+	margin: 0;
+	margin-top: 8px;
+	margin-left: 1em;
+	padding: 0;
+}
+
+:link {
+	color: #4879DB;
+	font-weight: bold;
+}
