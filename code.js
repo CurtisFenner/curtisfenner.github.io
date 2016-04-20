@@ -5,6 +5,7 @@ CodeLines.KEYPRESS = 20; // ms delay per character typed
 CodeLines.CHAR = 10; // px width of character
 CodeLines.stack = ["block", Break()];
 
+// Randomness helpers
 function Many(lo, hi, n) {
 	return function() {
 		var x = [];
@@ -80,6 +81,8 @@ function Break() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Source: https://www.lua.org/manual/5.1/manual.html#8
+// A specification of the probabilistic grammar the simulation uses
+// (based on Lua 5.1)
 var grammar = {
 	// keyword
 	"for": bar("for", "keyword"),
@@ -253,6 +256,7 @@ CodeLines.lastLine = null;
 
 CodeLines.suppressSpace = false;
 CodeLines.indent = 0;
+// Outputs an object into the simulation to be seen by the user.
 CodeLines.OUT = function(x) {
 	if (x === '$') {
 		CodeLines.suppressSpace = true;
@@ -301,6 +305,8 @@ CodeLines.OUT = function(x) {
 	}
 }
 
+// Execute one thing on the stack. Returns an Animation if something needs to
+// be shown.
 CodeLines.stepBlocks = function() {
 	var top = CodeLines.stack.pop();
 	if (top === undefined) {
@@ -340,6 +346,7 @@ CodeLines.stepBlocks = function() {
 
 CodeLines.animation = null;
 
+// Update the simulating coding
 CodeLines.animateBlocks = function() {
 	while (!CodeLines.animation) {
 		CodeLines.animation = CodeLines.stepBlocks();
@@ -350,6 +357,7 @@ CodeLines.animateBlocks = function() {
 	}, CodeLines.animation.delay);
 }
 
+// "Scroll down" to avoid ever filling the whole page with code
 CodeLines.clearLines = function() {
 	for (var i = 0; i < Math.random() * CodeLines.lines.length; i++) {
 		setTimeout(function() {
