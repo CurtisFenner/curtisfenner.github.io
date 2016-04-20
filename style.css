@@ -30,7 +30,7 @@ section, footer {
 	margin-right: auto;
 	margin-top: 32px;
 	margin-bottom: 0;
-	background: #FFF;
+	background: rgba(255, 255, 255, 0.875);
 	padding: 32px;
 	border-radius: 3px;
 	border: 1px solid #BBB;
