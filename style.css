@@ -1,9 +1,9 @@
 /* todo: pick my own colors. These are from Atom's One Dark theme */
 body {
-	background: #21252B;
+	background: #EEE;
 	margin: 0;
 	padding: 0;
-	color: #B3B3B3;
+	color: #444;
 	font-family: "Verdana";
 	position: relative;
 	z-index: 0;
@@ -30,10 +30,11 @@ section, footer {
 	margin-right: auto;
 	margin-top: 32px;
 	margin-bottom: 0;
-	background: #282C34;
+	background: #FFF;
 	padding: 32px;
 	border-radius: 3px;
-	border: 1px solid #181A1F;
+	border: 1px solid #BBB;
+	box-shadow: 0 0 40px -16px black;
 }
 
 footer {
