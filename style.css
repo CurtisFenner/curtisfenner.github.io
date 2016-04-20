@@ -69,30 +69,29 @@ ul, li {
 	display: inline-block;
 	color: transparent;
 	overflow: hidden;
-	opacity: 0.25;
 	height: 15px;
 }
 
 .number {
-	background: #AABB55;
+	background: #DDE1C8;
 }
 
 .name {
-	background: #58D;
+	background: #C8D5EA;
 }
 
 .bracket {
-	background: #D58;
+	background: #EAC8D5;
 }
 
 .operator {
-	background: #5C8;
+	background: #C8E6D5;
 }
 
 .value {
-	background: #824;
+	background: #D5BBC4;
 }
 
 .keyword {
-	background: #952;
+	background: #D9C8BB;
 }
