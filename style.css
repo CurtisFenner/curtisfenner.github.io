@@ -63,6 +63,8 @@ ul, li {
 /******************************************************************************/
 #codeblocks .line {
 	height: 16px;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 #codeblocks span {
