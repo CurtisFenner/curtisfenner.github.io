@@ -34,7 +34,7 @@ section, footer {
 	padding: 32px;
 	border-radius: 3px;
 	border: 1px solid #BBB;
-	box-shadow: 0 0 40px -16px black;
+	box-shadow: 0 8px 30px -12px #888;
 }
 
 footer {
@@ -58,6 +58,11 @@ ul, li {
 :link {
 	color: #4879DB;
 	font-weight: bold;
+	text-decoration: none;
+}
+
+:link:hover {
+	text-decoration: underline;
 }
 
 /******************************************************************************/
