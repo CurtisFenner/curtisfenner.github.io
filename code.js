@@ -359,7 +359,8 @@ CodeLines.animateBlocks = function() {
 
 // "Scroll down" to avoid ever filling the whole page with code
 CodeLines.clearLines = function() {
-	for (var i = 0; i < Math.random() * CodeLines.lines.length; i++) {
+	var kill = Math.random() * CodeLines.lines.length * 2/3;
+	for (var i = 0; i < kill; i++) {
 		setTimeout(function() {
 			if (CodeLines.lines.length > 0) {
 				codeblocks.removeChild(CodeLines.lines[0]);
