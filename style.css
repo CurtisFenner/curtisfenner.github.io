@@ -55,7 +55,7 @@ ul, li {
 	padding: 0;
 }
 
-:link {
+:link, :visited {
 	color: #4879DB;
 	font-weight: bold;
 	text-decoration: none;
