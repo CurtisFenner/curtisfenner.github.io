@@ -95,6 +95,9 @@ td {
 
 figure.inline {
 	display: inline-block;
+	font-size: 90%;
+	padding: 1em;
+	border: 1px dashed #A1A1A1;
 }
 
 ol.tree, ol.tree ol {
