@@ -58,9 +58,10 @@ ul, li {
 table {
 	border: 1px solid #444;
 	padding: 0.25em;
-	margin: auto;
-	margin-top: 0.25em;
-	margin-bottom: 0.25em;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 1em;
+	margin-bottom: 1em;
 }
 
 td {
@@ -86,9 +87,9 @@ td {
 
 .bubble {
 	border: 1px solid #444;
-	border-radius: 0.6em;
+	border-radius: 0.7em;
 	padding: 0.25em;
-	margin: 0.1em;
+	margin: 0.05em;
 	display: inline-block;
 }
 
