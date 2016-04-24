@@ -66,6 +66,30 @@ ul, li {
 }
 
 /******************************************************************************/
+.box {
+	border: 1px solid #444;
+}
+
+.bubble {
+	border: 1px solid #444;
+	border-radius: 0.45em;
+}
+
+figure.inline {
+	display: inline-block;
+}
+
+ol.tree, ol.tree ol {
+	list-style-type: lower-roman;
+	padding: 0;
+	padding-left: 2em;
+	overflow-y: hidden;
+}
+ol.tree > li {
+	list-style-type: none;
+}
+
+/******************************************************************************/
 #codeblocks .line {
 	height: 16px;
 	overflow-x: hidden;

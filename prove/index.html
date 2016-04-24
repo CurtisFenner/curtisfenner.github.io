@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<!-- made with love by Curtis Fenner -->
+	<title>Prove / CurtisFenner</title>
+	<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+	<div id="codeblocks"></div>
+	<section>
+		<h1>Proof Checker</h1>
+		<p>I worked with Dr. Martin Strauss, Elizabeth Viera, and Dr. Gavin La
+			Rose to build a simple web interface that could be used to
+			automatically check simple proofs.
+		<p>The prototype was built in JavaScript. It has a
+			<a href="https://github.com/CurtisFenner/Proof-Drilling">GitHub
+			repository available here</a>.
+	</section>
+	<section>
+		<h2>Proof Structure</h2>
+		<p>A proof is a sequence of statements that have
+			justifications.
+		<p>A <em>statement</em> is some (boolean) expression asserting some
+			fact.
+		<p>A <em>justification</em> is the reason it is valid to write a
+			particular statement. Examples include
+		<ul>
+			<li><em>given</em>: the statement is part of the hypothesis
+			<li><em>reflexivity of '='</em>: the statement follows from some
+				basic, universal property
+			<li><em>modus ponens</em>: the statement follows from several
+				previous statements and a deduction rule / theorem
+			<li><em>subproof</em>: the statement does not necessarily follow
+				from previous statements, <em>but</em> it is a valid starting
+				point to prove some lemma. For example, a contradiction subproof
+				begins by supposing something that is thought to be false.<br>
+				It ends by concluding the complement of what was supposed, if
+				a contradiction has been reached.
+		</ul>
+	</section>
+	<section>
+		<h2>Proof Verification</h2>
+		<p>A proof is verified by validating a number of things.
+		<ul>
+			<li>The statements are well-formed. For example, "for all"
+				statements must use a single name as their variable (as opposed
+				to an expression)
+			<li>The justifications refer only to in-scope statements 'in-scope'.
+				To be in-scope, a statement must appear before the current
+				statement, and not be in a closed subproof.
+			<li>The proof has closed all subproofs.
+			<li>The justification of every statement is correct
+			<li>The thing that was supposed to be proved was proved
+		</ul>
+		<p>Because these checks are all done separately, it's possible to
+			give a detailed responses to partially correct / partially
+			complete proofs.
+	</section>
+	<section>
+		<h2>Justification Verification (an example)</h2>
+		<p>Justifications are mostly verified by matching the student's
+			statement and the previous statements against different statement
+			structures.
+		<p>Consider this simple proof involving Universal Elimination
+		<table>
+			<tr><th>#<th>Statement<th>Justification
+			<tr><td>1<td>&forall;x, Q(x + 1)<td>Given
+			<tr><td>2<td>Q(cos(5) + 1)<td>Universal Elimination of <span class=box>1</span>
+		</table>
+		<p>The justification "Universal Elimination of
+			<span class=box>1</span> resulting in <span class=box>2</span>"
+			needs to be checked.
+		<p>First, the statements are parsed and turned into trees of operations.
+
+		<figure class=inline>
+			<figcaption>Statement <span class=box>1</span></figcaption>
+			<ol class=tree>
+				<li>&forall;
+				<ol>
+					<li>x
+					<li>$
+					<ol>
+						<li>Q
+						<ol>
+							<li>+
+							<ol>
+								<li>x
+								<li>1
+							<ol>
+						</ol>
+					</ol>
+				</ol>
+			</ol>
+		</figure>
+		<figure class=inline>
+			<figcaption>Statement <span class=box>2</span></figcaption>
+			<ol class=tree>
+				<li>$
+				<ol>
+					<li>Q
+					<ol>
+						<li>+
+						<ol>
+							<li>$
+							<ol>
+								<li>cos
+								<li>5
+							</ol>
+							<li>1
+						</ol>
+					</ol>
+				</ol>
+			</ol>
+		</figure>
+
+		<p>Statement <span class=box>2</span> is matched against a small tree to
+			verify that it is a for-all statement.
+		<ol class=tree>
+			<li>&forall;
+			<ol>
+				<li><span class=bubble>var</span>
+				<li><span class=bubble>pred</span>
+			</ol>
+		</ol>
+		<p>When this match succeeds, we get the assignments
+		<ul>
+			<li><span class=bubble>var<span> is x
+			<li><span class=bubble>pred</span> is Q(x + 1)
+		</ul>
+
+		<p>Next, <span class=bubble>var</span> is subsituted with a hole
+			<span class=bubble>instance</span> in
+			<span class=bubble>pred</span>, yielding the tree
+		<ol class=tree>
+			<li>$
+			<ol>
+				<li>Q
+				<ol>
+					<li>+
+					<ol>
+						<li><span class=bubble>inst</span>
+						<li>1
+					</ol>
+				</ol>
+			</ol>
+		</ol>
+		<p>The students answer is matched against this, successfully yielding
+			the assignment
+		<ul>
+			<li><span class=bubble>inst</span> is cos(5)
+		</ul>
+		<p>Thus, the justification was valid and the statement is justified.
+	</section>
+	<footer>
+		&copy; 2016 Curtis Fenner
+	</footer>
+	<script src="/code.js"></script>
+</body>
