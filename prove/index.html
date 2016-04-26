@@ -13,11 +13,16 @@
 		<h1>Proof Checker</h1>
 		<p>I worked with Dr. Martin Strauss, Elizabeth Viera, and Dr. Gavin La
 			Rose to build a simple web interface that could be used to
-			automatically check simple proofs.
-		<p>The prototype was built in JavaScript. It has a
+			automatically check simple proofs as a teaching tool.
+		<p>A prototype was first built in JavaScript. It has a
 			<a href="https://github.com/CurtisFenner/Proof-Drilling">GitHub
 			repository available here</a>.
+		<p>A partial implementation for WeBWorK (an open-source online math
+			homework platform)
+			<a href="https://github.com/CurtisFenner/ProofCheckerWeBWorK">has a
+			GitHub repository here</a>.
 	</section>
+
 	<section>
 		<h2>Proof Structure</h2>
 		<p>A proof is a sequence of statements that have
@@ -36,18 +41,20 @@
 				from previous statements, <em>but</em> it is a valid starting
 				point to prove some lemma. For example, a contradiction subproof
 				begins by supposing something that is thought to be false.<br>
-				It ends by concluding the complement of what was supposed, if
+				It ends by concluding the complement of what was supposed, once
 				a contradiction has been reached.
 		</ul>
 	</section>
+
 	<section>
 		<h2>Proof Verification</h2>
 		<p>A proof is verified by validating a number of things.
 		<ul>
 			<li>The statements are well-formed. For example, "for all"
 				statements must use a single name as their variable (as opposed
-				to an expression)
-			<li>The justifications refer only to in-scope statements 'in-scope'.
+				to an expression), and that name must not be used elsewhere in
+				the proof.
+			<li>The justifications refer only to in-scope statements.
 				To be in-scope, a statement must appear before the current
 				statement, and not be in a closed subproof.
 			<li>The proof has closed all subproofs.
@@ -58,6 +65,7 @@
 			give a detailed responses to partially correct / partially
 			complete proofs.
 	</section>
+
 	<section>
 		<h2>Justification Verification (an example)</h2>
 		<p>Justifications are mostly verified by matching the student's
@@ -73,6 +81,9 @@
 			<span class=box>1</span> resulting in <span class=box>2</span>"
 			needs to be checked.
 		<p>First, the statements are parsed and turned into trees of operations.
+			Note that here, there is an explicit function/predicate application
+			operator <em>$</em>, though the Universal Elimination rule described
+			here is compatible with other representations, too.
 
 		<figure class=inline>
 			<figcaption>Statement <span class=box>1</span></figcaption>
@@ -111,24 +122,29 @@
 			</ol>
 		</figure>
 
-		<p>Statement <span class=box>2</span> is matched against a small tree to
+		<p>The checker for Universal Elimination begins by matching Statement
+			<span class=box>1</span> against a small tree to
 			verify that it is a for-all statement.
 		<ol class=tree>
 			<li>&forall;
 			<ol>
-				<li><span class=bubble>var</span>
-				<li><span class=bubble>pred</span>
+				<li><span class=bubble>variable</span>
+				<li><span class=bubble>predicate</span>
 			</ol>
 		</ol>
 		<p>When this match succeeds, we get the assignments
 		<ul>
-			<li><span class=bubble>var</span> is x
-			<li><span class=bubble>pred</span> is Q(x + 1)
+			<li><span class=bubble>variable</span> is x
+			<li><span class=bubble>predicate</span> is Q(x + 1)
 		</ul>
 
-		<p>Next, <span class=bubble>var</span> is subsituted with a hole
-			<span class=bubble>instance</span> in
-			<span class=bubble>pred</span>, yielding the tree
+		<p>Next, we want to make a pattern from this to check the student's
+			input in Statement <span class=box>2</span>. To do this, all
+			instances of <span class=bubble>variable</span> (in this case, just
+			<em>x</em>) are substituted with a pattern-matching-variable
+			<span class=bubble>instance</span> inside the
+			<span class=bubble>predicate</span> tree.
+		<p>This yields the pattern
 		<ol class=tree>
 			<li>$
 			<ol>
@@ -136,19 +152,20 @@
 				<ol>
 					<li>+
 					<ol>
-						<li><span class=bubble>inst</span>
+						<li><span class=bubble>instance</span>
 						<li>1
 					</ol>
 				</ol>
 			</ol>
 		</ol>
-		<p>The students answer is matched against this, successfully yielding
-			the assignment
+		<p>The students answer <span class=box>2</span> is matched against this
+			pattern, yielding the assignment
 		<ul>
-			<li><span class=bubble>inst</span> is cos(5)
+			<li><span class=bubble>instance</span> is cos(5)
 		</ul>
 		<p>Thus, the justification was valid and the statement is justified.
 	</section>
+
 	<footer>
 		&copy; 2016 Curtis Fenner
 	</footer>
