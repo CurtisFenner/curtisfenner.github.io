@@ -25,14 +25,20 @@
 
 	<section>
 		<h2>Proof Structure</h2>
-		<p>A proof is a sequence of statements that have
+		<p>In this project, a proof is a sequence of statements that have
 			justifications.
 		<p>A <em>statement</em> is some (boolean) expression asserting some
-			fact.
+			fact. Examples of statements include
+			<ul>
+				<li> &forall;x P(x)
+				<li> x = f(y)
+				<li> P(a, b) &and; P(b, a)
+			</ul>
 		<p>A <em>justification</em> is the reason it is valid to write a
 			particular statement. Examples include
 		<ul>
-			<li><em>given</em>: the statement is part of the hypothesis
+			<li><em>given</em>: the statement is given as true as part of the
+				exercise.
 			<li><em>reflexivity of '='</em>: the statement follows from some
 				basic, universal property
 			<li><em>modus ponens</em>: the statement follows from several
@@ -42,7 +48,8 @@
 				point to prove some lemma. For example, a contradiction subproof
 				begins by supposing something that is thought to be false.<br>
 				It ends by concluding the complement of what was supposed, once
-				a contradiction has been reached.
+				a contradiction has been reached.<br>
+				See a full description in the <em>Subproofs</em> section.
 		</ul>
 	</section>
 
@@ -58,33 +65,87 @@
 				To be in-scope, a statement must appear before the current
 				statement, and not be in a closed subproof.
 			<li>The proof has closed all subproofs.
-			<li>The justification of every statement is correct
+			<li>The justification of every statement is correct. (This depends
+				on the rule being used; see the next section for an in-depth
+				example)
 			<li>The thing that was supposed to be proved was proved
 		</ul>
 		<p>Because these checks are all done separately, it's possible to
-			give a detailed responses to partially correct / partially
+			give detailed responses to partially correct / partially
 			complete proofs.
 	</section>
 
 	<section>
-		<h2>Justification Verification (an example)</h2>
+		<h2>Subproofs</h2>
+		<p>This project uses a system called <em>Natural Deduction</em>. Proofs
+			are
+			sequences of <em>statements</em> and <em>subproofs</em>. Statements
+			are justified given previous in-scope statements.
+		<p><em>Subproofs</em> are sequences of statements that begin by
+			supposing some statement is true. Depending on the kind of subproof,
+			different statements may be supposed.
+		<p>Statements inside a sub-proof are <em>scoped</em> to that subproof
+			(in a way similar to lexical scoping in programming language).
+			The statement is no longer in-scope after the subproof ends, and
+			cannot be referenced by any further justifications.
+		<p>When a subproof ends, it concludes with a single statement that is
+			in-scope
+			for the remainder of the proof. The <em>conclusion</em> that is
+			allowed depends on the type of subproof that was opened.
+		<p>For example, this is what a <b>Contradiction subproof</b> looks like.
+		<table>
+			<tr><th>#<th>Statement<th>Justification
+			<tr><td>1 <td>&forall;x, P(x) &rArr; Q(x) <td>Given
+			<tr><td>2 <td>&not;Q(5) <td>Given
+			<tr><td>3 <td>&hellip;&hellip; P(5) <td>Suppose
+				for Contradiction Subproof
+			<tr><td>4 <td>&hellip;&hellip; Q(5) <td> Modus Ponens on
+				<span class=box>1</span> and <span class=box>3</span>
+			<tr><td>5 <td>&not;P(5) <td>
+				Conclusion of Contradiction Subproof from
+				<span class=box>2</span> and <span class=box>4</span>
+			<tr><td>6 <td><td>
+		</table>
+		<p>Notice that statement <span class=box>3</span> does <em>not</em>
+			follow from the previous statements. The subproof simply supposes
+			that it is true to derive a contradiction.
+		<p>Because the subproof concludes in <span class=box>5</span>, statement
+			<span class=box>6</span> may <em>not</em> reference statements
+			<span class=box>3</span> or <span class=box>4</span>.
+		<p>Notice that statement <span class=box>4</span> <em>does</em> depend
+			on statement <span class=box>3</span>, because it is in the body of
+			the subproof. This is what allows a contradiction to be reached.
+		<p>The <em>conclusion</em> of the subproof is based on in-scope
+			statements, <em>combined</em> with the statement that was used to
+			introduce the subproof. The statements explicitly listed in the
+			justification are verified to be a contradiction; this fact is used
+			with <span class=box>3</span> to produce the conclusion in
+			<span class=box>6</span>.
+	</section>
+
+	<section>
+		<h2>
+			Verification Example 1 &ndash; Universal Elimination
+		</h2>
 		<p>Justifications are mostly verified by matching the student's
 			statement and the previous statements against different statement
 			structures.
 		<p>Consider this simple proof involving Universal Elimination
 		<table>
+			<tr><th colspan=3 style="font-weight: normal;">Ex.:
+				Prove that Q(cos(5)+1) is true given that &forall;x, Q(x+1) is
+				true.
 			<tr><th>#<th>Statement<th>Justification
 			<tr><td><span class=box>1</span><td>&forall;x, Q(x + 1)<td>Given
-			<tr><td><span class=box>2</span><td>Q(cos(5) + 1)<td>Universal Elimination of <span class=box>1</span>
+			<tr><td><span class=box>2</span><td>Q(cos(5) + 1)<td>
+				Universal Elimination of <span class=box>1</span>
 		</table>
 		<p>The justification "Universal Elimination of
-			<span class=box>1</span> resulting in <span class=box>2</span>"
+			<span class=box>1</span> results <span class=box>2</span>"
 			needs to be checked.
 		<p>First, the statements are parsed and turned into trees of operations.
-			Note that here, there is an explicit function/predicate application
-			operator <em>$</em>, though the Universal Elimination rule described
-			here is compatible with other representations, too.
-
+			(Note that here, there is an explicit function/predicate application
+			operator <em>$</em>)
 		<figure class=inline>
 			<figcaption>Statement <span class=box>1</span></figcaption>
 			<ol class=tree>
@@ -162,6 +223,99 @@
 			<li><span class=bubble>instance</span> is cos(5)
 		</ul>
 		<p>Thus, the justification was valid and the statement is justified.
+	</section>
+
+	<section>
+		<h2>
+			Verification Example 2 &ndash; Universal Elimination
+		</h2>
+		<p>Consider the following <strong>incorrect</strong> proof.
+		<table>
+			<tr><th>#<th>Statement<th>Justification
+			<tr><td><span class=box>1</span><td>&forall;x, R(x+1, x+1)<td>Given
+			<tr><td><span class=box>2</span><td>R(6+1, 5+1)<td>
+				Universal Elimination of <span class=box>1</span>
+		</table>
+		<p>As in Example 1, first Statement <span class=box>1</span> is verified
+			to be a for-all statement. The following pattern is constructed to
+			be used to match valid instantiations of it (by substituting all
+			appearances of <span class=bubble>variable</span> with a
+			pattern-matching variable <span class=bubble>instance</span>)
+		<ol class=tree>
+			<li>$
+			<ol>
+				<li>R
+				<li>+
+				<ol>
+					<li><span class=bubble>instance</span>
+					<li>1
+				</ol>
+				<li>+
+				<ol>
+					<li><span class=bubble>instance</span>
+					<li>1
+				</ol>
+			</ol>
+		</ol>
+		<p>This is matched against Statement <span class=box>2</span>.
+		<p>It establishes the following assignments:
+		<ol>
+			<li><span class=bubble>instance</span> is 6
+			<li><span class=bubble>instance</span> is 5
+		</ol>
+		<p>Note that the same pattern-matching variable is assigned a value
+			<em>twice</em>. Since 5 &ne; 6, the match fails, and the proof
+			checker reports
+			"Not a valid instantiation of &forall;x, R(x+1, x+1)"
+		<hr>
+		<p>Consider a similar, <strong>correct</strong> proof:
+		<table>
+			<tr><th>#<th>Statement<th>Justification
+			<tr><td><span class=box>1</span><td>&forall;x, R(x, x)<td>Given
+			<tr><td><span class=box>2</span><td>R(2+3, 3+2)<td>
+				Universal Elimination of <span class=box>1</span>
+		</table>
+		<p>This time, the following assignments occur:
+		<ol>
+			<li><span class=bubble>instance</span> is 2+3
+			<li><span class=bubble>instance</span> is 3+2
+		</ol>
+		<p>Here, when the second assignment is found, it is compared against the
+			first one. This comparison can be "smart" and know about the
+			commutativity of '+', and thus allow the assignment.
+		<p>If an instructor wants to disallow these kinds of 'skipping steps',
+			the comparison can be left "dumb" and reject the different form.
+	</section>
+
+	<section>
+		<h2>Verification Example 3 &ndash; Existential Elimination</h2>
+		<p>Here is an example proof that uses the Existential Elimination
+			subproof.
+		<table>
+			<tr><th>#<th>Statement<th>Justification
+			<tr><td><span class=box>1</span><td>&forall;x, P(x) &rArr; Q(x)<td>
+				Given
+			<tr><td><span class=box>2</span><td>&exist;y, P(y)<td>Given
+			<tr><td><span class=box>3</span><td>&hellip;&hellip;P(c)<td>Suppose
+				(for an object called c) from Existential Elimination on
+				<span class=box>2</span>
+			<tr><td><span class=box>4</span><td>&hellip;&hellip;P(c) &rArr; Q(c)
+				<td>Universal
+				Elimination of <span class=box>1</span>
+			<tr><td><span class=box>5</span><td>&hellip;&hellip;Q(c)<td>
+				Modus Ponens on <span class=box>3</span> and
+				<span class=box>4</span>
+			<tr><td><span class=box>6</span><td>&hellip;&hellip;&exist;y, Q(y)
+				<td>Existential Introduction from <span class=box>5</span>
+			<tr><td><span class=box>7</span><td>&exist;y, Q(y)
+				<td>Conclusion of Existential Elimination subproof from
+					<span class=box>6</span>
+		</table>
+		<p>Note that the kind of statement that can be supposed in a Existential
+			Elimination subproof is fairly limited; the name of a constant is
+			simply given to a there-exists statement.
+		<p>The conclusion can be any statement that does <em>not</em> involve
+			the name introduced at the beginning.
 	</section>
 
 	<footer>
