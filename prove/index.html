@@ -41,8 +41,8 @@
 				exercise.
 			<li><em>reflexivity of '='</em>: the statement follows from some
 				basic, universal property
-			<li><em>modus ponens</em>: the statement follows from several
-				previous statements and a deduction rule / theorem
+			<li><em>modus ponens</em>: the statement follows from a basic
+				deduction rule, such as modus ponens
 			<li><em>subproof</em>: the statement does not necessarily follow
 				from previous statements, <em>but</em> it is a valid starting
 				point to prove some lemma. For example, a contradiction subproof
@@ -57,10 +57,8 @@
 		<h2>Proof Verification</h2>
 		<p>A proof is verified by validating a number of things.
 		<ul>
-			<li>The statements are well-formed. For example, "for all"
-				statements must use a single name as their variable (as opposed
-				to an expression), and that name must not be used elsewhere in
-				the proof.
+			<li>The statements are well-formed and do not violate any of the
+				rules of any of the operations used
 			<li>The justifications refer only to in-scope statements.
 				To be in-scope, a statement must appear before the current
 				statement, and not be in a closed subproof.
