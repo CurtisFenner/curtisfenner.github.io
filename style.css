@@ -1,6 +1,15 @@
-/* todo: pick my own colors. These are from Atom's One Dark theme */
+/* <"sticky footer"> */
+html, body {
+	height: 100%;
+}
+#body {
+	min-height: 100%;
+}
+/* </"sticky footer"> */
+
+
 body {
-	background: #EEE;
+	background: white;
 	margin: 0;
 	padding: 0;
 	color: #444;
@@ -8,43 +17,116 @@ body {
 	font-size: 16px;
 	position: relative;
 	z-index: 0;
+	overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	background: #4772C1;
+	color: white;
+	margin: 0 -32px;
+	padding: 0.25em 32px;
+	position: relative;
+}
+
+h1::before, h2::before, h3::before, header::before {
+	content: " ";
+	position: absolute;
+	right: 100%;
+	width: 9600px;
+	height: 100%;
+	background: #4772C1;
+	top: 10px;
+}
+
+h1::after, h2::after, h3::after, header::after {
+	content: " ";
+	position: absolute;
+	left: 100%;
+	width: 9600px;
+	height: 100%;
+	background: #4772C1;
+	top: 10px;
+}
+
+section, footer, nav, header {
+	max-width: 7.5in;
+	margin: 0 auto;
+	position: relative;
+	padding: 32px;
+}
+
+section, footer {
+	background: rgba(255, 255, 255, 0.875);
 }
 
 header {
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuOWwzfk4AAAAgSURBVBhXY/gPBpcvXwaSIA6EBeLAWUAAVQYEly9fBgCl8C3BAgaCugAAAABJRU5ErkJggg==);
-
-	border: 1px solid #BBB;
-	box-shadow: 0 8px 30px -12px #888;
+	background: #4772C1;
+	margin-top: -10px;
+	margin-bottom: 10px;
 }
 
-header nav {
-	margin-top: 0;
-	margin: auto;
-	max-width: 7.5in;
+
+/* <box shadows on sides> */
+section::before, footer::before {
+	position: absolute;
+	content: " ";
+	height: 100%;
+	width: 64px;
+	left: -64px;
+	top: 0;
+}
+
+section::before, footer::before, h1::before, h2::before, h3::before, header::before {
+	box-shadow: inset -64px 0 64px -64px rgba(0, 0, 0, 0.25);
+}
+
+
+section::after, footer::after {
+	position: absolute;
+	content: " ";
+	height: 100%;
+	width: 64px;
+	right: -64px;
+	top: 0;
+}
+
+section::after, footer::after, h1::after, h2::after, h3::after, header::after {
+	box-shadow: inset 64px 0 64px -64px rgba(0, 0, 0, 0.25);
+}
+
+/* </box shadows on sides> */
+
+/* <header> */
+nav {
+	padding: 1em;
+	padding-bottom: 0;
+	margin: 0;
+}
+nav :link, nav :visited {
+	color: white;
 }
 
 nav h1 {
-	float: left;
-	height: 2em;
-	line-height: 2em;
 	margin: 0;
+	padding: 0;
 }
+
+nav h1::before, nav h1::after {
+	display: none;
+}
+
 nav li, nav ul {
 	padding: 0;
 	margin: 0;
 }
 
-nav ul {
-	float: left;
-	margin: 0;
-	padding: 0;
-	margin-left: 4em;
-}
-
 nav li {
 	height: 2em;
 	line-height: 2em;
+	display: inline-block;
+	padding-right: 2em;
 }
+/* </header> */
 
 .clear {
 	clear: both;
@@ -54,24 +136,8 @@ nav li {
 }
 
 
-#codeblocks {
-	top: -40px;
-	left: 0;
-	overflow-x: hidden;
-	position: absolute;
-	overflow: hidden;
-	bottom: -40px;
-	z-index: -100;
-}
-
-h1, h2, h3, h4, h5, h6 {
-	padding: 0;
-	margin: 0;
-}
-
 h1 {
 	font-size: 2em;
-	margin-bottom: 0.5em;
 }
 
 h2 {
@@ -88,21 +154,12 @@ hr {
 	margin-bottom: 1em;
 }
 
-section, footer {
-	max-width: 7.5in;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 32px;
-	margin-bottom: 0;
-	background: rgba(255, 255, 255, 0.875);
-	padding: 32px;
-	border-radius: 3px;
-	border: 1px solid #BBB;
-	box-shadow: 0 8px 30px -12px #888;
-}
+
 
 footer {
-	margin-bottom: 32px;
+	border-top: 1px dotted #BBB;
+	margin-top: -1px;
+	padding-bottom: 32px;
 }
 
 p {
@@ -174,6 +231,16 @@ ol.tree > li {
 }
 
 /******************************************************************************/
+
+#codeblocks {
+	top: -40px;
+	left: 0;
+	overflow-x: hidden;
+	position: absolute;
+	overflow: hidden;
+	z-index: -100;
+}
+
 #codeblocks .line {
 	height: 16px;
 	overflow-x: hidden;
