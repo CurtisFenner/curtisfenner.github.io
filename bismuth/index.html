@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<!-- made with love by Curtis Fenner -->
+	<title>Bismuth / CurtisFenner</title>
+	<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+	<div id="codeblocks"></div>
+	<header>
+		<nav>
+			<h1><a href="/">CurtisFenner</a></h1>
+			<ul class="small">
+				<li><a href="http://github.com/curtisfenner">GitHub</a>
+				<li>
+					<a href="http://www.google.com/recaptcha/mailhide/d?k=018CuaWnTFBB6frcYDLBdu1g==&amp;c=s0oYZ8B6zNjjWgDYqmrUGa0P1yLrsShQ8nCB-TzAbEk=" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\075018CuaWnTFBB6frcYDLBdu1g\75\75\46c\75s0oYZ8B6zNjjWgDYqmrUGa0P1yLrsShQ8nCB-TzAbEk\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" title="Reveal this e-mail address">
+						Email Me
+					</a>
+			</ul>
+		</nav>
+	</header>
+	<!-- HEADER END -->
+	<section>
+		<h1> Bismuth</h1>
+		<p>
+			Bismuth is a semi-functional statically-typed programming language.
+		</p>
+		<p>
+			The goal of Bismuth is to be an imperative language that uses the
+			advantages of functional purity and strong types to make writing
+			and testing correct code easier.
+		</p>
+
+	</section>
+
+	<section>
+		<h2> Effects and Actions</h2>
+		<p>
+			Functions in Bismuth are functionally pure by default. This guarantees a
+		function called with the same parameters will always produce the same result &mdash;
+		there is never any hidden state.
+		</p>
+		<p>
+			This means there's no "side-effects" of calling a function. Invoking a pure
+		function will change nothing about the rest of the world.
+		</p>
+		<p>
+			This is possible because Bismuth does not allow global variables or destructive
+		methods on objects.
+		</p>
+		<p>
+			However, this would make important tasks like IO and database calls cumbersome.
+		Bismuth allows functions to explicitly state their *effects*.
+		</p>
+		<p>
+			An effect is a description of the impure aspects of functions. It describes the
+		interface that lets the function know about the outside world:
+		</p>
+		<pre class="draft">
+effect GetConfig {
+	func getWikipediaArticle (page : String) ! -&gt; Article,
+}</pre>
+		<p>
+			Effects also describe how the function modifies the outside world:
+		</p>
+		<pre class="draft">
+effect Log {
+	func log (line:str) !,
+}</pre>
+		<p>
+			A *service* defines implementations for an effect. Services are the only
+		instance in Bismuth that a function is allowed to modify a variable not defined
+		lexically within the function.
+		</p>
+		<p>
+			Services bear a strong resemblance to the classes of OOP.
+		</p>
+		<pre class="draft">
+service LogList impl Log {
+	var q : Queue String = empty;
+
+	func log (thing : String) ! {
+		push @q thing;
+	}
+}</pre>
+		<p>
+			Effect actions are always invoked using a bang:
+		</p>
+		<pre class="">
+log "Hello" !</pre>
+		<p>
+			Program standard input/output is implemented as the <code>IO</code> effect. The handlers
+		for these effects are implemented in a foreign environment; the <code>main</code>
+		function declares the <code>IO</code> effect which gives it access to these.
+		</p>
+		<h2> Effects: TL;DR</h2>
+		<ul>
+			<li> functions pure by default &mdash; no side-effects
+			<li> never any hidden/global state
+			<li> mutation is always explicit
+			<li> all services automatically provide mockable interfaces
+		</ul>
+
+	</section>
+
+	<section>
+		<h2> Data Structures: Enums, Structs, and Services</h2>
+		<p>
+			Bismuth has three types of compound data structures.
+		</p>
+		<h3> Enums</h3>
+		<p>
+			*Enums* are algebraic-data-types. They define an exhaustive sequence of
+		'patterns' that objects of that type may have.
+		</p>
+		<p>
+			For example, an "optional value type" can be defined as an enum:
+		</p>
+		<pre class="">
+enum Optional T {
+	Some T,
+	Nil,
+}</pre>
+		<p>
+			For example, <code>Some 5</code>, <code>Some 18</code>, and <code>Nil</code> are all instances of the
+		<code>Optional Int</code> type.
+		</p>
+		<p>
+			The fields in an enum constructor can't be named. An enum can be examined by
+		destructuring it.
+		</p>
+		<pre class="draft">
+// Read a line from standard-input and try to parse it as an integer
+var num : Optional Int = parse (readLine !);
+
+match num {
+	Nil {
+		// `parse` returned `Nil` (there was no number it could return)
+		log "You didn't give a number"
+	},
+	Some x {
+		// `parse` return Some number, `x`
+		if x &gt; 0 {
+			log "positive" !;
+		} else if x &lt; 0 {
+			log "negative" !;
+		} else {
+			log "zero" !;
+		}
+	},
+}</pre>
+		<p>
+			Enums can also be used to easily build recursive data structures like trees.
+		</p>
+		<pre class="draft">
+enum Tree T {
+	Node (Tree T) T (Tree T), // left, right
+	Empty,                    // (parent is a leaf)
+}
+
+func sum (tree : Tree Int) -&gt; Int {
+	match tree {
+		Empty {
+			// An empty tree has a total sum of 0
+			return 0;
+		},
+		Node left value right {
+			// A tree has the some of the value at this node and the sums
+			// of the sub-trees
+			return value + sum left + sum right;
+		}
+	}
+}</pre>
+		<p>
+			Notice that <code>sum</code> has no return after the <code>match</code>. Bismuth allows this because
+		it knows the match against <code>tree</code> was exhaustive.
+		</p>
+		<h3> Structs</h3>
+		<p>
+			*Structs* are groups of named fields. Their fields don't have any order, but can
+		be easily pulled out by their identifier.
+		</p>
+		<p>
+			For example, a person in a contact book could be defined as a struct:
+		</p>
+		<pre class="">
+struct Person {
+	name : String,
+	birth : Date,
+	nickname : String,
+	address : Location,
+}</pre>
+	</section>
+	<!-- FOOTER BEGIN -->
+	<footer>
+		&copy; 2016 Curtis Fenner
+	</footer>
+	<script src="/code.js"></script>
+</body>
