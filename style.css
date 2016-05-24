@@ -72,6 +72,7 @@ code, pre {
 	color: #EEE;
 }
 pre {
+	overflow-x: auto;
 	position: relative;
 	padding: 0.5em;
 }
