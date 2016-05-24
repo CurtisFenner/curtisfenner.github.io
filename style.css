@@ -25,6 +25,7 @@ h1, h2, h3, h4, h5, h6 {
 	color: white;
 	margin: 0 -32px;
 	padding: 0.25em 32px;
+	margin-top: 1em;
 	position: relative;
 }
 
@@ -65,6 +66,32 @@ header {
 	margin-bottom: 10px;
 }
 
+/* <code> */
+code, pre {
+	background: #234;
+	color: #EEE;
+}
+pre {
+	position: relative;
+	padding: 0.5em;
+}
+code {
+	padding: 0.25em;
+}
+
+pre.draft::after {
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: #BB3;
+	color: #444;
+	content: "DRAFT";
+	border: 1px solid #992;
+	padding: 0.125em;
+	margin: 0.25em;
+}
+/* </code> */
 
 /* <box shadows on sides> */
 section::before, footer::before {
