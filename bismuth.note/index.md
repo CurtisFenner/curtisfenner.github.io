@@ -5,7 +5,7 @@ Bismuth is a semi-functional statically-typed programming language.
 
 The goal of Bismuth is to be an imperative language that uses the
 	advantages of functional purity and strong types to make writing
-	and testing correct code easier.
+	and testing correct code easy.
 
 #
 ## Effects and Actions
@@ -14,24 +14,24 @@ function called with the same parameters will always produce the same result --
 there is never any hidden state.
 
 This means there's no "side-effects" of calling a function. Invoking a pure
-function will change nothing about the rest of the world.
+function will change nothing about the rest of the world (there are no global
+variables).
 
-This is possible because Bismuth does not allow global variables or destructive
-methods on objects.
+However, complete functional purity can obscure important, typical tasks like
+IO and database calls.
+Bismuth allows functions to break this purity when they explicitly state their
+`effect`s.
 
-However, this would make important tasks like IO and database calls cumbersome.
-Bismuth allows functions to explicitly state their *effects*.
-
-An effect is a description of the impure aspects of functions. It describes the
+An effect is a description of the impure aspects of a function. It describes the
 interface that lets the function know about the outside world:
 
 ```draft
-effect GetConfig {
-	func getWikipediaArticle (page : String) ! -> Article,
+effect ReadInternet {
+	func getArticle (url : URL) ! -> Article,
 }
 ```
 
-Effects also describe how the function modifies the outside world:
+and also describe how the function modifies the outside world:
 
 ```draft
 effect Log {
@@ -39,11 +39,7 @@ effect Log {
 }
 ```
 
-A *service* defines implementations for an effect. Services are the only
-instance in Bismuth that a function is allowed to modify a variable not defined
-lexically within the function.
-
-Services bear a strong resemblance to the classes of OOP.
+A `service` defines an implementation of an effect.
 
 ```draft
 service LogList impl Log {
@@ -63,15 +59,70 @@ log "Hello" !
 
 Program standard input/output is implemented as the `IO` effect. The handlers
 for these effects are implemented in a foreign environment; the `main`
-function declares the `IO` effect which gives it access to these.
+function declares the `IO` effect which gives it access to these:
 
-## Effects: TL;DR
+```
+func main ! IO {
+}
+```
+
+### Effects: TL;DR
 + functions pure by default -- no side-effects
 + never any hidden/global state
 + mutation is always explicit
 + all services automatically provide mockable interfaces
 
-#
+----
+
+## Types and Traits
+
+Bismuth is a strongly typed language. All variable declarations must explicitly
+specify their type (it cannot be inferred).
+
+```
+var petName : String = "Mr. Whiskers";
+```
+
+### Generics
+
+Types (both structs and enums, see below) can be generic over other types. Type
+parameters are listed after the
+type they are applied to. Here, `pets` is a `List` of `Pet` objects:
+
+```
+var pets : List Pet = empty;
+```
+
+Generic variables can be introduced in type and function definitions. For
+example, here is a function that returns its second argument:
+
+```
+func [T] second (a : T) (b : T) -> T {
+	return b;
+}
+```
+
+### Traits
+
+Types can also satisfy `trait`s. A trait is a common interface between different
+types. For example, the `Orderable` trait allows the use of the `<` operator.
+
+Here is a function that returns the least of its arguments:
+
+```
+func [T | Orderable T] min (a : T) (b : T) -> T {
+	if a < b {
+		return a;
+	}
+	return b;
+}
+```
+
+The definition of `T` is read as "for T, such that T is Orderable".
+
+
+
+----
 
 ## Data Structures: Enums, Structs, and Services
 
@@ -79,7 +130,7 @@ Bismuth has three types of compound data structures.
 
 ### Enums
 
-*Enums* are algebraic-data-types. They define an exhaustive sequence of
+An `enum` is an algebraic-data-types. They define an exhaustive sequence of
 'patterns' that objects of that type may have.
 
 For example, an "optional value type" can be defined as an enum:
@@ -134,21 +185,21 @@ func sum (tree : Tree Int) -> Int {
 			return 0;
 		},
 		Node left value right {
-			// A tree has the some of the value at this node and the sums
-			// of the sub-trees
+			// A tree has the some of the value at this
+			// node and the sums of the sub-trees.
 			return value + sum left + sum right;
 		}
 	}
 }
 ```
 
-Notice that `sum` has no return after the `match`. Bismuth allows this because
-it knows the match against `tree` was exhaustive.
+Notice that `sum` has no return after the `match`. Bismuth knows the match
+against `tree` is exhaustive, so it knows that any code after the `match` cannot
+be reached.
 
 ### Structs
 
-*Structs* are groups of named fields. Their fields don't have any order, but can
-be easily pulled out by their identifier.
+A `struct` is a group of named fields. Their fields have names, unlike `enum`s.
 
 For example, a person in a contact book could be defined as a struct:
 
@@ -160,3 +211,35 @@ struct Person {
 	address : Location,
 }
 ```
+
+Members of structs can be read and assigned using the familiar `.field`
+notation:
+
+```
+log johnDoe.name !; // -> "John Doe"
+
+johnDoe.address = parse "123 Drury Lane";
+```
+
+Structs can also be destructured:
+
+```draft
+var Person{name = name, birth = someDate} = johnDoe;
+// defines `name` and `someDate` variables
+```
+
+## Syntax
+
+TODO
+
+## Testing
+
+TODO
+
+## Concurrency
+
+TODO
+
+## Packages
+
+TODO

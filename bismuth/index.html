@@ -30,7 +30,7 @@
 		<p>
 			The goal of Bismuth is to be an imperative language that uses the
 			advantages of functional purity and strong types to make writing
-			and testing correct code easier.
+			and testing correct code easy.
 		</p>
 
 	</section>
@@ -44,38 +44,32 @@
 		</p>
 		<p>
 			This means there's no "side-effects" of calling a function. Invoking a pure
-		function will change nothing about the rest of the world.
+		function will change nothing about the rest of the world (there are no global
+		variables).
 		</p>
 		<p>
-			This is possible because Bismuth does not allow global variables or destructive
-		methods on objects.
+			However, complete functional purity can obscure important, typical tasks like
+		IO and database calls.
+		Bismuth allows functions to break this purity when they explicitly state their
+		<code>effect</code>s.
 		</p>
 		<p>
-			However, this would make important tasks like IO and database calls cumbersome.
-		Bismuth allows functions to explicitly state their *effects*.
-		</p>
-		<p>
-			An effect is a description of the impure aspects of functions. It describes the
+			An effect is a description of the impure aspects of a function. It describes the
 		interface that lets the function know about the outside world:
 		</p>
 		<pre class="draft">
-effect GetConfig {
-	func getWikipediaArticle (page : String) ! -&gt; Article,
+effect ReadInternet {
+	func getArticle (url : URL) ! -&gt; Article,
 }</pre>
 		<p>
-			Effects also describe how the function modifies the outside world:
+			and also describe how the function modifies the outside world:
 		</p>
 		<pre class="draft">
 effect Log {
 	func log (line:str) !,
 }</pre>
 		<p>
-			A *service* defines implementations for an effect. Services are the only
-		instance in Bismuth that a function is allowed to modify a variable not defined
-		lexically within the function.
-		</p>
-		<p>
-			Services bear a strong resemblance to the classes of OOP.
+			A <code>service</code> defines an implementation of an effect.
 		</p>
 		<pre class="draft">
 service LogList impl Log {
@@ -93,26 +87,68 @@ log "Hello" !</pre>
 		<p>
 			Program standard input/output is implemented as the <code>IO</code> effect. The handlers
 		for these effects are implemented in a foreign environment; the <code>main</code>
-		function declares the <code>IO</code> effect which gives it access to these.
+		function declares the <code>IO</code> effect which gives it access to these:
 		</p>
-		<h2> Effects: TL;DR</h2>
+		<pre class="">
+func main ! IO {
+}</pre>
+		<h3> Effects: TL;DR</h3>
 		<ul>
 			<li> functions pure by default &mdash; no side-effects
 			<li> never any hidden/global state
 			<li> mutation is always explicit
 			<li> all services automatically provide mockable interfaces
 		</ul>
-
-	</section>
-
-	<section>
+		<hr>
+		<h2> Types and Traits</h2>
+		<p>
+			Bismuth is a strongly typed language. All variable declarations must explicitly
+		specify their type (it cannot be inferred).
+		</p>
+		<pre class="">
+var petName : String = "Mr. Whiskers";</pre>
+		<h3> Generics</h3>
+		<p>
+			Types (both structs and enums, see below) can be generic over other types. Type
+		parameters are listed after the
+		type they are applied to. Here, <code>pets</code> is a <code>List</code> of <code>Pet</code> objects:
+		</p>
+		<pre class="">
+var pets : List Pet = empty;</pre>
+		<p>
+			Generic variables can be introduced in type and function definitions. For
+		example, here is a function that returns its second argument:
+		</p>
+		<pre class="">
+func [T] second (a : T) (b : T) -&gt; T {
+	return b;
+}</pre>
+		<h3> Traits</h3>
+		<p>
+			Types can also satisfy <code>trait</code>s. A trait is a common interface between different
+		types. For example, the <code>Orderable</code> trait allows the use of the <code>&lt;</code> operator.
+		</p>
+		<p>
+			Here is a function that returns the least of its arguments:
+		</p>
+		<pre class="">
+func [T | Orderable T] min (a : T) (b : T) -&gt; T {
+	if a &lt; b {
+		return a;
+	}
+	return b;
+}</pre>
+		<p>
+			The definition of <code>T</code> is read as "for T, such that T is Orderable".
+		</p>
+		<hr>
 		<h2> Data Structures: Enums, Structs, and Services</h2>
 		<p>
 			Bismuth has three types of compound data structures.
 		</p>
 		<h3> Enums</h3>
 		<p>
-			*Enums* are algebraic-data-types. They define an exhaustive sequence of
+			An <code>enum</code> is an algebraic-data-types. They define an exhaustive sequence of
 		'patterns' that objects of that type may have.
 		</p>
 		<p>
@@ -167,20 +203,20 @@ func sum (tree : Tree Int) -&gt; Int {
 			return 0;
 		},
 		Node left value right {
-			// A tree has the some of the value at this node and the sums
-			// of the sub-trees
+			// A tree has the some of the value at this
+			// node and the sums of the sub-trees.
 			return value + sum left + sum right;
 		}
 	}
 }</pre>
 		<p>
-			Notice that <code>sum</code> has no return after the <code>match</code>. Bismuth allows this because
-		it knows the match against <code>tree</code> was exhaustive.
+			Notice that <code>sum</code> has no return after the <code>match</code>. Bismuth knows the match
+		against <code>tree</code> is exhaustive, so it knows that any code after the <code>match</code> cannot
+		be reached.
 		</p>
 		<h3> Structs</h3>
 		<p>
-			*Structs* are groups of named fields. Their fields don't have any order, but can
-		be easily pulled out by their identifier.
+			A <code>struct</code> is a group of named fields. Their fields have names, unlike <code>enum</code>s.
 		</p>
 		<p>
 			For example, a person in a contact book could be defined as a struct:
@@ -192,6 +228,36 @@ struct Person {
 	nickname : String,
 	address : Location,
 }</pre>
+		<p>
+			Members of structs can be read and assigned using the familiar <code>.field</code>
+		notation:
+		</p>
+		<pre class="">
+log johnDoe.name !; // -&gt; "John Doe"
+
+johnDoe.address = parse "123 Drury Lane";</pre>
+		<p>
+			Structs can also be destructured:
+		</p>
+		<pre class="draft">
+var Person{name = name, birth = someDate} = johnDoe;
+// defines `name` and `someDate` variables</pre>
+		<h2> Syntax</h2>
+		<p>
+			TODO
+		</p>
+		<h2> Testing</h2>
+		<p>
+			TODO
+		</p>
+		<h2> Concurrency</h2>
+		<p>
+			TODO
+		</p>
+		<h2> Packages</h2>
+		<p>
+			TODO
+		</p>
 	</section>
 	<!-- FOOTER BEGIN -->
 	<footer>
