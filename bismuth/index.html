@@ -29,8 +29,15 @@
 		</p>
 		<p>
 			The goal of Bismuth is to be an imperative language that uses the
-			advantages of functional purity and strong types to make writing
-			and testing correct code easy.
+		advantages of functional purity and strong types to make writing
+		and testing correct code easy.
+		</p>
+		<h1> Examples and the Compiler</h1>
+		<p>
+			I have implemented a compiled for Bismuth in Java.
+		</p>
+		<p>
+			Examples of Bismuth code can be found here.
 		</p>
 
 	</section>
@@ -55,14 +62,14 @@
 		</p>
 		<p>
 			An effect is a description of the impure aspects of a function. It describes the
-		interface that lets the function know about the outside world:
+		interface that lets the function know about the outside world.
 		</p>
 		<pre class="draft">
 effect ReadInternet {
 	func getArticle (url : URL) ! -&gt; Article,
 }</pre>
 		<p>
-			and also describe how the function modifies the outside world:
+			and also describe how the function modifies the outside world.
 		</p>
 		<pre class="draft">
 effect Log {
@@ -80,17 +87,17 @@ service LogList impl Log {
 	}
 }</pre>
 		<p>
-			Effect actions are always invoked using a bang:
+			Effect actions are always invoked using a bang.
 		</p>
 		<pre class="">
 log "Hello" !</pre>
 		<p>
 			Program standard input/output is implemented as the <code>IO</code> effect. The handlers
 		for these effects are implemented in a foreign environment; the <code>main</code>
-		function declares the <code>IO</code> effect which gives it access to these:
+		function declares the <code>IO</code> effect which gives it access to these.
 		</p>
 		<pre class="">
-func main ! IO {
+func main ! IO -&gt; Unit {
 }</pre>
 		<h3> Effects: TL;DR</h3>
 		<ul>
@@ -111,13 +118,13 @@ var petName : String = "Mr. Whiskers";</pre>
 		<p>
 			Types (both structs and enums, see below) can be generic over other types. Type
 		parameters are listed after the
-		type they are applied to. Here, <code>pets</code> is a <code>List</code> of <code>Pet</code> objects:
+		type they are applied to. Here, <code>pets</code> is a <code>List</code> of <code>Pet</code> objects.
 		</p>
 		<pre class="">
 var pets : List Pet = empty;</pre>
 		<p>
 			Generic variables can be introduced in type and function definitions. For
-		example, here is a function that returns its second argument:
+		example, here is a function that returns its second argument.
 		</p>
 		<pre class="">
 func [T] second (a : T) (b : T) -&gt; T {
@@ -129,7 +136,7 @@ func [T] second (a : T) (b : T) -&gt; T {
 		types. For example, the <code>Orderable</code> trait allows the use of the <code>&lt;</code> operator.
 		</p>
 		<p>
-			Here is a function that returns the least of its arguments:
+			Here is a function that returns the least of its arguments.
 		</p>
 		<pre class="">
 func [T | Orderable T] min (a : T) (b : T) -&gt; T {
@@ -152,7 +159,7 @@ func [T | Orderable T] min (a : T) (b : T) -&gt; T {
 		'patterns' that objects of that type may have.
 		</p>
 		<p>
-			For example, an "optional value type" can be defined as an enum:
+			For example, an "optional value type" can be defined as an enum.
 		</p>
 		<pre class="">
 enum Optional T {
@@ -219,7 +226,7 @@ func sum (tree : Tree Int) -&gt; Int {
 			A <code>struct</code> is a group of named fields. Their fields have names, unlike <code>enum</code>s.
 		</p>
 		<p>
-			For example, a person in a contact book could be defined as a struct:
+			For example, a person in a contact book could be defined as a struct.
 		</p>
 		<pre class="">
 struct Person {
@@ -230,7 +237,7 @@ struct Person {
 }</pre>
 		<p>
 			Members of structs can be read and assigned using the familiar <code>.field</code>
-		notation:
+		notation.
 		</p>
 		<pre class="">
 log johnDoe.name !; // -&gt; "John Doe"
@@ -244,8 +251,223 @@ var Person{name = name, birth = someDate} = johnDoe;
 // defines `name` and `someDate` variables</pre>
 		<h2> Syntax</h2>
 		<p>
-			TODO
+			Bismuth uses curly braces to denote blocks and semicolons to mark the ends of
+		statements.
 		</p>
+		<pre class="">
+func main ! IO -&gt; Unit {
+	var a : Int = 5;
+	a = a + 5;
+}</pre>
+		<p>
+			Conditions in control statements do not need to be parenthesized.
+		</p>
+		<pre class="">
+if a &lt; 10 {
+	log a !;
+}</pre>
+		<p>
+			Functions can be invoked in the standard C-style with parentheses and commas.
+		</p>
+		<pre class="">
+var x : T = fun(a, b+1, c+2);</pre>
+		<p>
+			Functions can also be invoked in Haskell style, with spaces marking partial
+		function application.
+		</p>
+		<pre class="">
+var x : T = fun a (b+1) (c+2);</pre>
+		<p>
+			Operators are formed by punctuation operators, excluding period, comma,
+		parentheses, braces, the colon, the at sign, single/double quotes, and the
+		backtick.
+		</p>
+		<pre class="">
+var foo = bar &amp;*# baz;</pre>
+		<p>
+			Operators can also be formed by enclosing the name of a function in back-ticks.
+		</p>
+		<pre class="">
+var foo = bar `fizz` baz;</pre>
+		<p>
+			Comments are indicated using a double forward slash.
+		</p>
+		<pre class="">
+// This is a comment</pre>
+		<p>
+			The following is the syntax of Nickel, in BNF style notation. This is generated
+		by my implementation of the parser.
+		</p>
+		<pre class="">
+Program = Definition+
+
+Definition = EnumDefinition
+           | StructDefinition
+           | FunctionDefinition
+
+FunctionDefinition = `func`
+                     Generics?
+                     Name
+                     ArgumentGroup*
+                     FunctionEffects?
+                     `-&gt;`
+                     Type
+                     Block
+
+StructDefinition = `struct`
+                   Name
+                   Name*
+                   `{`
+                   StructField~","
+                   `}`
+
+StructField = Name
+              `:`
+              Type
+
+Block = `{`
+        Statement*
+        `}`
+
+Type = TypeResult~"-&gt;"
+
+ArgumentGroup = `(`
+                TypedName~","
+                `)`
+
+TypedName = Name
+            `:`
+            Type
+
+Statement = ReturnStatement
+          | IfStatement
+          | ForStatement
+          | VarStatement
+          | AssignmentStatement
+          | CallStatement
+
+VarStatement = `var`
+               Generics?
+               TypedName
+               `=`
+               Expression
+               `;`
+
+IfStatement = `if`
+              Expression
+              Block
+              ElseifClause*
+              ElseClause?
+
+ReturnStatement = `return`
+                  Expression?
+                  `;`
+
+EnumDefinition = `enum`
+                 Name
+                 Name*
+                 `{`
+                 EnumField~","
+                 `}`
+
+Name = ....
+
+CallStatement = CallExpression
+                `;`
+
+CallExpression = ExpressionAtom+
+
+ElseifClause = `elseif`
+               Expression
+               Block
+
+ElseClause = `else`
+             Block
+
+EnumField = Name
+            TypeAtom*
+
+Generics = `[`
+           Name~","
+           Constraints?
+           `]`
+
+ExpressionAtom = SimpleExpressionAtom
+               | Variable
+
+SimpleExpressionAtom = ParenedExpression
+                     | StringLiteral
+                     | NumberLiteral
+                     | Bang
+
+Variable = Reference
+           Access*
+
+Access = DotAccess
+       | SubscriptAccess
+
+DotAccess = `.`
+
+ParenedExpression = `(`
+                    Expression
+                    `)`
+
+Bang = ....
+
+NumberLiteral = ....
+
+SubscriptAccess = `[`
+                  Expression
+                  `]`
+
+Constraints = `|`
+              Constructor~","
+
+Constructor = Name
+              TypeAtom*
+
+FunctionEffects = `!`
+                  TypeResult~","
+
+TypeResult = TypeAtom+
+
+Expression = BinaryExpression
+
+BinaryExpression = UnaryExpression
+                   BinaryExpressionComponent*
+
+UnaryExpression = UnaryOperator*
+                  CallExpression
+
+UnaryOperator = ....
+
+BinaryExpressionComponent = BinaryOperator
+                            UnaryExpression
+
+BinaryOperator = ....
+
+TypeAtom = ParenedType
+         | Name
+
+ParenedType = `(`
+              Type
+              `)`
+
+ForStatement = `for`
+               TypedName~","
+               `in`
+               Expression
+               Block
+
+AssignmentStatement = Variable
+                      `=`
+                      Expression
+                      `;`
+
+StringLiteral = ....
+
+Reference = SimpleExpressionAtom
+          | Name</pre>
 		<h2> Testing</h2>
 		<p>
 			TODO

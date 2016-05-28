@@ -4,8 +4,14 @@ Bismuth
 Bismuth is a semi-functional statically-typed programming language.
 
 The goal of Bismuth is to be an imperative language that uses the
-	advantages of functional purity and strong types to make writing
-	and testing correct code easy.
+advantages of functional purity and strong types to make writing
+and testing correct code easy.
+
+# Examples and the Compiler
+
+I have implemented a compiled for Bismuth in Java.
+
+Examples of Bismuth code can be found here.
 
 #
 ## Effects and Actions
@@ -23,7 +29,7 @@ Bismuth allows functions to break this purity when they explicitly state their
 `effect`s.
 
 An effect is a description of the impure aspects of a function. It describes the
-interface that lets the function know about the outside world:
+interface that lets the function know about the outside world.
 
 ```draft
 effect ReadInternet {
@@ -31,7 +37,7 @@ effect ReadInternet {
 }
 ```
 
-and also describe how the function modifies the outside world:
+and also describe how the function modifies the outside world.
 
 ```draft
 effect Log {
@@ -51,7 +57,7 @@ service LogList impl Log {
 }
 ```
 
-Effect actions are always invoked using a bang:
+Effect actions are always invoked using a bang.
 
 ```
 log "Hello" !
@@ -59,10 +65,10 @@ log "Hello" !
 
 Program standard input/output is implemented as the `IO` effect. The handlers
 for these effects are implemented in a foreign environment; the `main`
-function declares the `IO` effect which gives it access to these:
+function declares the `IO` effect which gives it access to these.
 
 ```
-func main ! IO {
+func main ! IO -> Unit {
 }
 ```
 
@@ -87,14 +93,14 @@ var petName : String = "Mr. Whiskers";
 
 Types (both structs and enums, see below) can be generic over other types. Type
 parameters are listed after the
-type they are applied to. Here, `pets` is a `List` of `Pet` objects:
+type they are applied to. Here, `pets` is a `List` of `Pet` objects.
 
 ```
 var pets : List Pet = empty;
 ```
 
 Generic variables can be introduced in type and function definitions. For
-example, here is a function that returns its second argument:
+example, here is a function that returns its second argument.
 
 ```
 func [T] second (a : T) (b : T) -> T {
@@ -107,7 +113,7 @@ func [T] second (a : T) (b : T) -> T {
 Types can also satisfy `trait`s. A trait is a common interface between different
 types. For example, the `Orderable` trait allows the use of the `<` operator.
 
-Here is a function that returns the least of its arguments:
+Here is a function that returns the least of its arguments.
 
 ```
 func [T | Orderable T] min (a : T) (b : T) -> T {
@@ -133,7 +139,7 @@ Bismuth has three types of compound data structures.
 An `enum` is an algebraic-data-types. They define an exhaustive sequence of
 'patterns' that objects of that type may have.
 
-For example, an "optional value type" can be defined as an enum:
+For example, an "optional value type" can be defined as an enum.
 
 ```
 enum Optional T {
@@ -201,7 +207,7 @@ be reached.
 
 A `struct` is a group of named fields. Their fields have names, unlike `enum`s.
 
-For example, a person in a contact book could be defined as a struct:
+For example, a person in a contact book could be defined as a struct.
 
 ```
 struct Person {
@@ -213,7 +219,7 @@ struct Person {
 ```
 
 Members of structs can be read and assigned using the familiar `.field`
-notation:
+notation.
 
 ```
 log johnDoe.name !; // -> "John Doe"
@@ -230,7 +236,226 @@ var Person{name = name, birth = someDate} = johnDoe;
 
 ## Syntax
 
-TODO
+Bismuth uses curly braces to denote blocks and semicolons to mark the ends of
+statements.
+
+```
+func main ! IO -> Unit {
+	var a : Int = 5;
+	a = a + 5;
+}
+```
+
+Conditions in control statements do not need to be parenthesized.
+
+```
+if a < 10 {
+	log a !;
+}
+```
+
+Functions can be invoked in the standard C-style with parentheses and commas.
+
+```
+var x : T = fun(a, b+1, c+2);
+```
+
+Functions can also be invoked in Haskell style, with spaces marking partial
+function application.
+
+```
+var x : T = fun a (b+1) (c+2);
+```
+
+Operators are formed by punctuation operators, excluding period, comma,
+parentheses, braces, the colon, the at sign, single/double quotes, and the
+backtick.
+
+```
+var foo = bar &*# baz;
+```
+
+Operators can also be formed by enclosing the name of a function in back-ticks.
+
+```
+var foo = bar `fizz` baz;
+```
+
+Comments are indicated using a double forward slash.
+
+```
+// This is a comment
+```
+
+The following is the syntax of Nickel, in BNF style notation. This is generated
+by my implementation of the parser.
+
+```
+Program = Definition+
+
+Definition = EnumDefinition
+           | StructDefinition
+           | FunctionDefinition
+
+FunctionDefinition = `func`
+                     Generics?
+                     Name
+                     ArgumentGroup*
+                     FunctionEffects?
+                     `->`
+                     Type
+                     Block
+
+StructDefinition = `struct`
+                   Name
+                   Name*
+                   `{`
+                   StructField~","
+                   `}`
+
+StructField = Name
+              `:`
+              Type
+
+Block = `{`
+        Statement*
+        `}`
+
+Type = TypeResult~"->"
+
+ArgumentGroup = `(`
+                TypedName~","
+                `)`
+
+TypedName = Name
+            `:`
+            Type
+
+Statement = ReturnStatement
+          | IfStatement
+          | ForStatement
+          | VarStatement
+          | AssignmentStatement
+          | CallStatement
+
+VarStatement = `var`
+               Generics?
+               TypedName
+               `=`
+               Expression
+               `;`
+
+IfStatement = `if`
+              Expression
+              Block
+              ElseifClause*
+              ElseClause?
+
+ReturnStatement = `return`
+                  Expression?
+                  `;`
+
+EnumDefinition = `enum`
+                 Name
+                 Name*
+                 `{`
+                 EnumField~","
+                 `}`
+
+CallStatement = CallExpression
+                `;`
+
+CallExpression = ExpressionAtom+
+
+ElseifClause = `elseif`
+               Expression
+               Block
+
+ElseClause = `else`
+             Block
+
+EnumField = Name
+            TypeAtom*
+
+Generics = `[`
+           Name~","
+           Constraints?
+           `]`
+
+ExpressionAtom = SimpleExpressionAtom
+               | Variable
+
+SimpleExpressionAtom = ParenedExpression
+                     | StringLiteral
+                     | NumberLiteral
+                     | Bang
+
+Variable = Reference
+           Access*
+
+Access = DotAccess
+       | SubscriptAccess
+
+DotAccess = `.`
+
+ParenedExpression = `(`
+                    Expression
+                    `)`
+
+SubscriptAccess = `[`
+                  Expression
+                  `]`
+
+Constraints = `|`
+              Constructor~","
+
+Constructor = Name
+              TypeAtom*
+
+FunctionEffects = `!`
+                  TypeResult~","
+
+TypeResult = TypeAtom+
+
+Expression = BinaryExpression
+
+BinaryExpression = UnaryExpression
+                   BinaryExpressionComponent*
+
+UnaryExpression = UnaryOperator*
+                  CallExpression
+
+BinaryExpressionComponent = BinaryOperator
+                            UnaryExpression
+
+TypeAtom = ParenedType
+         | Name
+
+ParenedType = `(`
+              Type
+              `)`
+
+ForStatement = `for`
+               TypedName~","
+               `in`
+               Expression
+               Block
+
+AssignmentStatement = Variable
+                      `=`
+                      Expression
+                      `;`
+
+Reference = SimpleExpressionAtom
+          | Name
+
+Bang = `!`
+NumberLiteral = ....
+UnaryOperator = `not` | `~`
+BinaryOperator = ....
+StringLiteral = ....
+Name = ....
+```
 
 ## Testing
 
