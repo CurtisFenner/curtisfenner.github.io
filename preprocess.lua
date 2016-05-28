@@ -151,13 +151,13 @@ function process(path)
 	out:close()
 end
 
-local file = arg[1]
-if not file then
-	print("usage:")
-	print("", arg[0] .. " <output file>")
-	return 1
+local dir = arg[1]
+for line in io.popen("ls " .. dir .. ".note"):lines() do
+	local pattern = line:match("^(.-)%.md$")
+	if pattern then
+		process(dir .. "/" .. pattern)
+	end
 end
 
-process(file)
 
 
