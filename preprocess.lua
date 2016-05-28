@@ -158,6 +158,3 @@ for line in io.popen("ls " .. dir .. ".note"):lines() do
 		process(dir .. "/" .. pattern)
 	end
 end
-
-
-
