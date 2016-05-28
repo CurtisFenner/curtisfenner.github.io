@@ -370,8 +370,6 @@ EnumDefinition = `enum`
                  EnumField~","
                  `}`
 
-Name = ....
-
 CallStatement = CallExpression
                 `;`
 
@@ -412,10 +410,6 @@ ParenedExpression = `(`
                     Expression
                     `)`
 
-Bang = ....
-
-NumberLiteral = ....
-
 SubscriptAccess = `[`
                   Expression
                   `]`
@@ -439,12 +433,8 @@ BinaryExpression = UnaryExpression
 UnaryExpression = UnaryOperator*
                   CallExpression
 
-UnaryOperator = ....
-
 BinaryExpressionComponent = BinaryOperator
                             UnaryExpression
-
-BinaryOperator = ....
 
 TypeAtom = ParenedType
          | Name
@@ -464,10 +454,15 @@ AssignmentStatement = Variable
                       Expression
                       `;`
 
-StringLiteral = ....
-
 Reference = SimpleExpressionAtom
-          | Name</pre>
+          | Name
+
+Bang = `!`
+NumberLiteral = ....
+UnaryOperator = `not` | `~`
+BinaryOperator = ....
+StringLiteral = ....
+Name = ....</pre>
 		<h2> Testing</h2>
 		<p>
 			TODO
