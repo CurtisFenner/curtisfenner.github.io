@@ -1,17 +1,23 @@
 Bismuth
 
 # Bismuth
-Bismuth is a semi-functional statically-typed programming language.
+Bismuth is a purely-functional statically-typed imperative programming language.
 
 The goal of Bismuth is to be an imperative language that uses the
 advantages of functional purity and strong types to make writing
 and testing correct code easy.
 
+Here's a brief outline of the features of Bismuth:
+
++ fewer parentheses
++ explicit side-effects with the `effect` and `!` system
++ generics and type classes
++ pattern matching and destructuring
++ first class functions
+
 # Examples and the Compiler
 
-I have implemented a compiled for Bismuth in Java.
-
-Examples of Bismuth code can be found here.
+Examples of Bismuth code can be found [here|TODO].
 
 #
 ## Effects and Actions
@@ -285,176 +291,6 @@ Comments are indicated using a double forward slash.
 
 ```
 // This is a comment
-```
-
-The following is the syntax of Nickel, in BNF style notation. This is generated
-by my implementation of the parser.
-
-```
-Program = Definition+
-
-Definition = EnumDefinition
-           | StructDefinition
-           | FunctionDefinition
-
-FunctionDefinition = `func`
-                     Generics?
-                     Name
-                     ArgumentGroup*
-                     FunctionEffects?
-                     `->`
-                     Type
-                     Block
-
-StructDefinition = `struct`
-                   Name
-                   Name*
-                   `{`
-                   StructField~","
-                   `}`
-
-StructField = Name
-              `:`
-              Type
-
-Block = `{`
-        Statement*
-        `}`
-
-Type = TypeResult~"->"
-
-ArgumentGroup = `(`
-                TypedName~","
-                `)`
-
-TypedName = Name
-            `:`
-            Type
-
-Statement = ReturnStatement
-          | IfStatement
-          | ForStatement
-          | VarStatement
-          | AssignmentStatement
-          | CallStatement
-
-VarStatement = `var`
-               Generics?
-               TypedName
-               `=`
-               Expression
-               `;`
-
-IfStatement = `if`
-              Expression
-              Block
-              ElseifClause*
-              ElseClause?
-
-ReturnStatement = `return`
-                  Expression?
-                  `;`
-
-EnumDefinition = `enum`
-                 Name
-                 Name*
-                 `{`
-                 EnumField~","
-                 `}`
-
-CallStatement = CallExpression
-                `;`
-
-CallExpression = ExpressionAtom+
-
-ElseifClause = `elseif`
-               Expression
-               Block
-
-ElseClause = `else`
-             Block
-
-EnumField = Name
-            TypeAtom*
-
-Generics = `[`
-           Name~","
-           Constraints?
-           `]`
-
-ExpressionAtom = SimpleExpressionAtom
-               | Variable
-
-SimpleExpressionAtom = ParenedExpression
-                     | StringLiteral
-                     | NumberLiteral
-                     | Bang
-
-Variable = Reference
-           Access*
-
-Access = DotAccess
-       | SubscriptAccess
-
-DotAccess = `.`
-
-ParenedExpression = `(`
-                    Expression
-                    `)`
-
-SubscriptAccess = `[`
-                  Expression
-                  `]`
-
-Constraints = `|`
-              Constructor~","
-
-Constructor = Name
-              TypeAtom*
-
-FunctionEffects = `!`
-                  TypeResult~","
-
-TypeResult = TypeAtom+
-
-Expression = BinaryExpression
-
-BinaryExpression = UnaryExpression
-                   BinaryExpressionComponent*
-
-UnaryExpression = UnaryOperator*
-                  CallExpression
-
-BinaryExpressionComponent = BinaryOperator
-                            UnaryExpression
-
-TypeAtom = ParenedType
-         | Name
-
-ParenedType = `(`
-              Type
-              `)`
-
-ForStatement = `for`
-               TypedName~","
-               `in`
-               Expression
-               Block
-
-AssignmentStatement = Variable
-                      `=`
-                      Expression
-                      `;`
-
-Reference = SimpleExpressionAtom
-          | Name
-
-Bang = `!`
-NumberLiteral = ....
-UnaryOperator = `not` | `~`
-BinaryOperator = ....
-StringLiteral = ....
-Name = ....
 ```
 
 ## Testing
