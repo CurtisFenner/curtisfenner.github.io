@@ -158,19 +158,19 @@ nav li {
 /* <heading styles> */
 
 header::before {
-	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.25);
+	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.125);
 }
 
 header::after {
-	box-shadow: inset 32px 0 32px -32px rgba(0, 0, 0, 0.25);
+	box-shadow: inset 32px 0 32px -32px rgba(0, 0, 0, 0.125);
 }
 
 section::before, footer::before {
-	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.25);
+	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.125);
 }
 
 section::after, footer::after {
-	box-shadow: inset 32spx 0 32px -32px rgba(0, 0, 0, 0.25);
+	box-shadow: inset 32px 0 32px -32px rgba(0, 0, 0, 0.125);
 }
 
 h1, h2, h3 {
