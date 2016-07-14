@@ -9,6 +9,18 @@ html, body {
 
 /* </"sticky footer"> */
 
+.multicolumn {
+	column-count: 3;
+	padding-right: 5em;
+}
+
+.multicolumn li {
+	list-style-type: bullet;
+	list-style-position: inside;
+}
+
+/* */
+
 body {
 	background: white;
 	margin: 0;
@@ -120,6 +132,7 @@ nav {
 	padding: 1em;
 	padding-bottom: 0;
 	margin: 0;
+	text-align: center;
 }
 nav :link, nav :visited {
 	color: white;
@@ -137,6 +150,14 @@ nav h1::before, nav h1::after {
 nav li, nav ul {
 	padding: 0;
 	margin: 0;
+}
+
+nav :link {
+	font-weight: normal;
+}
+
+nav ul {
+	padding-left: 2em;
 }
 
 nav li {
@@ -178,10 +199,21 @@ h1, h2, h3 {
 }
 
 h1 {
-	border-bottom: 4px solid #444;
+	position: relative;
 	margin-left: -32px;
 	margin-right: -32px;
 	padding-left: 32px;
+	padding-bottom: -5px;
+}
+h1::after {
+	height: 0;
+	position: absolute;
+	display: block;
+	left: 0;
+	right: 0;
+	top: 0.99em;
+	content: "";
+	border-bottom: 2px solid #444;
 }
 
 h2, h3 {
@@ -195,15 +227,15 @@ header h1 {
 }
 
 h1 {
-	font-size: 2.5em;
+	font-size: 2em;
 }
 
 h2 {
-	font-size: 1.5em;
+	font-size: 1.25em;
 }
 
 h3 {
-	font-size: 1.25em;
+	font-size: 1em;
 }
 
 /* </heading styles> */
