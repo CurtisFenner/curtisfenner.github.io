@@ -1,12 +1,13 @@
 /* <"sticky footer"> */
+
 html, body {
 	height: 100%;
 }
 #body {
 	min-height: 100%;
 }
-/* </"sticky footer"> */
 
+/* </"sticky footer"> */
 
 body {
 	background: white;
@@ -48,6 +49,9 @@ section, footer, nav, header {
 	position: relative;
 	padding: 32px;
 }
+header, footer {
+	padding-top: 32px;
+}
 
 section, footer {
 	background: rgba(255, 255, 255, 0.875);
@@ -59,6 +63,7 @@ header {
 }
 
 /* <code> */
+
 code, pre {
 	background: #234;
 	color: #EEE;
@@ -84,9 +89,11 @@ pre.draft::after {
 	padding: 0.125em;
 	margin: 0.25em;
 }
+
 /* </code> */
 
 /* <box shadows on sides> */
+
 section::before, footer::before {
 	position: absolute;
 	content: " ";
@@ -95,11 +102,6 @@ section::before, footer::before {
 	left: -64px;
 	top: 0;
 }
-
-section::before, footer::before, h1::before, h2::before, h3::before, header::before {
-	box-shadow: inset -64px 0 64px -64px rgba(0, 0, 0, 0.25);
-}
-
 
 section::after, footer::after {
 	position: absolute;
@@ -110,13 +112,10 @@ section::after, footer::after {
 	top: 0;
 }
 
-section::after, footer::after, h1::after, h2::after, h3::after, header::after {
-	box-shadow: inset 64px 0 64px -64px rgba(0, 0, 0, 0.25);
-}
-
 /* </box shadows on sides> */
 
 /* <header> */
+
 nav {
 	padding: 1em;
 	padding-bottom: 0;
@@ -146,6 +145,7 @@ nav li {
 	display: inline-block;
 	padding-right: 2em;
 }
+
 /* </header> */
 
 .clear {
@@ -156,45 +156,55 @@ nav li {
 }
 
 /* <heading styles> */
-h1, h2, h3, h4, h5, h6 {
-	background: #4772C1;
-	color: white;
-	margin: 0 -32px;
-	padding: 0.25em 32px;
-	margin-top: 1em;
-	position: relative;
+
+header::before {
+	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.25);
 }
 
-h1::before, h2::before, /*h3::before,*/ header::before {
-	content: " ";
-	position: absolute;
-	right: 100%;
-	width: 9600px;
-	height: 100%;
-	background: #4772C1;
-	top: 5px;
-	z-index: 1;
+header::after {
+	box-shadow: inset 32px 0 32px -32px rgba(0, 0, 0, 0.25);
 }
 
-h1::after, h2::after, /*h3::after,*/ header::after {
-	content: " ";
-	position: absolute;
-	left: 100%;
-	width: 9600px;
-	height: 100%;
-	background: #4772C1;
-	top: 5px;
-	z-index: 1;
+section::before, footer::before {
+	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.25);
+}
+
+section::after, footer::after {
+	box-shadow: inset 32spx 0 32px -32px rgba(0, 0, 0, 0.25);
+}
+
+h1, h2, h3 {
+	margin: 0;
 }
 
 h1 {
-	font-size: 2em;
+	border-bottom: 4px solid #444;
+	margin-left: -32px;
+	margin-right: -32px;
+	padding-left: 32px;
+}
+
+h2, h3 {
+	padding-top: 1em;
+}
+
+header h1 {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+h1 {
+	font-size: 2.5em;
 }
 
 h2 {
 	font-size: 1.5em;
 }
 
+h3 {
+	font-size: 1.25em;
+}
 
 /* </heading styles> */
 
@@ -207,8 +217,6 @@ hr {
 	margin-top: 1em;
 	margin-bottom: 1em;
 }
-
-
 
 footer {
 	border-top: 1px dotted #BBB;
@@ -255,6 +263,7 @@ td {
 }
 
 /******************************************************************************/
+
 .box {
 	border: 1px solid #444;
 	display: inline-block;
