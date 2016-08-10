@@ -16,7 +16,7 @@ body {
 	padding: 0.75in;
 	margin-left: auto;
 	margin-right: auto;
-	font-size: 16px;
+	font-size: 14px;
 }
 :link, :visited {
 	color: #0044EE;
@@ -39,10 +39,8 @@ ul, ol, p {
 	margin-bottom: 0;
 }
 
-.threecolumn li {
-	display: inline-block;
-	float: left;
-	width: 26%;
+.threecolumn {
+	column-count: 3;
 }
 
 h1, h2, h3 {
@@ -78,10 +76,22 @@ h1 {
 }
 
 address {
-	text-align: left;
+	text-align: center;
 	line-height: 1.25em;
 	margin: auto;
 	width: 3in;
+}
+
+table.aligned th {
+	text-align: right;
+}
+
+table.aligned td {
+	text-align: left;
+}
+
+.inline {
+	display: inline-block;
 }
 
 	</style>
@@ -90,14 +100,14 @@ address {
 	<h1>Curtis W. Fenner</h1>
 
 	<address>
-		Resume:
-		<a href="http://www.curtisfenner.com/resume">curtisfenner.com/resume</a>
-		<br>
-		GitHub:
-		<a href="https://github.com/CurtisFenner">github.com/CurtisFenner</a>
-		<br>
-		Email:
-		<a href="mailto:cwfenner@umich.edu">cwfenner@umich.edu</a>
+		<table class="inline aligned">
+			<tr><th>Resume:
+				<td><a href="http://www.curtisfenner.com/resume">curtisfenner.com/resume</a>
+			<tr><th>GitHub:
+				<td><a href="https://github.com/CurtisFenner">github.com/CurtisFenner</a>
+			<tr><th>Email:
+				<td><a href="mailto:cwfenner@umich.edu">cwfenner@umich.edu</a>
+		</table>
 	</address>
 
 	<section class=education>
@@ -106,7 +116,9 @@ address {
 		<div class=setting>Ann Arbor, Michigan. 2014 &ndash; 2018</div>
 		<ul>
 			<li>Pursuing Computer Science B.S.E.
-			<li>4.0 GPA &mdash; Dean's List Fall 2014, Winter 2015, Fall 2015
+			<li>4.0 GPA &mdash;
+				Dean's List Fall 2014, Winter 2015, Fall 2015,
+				Winter 2016
 		</ul>
 		<h3>Stoney Creek High School</h3>
 		<div class=setting>Rochester Hills, Michigan. 2011 &ndash; 2014</div>
@@ -146,15 +158,25 @@ address {
 		<h2>Additional Information &amp; Skills</h2>
 		<h3>Computer Programming</h3>
 		<p>Programmed for 10 years on many various personal projects and two
-			industry internships
+			software engineering internships
 		<ul class=threecolumn>
 			<li>Go
+			<li>C
+			<li>C++
 			<li>Lua
 			<li>Java
 			<li>CSS
 			<li>HTML
 			<li>JavaScript
 			<li>Python
+		</ul>
+
+		<h3>Selected Coursework</h3>
+		<ul>
+			<li>Data Structures &amp; Algorithms
+			<li>Introdunction to Computer Security
+			<li>Introduction to Math. Analysis
+			<li>Discrete Mathematics
 		</ul>
 	</section>
 </body>
