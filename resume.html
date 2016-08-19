@@ -12,11 +12,10 @@ body {
 	box-shadow: 0 0 50px -4px #AAA;
 	font-family: "Merriweather";
 	width: 8.5in;
-	height: 10in;
 	padding: 0.75in;
 	margin-left: auto;
 	margin-right: auto;
-	font-size: 14px;
+	font-size: 15px;
 }
 :link, :visited {
 	color: #0044EE;
@@ -37,6 +36,7 @@ li:before {
 ul, ol, p {
 	margin-top: 0.5em;
 	margin-bottom: 0;
+	padding: 0;
 }
 
 .threecolumn {
@@ -133,16 +133,24 @@ table.aligned td {
 		<h3>Qumulo &mdash; Software Engineering Intern</h3>
 		<div class=setting>Seattle, Washington. 2016</div>
 		<ul>
-			<li>Wrote, designed, and tested code in C dialect to improve NAS
-				performance
-			<li>Practiced and studied test-driven-development
+			<li>Wrote C code on performance team for a distributed file system
+			<ul>
+				<li>Developed sharding of deleted file space reclamation to
+					double reclaimation rate
+				<li>Eliminated lock contention in a multithreaded cache to
+					reduce operation latency
+				<li>Implemented allocation changes to
+					significantly improve metadata operation latency
+			</ul>
 		</ul>
 
 		<h3>Square &mdash; Software Engineering Intern</h3>
 		<div class=setting>San Francisco, California. 2015</div>
 		<ul>
-			<li>Wrote production backend code in Go for Square's public API
-			<li>Optimized and refactored Node.JS server to halve latency
+			<li>Optimized and refactored external API Node.JS server to halve
+				latency
+			<li>Wrote backend code in Go for Square's public API's
+				version two
 		</ul>
 
 		<h3>Programmer for U. of M. Math Department</h3>
@@ -173,10 +181,11 @@ table.aligned td {
 
 		<h3>Selected Coursework</h3>
 		<ul>
-			<li>Data Structures &amp; Algorithms
-			<li>Introdunction to Computer Security
-			<li>Introduction to Math. Analysis
-			<li>Discrete Mathematics
+			<li>Intro. Operating Systems (current)
+			<li>Introduction to Computer Security (Winter 2016)
+			<li>Data Structures &amp; Algorithms (Fall 2015)
+			<li>Intro. to Math. Analysis (Fall 2015)
+			<li>Discrete Mathematics (Fall 2014)
 		</ul>
 	</section>
 </body>
