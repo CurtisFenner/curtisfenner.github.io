@@ -17,6 +17,14 @@ body {
 	margin-right: auto;
 	font-size: 15px;
 }
+
+address {
+	text-align: center;
+	line-height: 1.25em;
+	margin: auto;
+	width: 3in;
+}
+
 :link, :visited {
 	color: #0044EE;
 }
@@ -47,15 +55,17 @@ h1, h2, h3 {
 	margin-bottom: 0;
 }
 
+h1 {
+	text-align: center;
+	margin: 0;
+	padding: 0;
+}
+
 h2 {
 	text-align: left;
 	border-bottom: 2px black solid;
-	margin-left: -5em;
+	margin-left: -2em;
 	padding-left: 0.5em;
-}
-
-section {
-	padding-left: 5em;
 }
 
 h3 {
@@ -64,22 +74,13 @@ h3 {
 	margin-top: 1.5em;
 }
 
+section {
+	padding-left: 2em;
+}
+
 .setting {
 	text-align: right;
 	margin-top: -1.34em;
-}
-
-h1 {
-	text-align: center;
-	margin: 0;
-	padding: 0;
-}
-
-address {
-	text-align: center;
-	line-height: 1.25em;
-	margin: auto;
-	width: 3in;
 }
 
 table.aligned th {
@@ -123,28 +124,28 @@ table.aligned td {
 		<h3>Stoney Creek High School</h3>
 		<div class=setting>Rochester Hills, Michigan. 2011 &ndash; 2014</div>
 		<ul>
-			<li>3.959 GPA &mdash; Scholar of Highest Distinction
 			<li>Awarded Computer Science Department Award
+			<li>3.96 GPA &mdash; Scholar of Highest Distinction
 		</ul>
 	</section>
 
 	<section class=experience>
 		<h2>Experience</h2>
-		<h3>Qumulo &mdash; Software Engineering Intern</h3>
+		<h3>Qumulo &mdash; Software Engineer Intern</h3>
 		<div class=setting>Seattle, Washington. 2016</div>
 		<ul>
-			<li>Wrote C code on performance team for a distributed file system
+			<li>Wrote C code on distributed filesystem performance team
 			<ul>
 				<li>Developed sharding of deleted file space reclamation to
 					double reclaimation rate
 				<li>Eliminated lock contention in a multithreaded cache to
-					reduce operation latency
-				<li>Implemented allocation changes to
-					significantly improve metadata operation latency
+					reduce file operation latency
+				<li>Implemented allocation changes to allow
+					significantly faster metadata operations
 			</ul>
 		</ul>
 
-		<h3>Square &mdash; Software Engineering Intern</h3>
+		<h3>Square &mdash; Software Engineer Intern</h3>
 		<div class=setting>San Francisco, California. 2015</div>
 		<ul>
 			<li>Optimized and refactored external API Node.JS server to halve
@@ -156,8 +157,8 @@ table.aligned td {
 		<h3>Programmer for U. of M. Math Department</h3>
 		<div class=setting>Ann Arbor, Michigan. 2016</div>
 		<ul>
-			<li>Designed and implemented automatic proof verification interface
-				in JavaScript and Perl
+			<li>Designed and implemented automatic proof verification engine and
+				interface in JavaScript and Perl
 			<li><a href="http://curtisfenner.com/prove">http://curtisfenner.com/prove</a>
 		</ul>
 	</section>
