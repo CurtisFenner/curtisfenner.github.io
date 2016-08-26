@@ -9,6 +9,8 @@ end
 function format(str)
 	local result = str:gsub("%b``", function(n)
 		return "<code>" .. n:sub(2, -2) .. "</code>"
+	end):gsub("<code></code>", "``"):gsub("``.-``", function(n)
+		return "<code>" .. n:sub(3, -3):gsub("</?code>", "`") .. "</code>"
 	end)
 	result = result:gsub("%-%-", "&mdash;")
 	return result
@@ -27,6 +29,9 @@ local function isAlone(line)
 		if not rest then
 			print("invalid header")
 			return false
+		end
+		if sigil == "#" then
+			return "</section><section><h1>" .. escape(rest) .. "</h1>"
 		end
 		return "<h" .. #sigil .. ">" .. escape(rest) .. "</h" .. #sigil .. ">"
 	end
@@ -126,9 +131,10 @@ function compileMD(contents)
 		sections[i] = compileSection(sections[i])
 	end
 	-- Combine results
-	return HEADER:gsub("%{%{TITLE%}%}", title)
+	local output = HEADER:gsub("%{%{TITLE%}%}", title)
 		.. table.concat(sections, "\n\t</section>\n\n\t<section>\n")
 		.. FOOTER
+	return output:gsub("<section>%s*</section>%s*<section>", "<section>")
 end
 
 --------------------------------------------------------------------------------

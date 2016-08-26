@@ -87,6 +87,7 @@ pre {
 }
 code {
 	padding: 0.25em;
+	display: inline-block;
 }
 
 pre.draft::after {
