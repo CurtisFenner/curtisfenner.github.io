@@ -47,8 +47,8 @@ ul, ol, p {
 	padding: 0;
 }
 
-.threecolumn {
-	column-count: 3;
+.fourcolumn {
+	column-count: 5;
 }
 
 h1, h2, h3 {
@@ -118,15 +118,20 @@ table.aligned td {
 		<ul>
 			<li>Pursuing Computer Science B.S.E.
 			<li>4.0 GPA &mdash;
-				Dean's List Fall 2014, Winter 2015, Fall 2015,
-				Winter 2016
+				Dean's List
 		</ul>
-		<h3>Stoney Creek High School</h3>
-		<div class=setting>Rochester Hills, Michigan. 2011 &ndash; 2014</div>
 		<ul>
-			<li>Awarded Computer Science Department Award
-			<li>3.96 GPA &mdash; Scholar of Highest Distinction
+			<li><strong>Selected Coursework</strong>
+				<ul>
+					<li>Intro. Operating Systems (current)
+					<li>Introduction to Computer Security (Winter 2016)
+					<li>Data Structures &amp; Algorithms (Fall 2015)
+					<li>Intro. to Math. Analysis (Fall 2015)
+					<li>Discrete Mathematics (Fall 2014)
+				</ul>
+			</li>
 		</ul>
+
 	</section>
 
 	<section class=experience>
@@ -134,59 +139,54 @@ table.aligned td {
 		<h3>Qumulo &mdash; Software Engineer Intern</h3>
 		<div class=setting>Seattle, Washington. 2016</div>
 		<ul>
-			<li>Wrote C code on distributed filesystem performance team
-			<ul>
-				<li>Developed sharding of deleted file space reclamation to
-					double reclaimation rate
-				<li>Eliminated lock contention in a multithreaded cache to
-					reduce file operation latency
-				<li>Implemented allocation changes to allow
-					significantly faster metadata operations
-			</ul>
+			<li>Wrote C and Python code for distributed filesystem as member of
+				performance team
+				<ul>
+					<li>Developed sharding of deleted file space reclamation to
+						double reclaimation rate
+					<li>Eliminated lock contention in a multithreaded cache to
+						reduce file operation latency
+					<li>Implemented allocation changes to allow
+						significantly faster metadata operations
+				</ul>
 		</ul>
 
 		<h3>Square &mdash; Software Engineer Intern</h3>
 		<div class=setting>San Francisco, California. 2015</div>
 		<ul>
-			<li>Optimized and refactored external API Node.JS server to halve
-				latency
-			<li>Wrote backend code in Go for Square's public API's
-				version two
-		</ul>
-
-		<h3>Programmer for U. of M. Math Department</h3>
-		<div class=setting>Ann Arbor, Michigan. 2016</div>
-		<ul>
-			<li>Designed and implemented automatic proof verification engine and
-				interface in JavaScript and Perl
-			<li><a href="http://curtisfenner.com/prove">http://curtisfenner.com/prove</a>
+			<li>Wrote Go and JavaScript as member of public API team
+				<ul>
+					<li>Optimized and refactored public API server to halve latency
+					<li>Wrote backend code in Go for Square's public API's
+						version two
+				</ul>
 		</ul>
 	</section>
 
 	<section>
-		<h2>Additional Information &amp; Skills</h2>
+		<h2>Projects &amp; Skills</h2>
+
 		<h3>Computer Programming</h3>
 		<p>Programmed for 10 years on many various personal projects and two
 			software engineering internships
-		<ul class=threecolumn>
+		<ul class=fourcolumn>
 			<li>Go
 			<li>C
 			<li>C++
 			<li>Lua
 			<li>Java
-			<li>CSS
-			<li>HTML
+			<li>HTML + CSS
 			<li>JavaScript
 			<li>Python
 		</ul>
 
-		<h3>Selected Coursework</h3>
+		<h3>WeBWorK Proof Checker</h3>
 		<ul>
-			<li>Intro. Operating Systems (current)
-			<li>Introduction to Computer Security (Winter 2016)
-			<li>Data Structures &amp; Algorithms (Fall 2015)
-			<li>Intro. to Math. Analysis (Fall 2015)
-			<li>Discrete Mathematics (Fall 2014)
+			<li>Designed and built a  simple automatic proof-verifier for students
+			learning proofs in JavaScript and Perl.<br>
+			The checker manipulates symbolic representations of mathematical
+			statements and verifies the steps taken in a formal proof.
+			<li><a href="http://curtisfenner.com/prove">http://curtisfenner.com/prove</a>
 		</ul>
 	</section>
 </body>
