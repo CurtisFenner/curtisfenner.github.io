@@ -59,10 +59,7 @@ section, footer, nav, header {
 	max-width: 7.5in;
 	margin: 0 auto;
 	position: relative;
-	padding: 32px;
-}
-header, footer {
-	padding-top: 32px;
+	padding: 2em;
 }
 
 section, footer {
@@ -204,7 +201,7 @@ h1 {
 	margin-left: -32px;
 	margin-right: -32px;
 	padding-left: 32px;
-	padding-bottom: -5px;
+	padding-bottom: 0;
 }
 h1::after {
 	height: 0;
@@ -330,7 +327,7 @@ ol.tree > li {
 /******************************************************************************/
 
 #codeblocks {
-	top: -40px;
+	top: 8em;
 	left: 0;
 	overflow-x: hidden;
 	position: absolute;
