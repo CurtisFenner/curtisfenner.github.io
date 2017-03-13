@@ -22,12 +22,27 @@ local FOOTER = io.open("footer.html"):read "*all"
 --------------------------------------------------------------------------------
 
 local function isAlone(line)
-	if line:sub(1, 4) == "----" then
+	if line:sub(1, 1) == "`" and line:sub(-1, -1) == "`" and not line:sub(2, -2):find("`") and #line > 4 then
+		-- Line indicates an external code import
+		local fileName = directory .. ".code/" .. line:sub(2, -2)
+		local file = io.open(fileName, "r")
+		if not file then
+			print("could not open file `" .. fileName .. "`")
+			os.exit(1)
+		end
+		
+		-- Sanitize HTML by replacing special characters with their entities
+		local contents = file:read("*all")
+		contents = contents:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&lt;")
+		return "<pre>\n" .. contents .. "</pre>"
+	elseif line:sub(1, 4) == "----" then
+		-- Line indicates a horizontal rule
 		return "<hr>"
 	elseif line:sub(1, 1) == "#" then
+		-- Line indicates a heading
 		local sigil, rest = line:match("^(#+)(.+)")
 		if not rest then
-			print("invalid header")
+			print("invalid heading")
 			return false
 		end
 		if sigil == "#" then
