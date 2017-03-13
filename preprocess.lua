@@ -134,7 +134,8 @@ function compileMD(contents)
 	local output = HEADER:gsub("%{%{TITLE%}%}", title)
 		.. table.concat(sections, "\n\t</section>\n\n\t<section>\n")
 		.. FOOTER
-	return output:gsub("<section>%s*</section>%s*<section>", "<section>")
+	output = output:gsub("<section>%s*</section>%s*<section>", "<section>")
+	return output
 end
 
 --------------------------------------------------------------------------------

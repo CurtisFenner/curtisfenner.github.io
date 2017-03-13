@@ -9,45 +9,48 @@ and testing correct code easy.
 
 Here's a brief outline of the features of Bismuth:
 
-+ fewer parentheses
 + explicit side-effects with the `effect` and `!` system
 + generics and type classes
 + pattern matching and destructuring
 + first class functions
++ fewer parentheses
 
 # Examples and the Compiler
 
-Examples of Bismuth code can be found [here|TODO].
+TODO
 
-#
+# The Bismuth language
+
+This is a mini-tour of Bismuth.
+
 ## Effects and Actions
 Functions in Bismuth are functionally pure by default. This guarantees a
 function called with the same parameters will always produce the same result --
 there is never any hidden state.
 
-This means there's no "side-effects" of calling a function. Invoking a pure
+This means calling a function never leaves any "side-effects". Invoking a pure
 function will change nothing about the rest of the world (there are no global
 variables).
 
-However, complete functional purity can obscure important, typical tasks like
+However, complete functional purity can obscure typical operations like
 IO and database calls.
 Bismuth allows functions to break this purity when they explicitly state their
 `effect`s.
 
-An effect is a description of the impure aspects of a function. It describes the
-interface that lets the function know about the outside world.
+An effect is a description of the impure aspects of a function. An effect
+describes the interface that lets the function know about the state of the world
 
 ```draft
 effect ReadInternet {
-	func getArticle (url : URL) ! -> Article,
+	func getArticle (url: URL) ! -> Article,
 }
 ```
 
-and also describe how the function modifies the outside world.
+and also describe how the function modifies the state of the world.
 
 ```draft
 effect Log {
-	func log (line:str) !,
+	func log (line: str) !,
 }
 ```
 
@@ -55,9 +58,9 @@ A `service` defines an implementation of an effect.
 
 ```draft
 service LogList impl Log {
-	var q : Queue String = empty;
+	var q: Queue[String] = empty;
 
-	func log (thing : String) ! {
+	func log (thing: String) ! {
 		push @q thing;
 	}
 }
@@ -66,7 +69,7 @@ service LogList impl Log {
 Effect actions are always invoked using a bang.
 
 ```
-log "Hello" !
+log "Hello" !;
 ```
 
 Program standard input/output is implemented as the `IO` effect. The handlers
@@ -88,11 +91,11 @@ func main ! IO -> Unit {
 
 ## Types and Traits
 
-Bismuth is a strongly typed language. All variable declarations must explicitly
-specify their type (it cannot be inferred).
+Bismuth is a statically typed language. All variables and parameters must
+explicitly specify their types (types of variables cannot be inferred).
 
 ```
-var petName : String = "Mr. Whiskers";
+var petName: String = "Mr. Whiskers";
 ```
 
 ### Generics
@@ -102,14 +105,14 @@ parameters are listed after the
 type they are applied to. Here, `pets` is a `List` of `Pet` objects.
 
 ```
-var pets : List Pet = empty;
+var pets: List Pet = empty;
 ```
 
 Generic variables can be introduced in type and function definitions. For
 example, here is a function that returns its second argument.
 
 ```
-func [T] second (a : T) (b : T) -> T {
+func second [T] (a: T, b: T) -> T {
 	return b;
 }
 ```
@@ -122,7 +125,7 @@ types. For example, the `Orderable` trait allows the use of the `<` operator.
 Here is a function that returns the least of its arguments.
 
 ```
-func [T | Orderable T] min (a : T) (b : T) -> T {
+func min [T | Orderable T] (a: T, b: T) -> T {
 	if a < b {
 		return a;
 	}
@@ -131,8 +134,6 @@ func [T | Orderable T] min (a : T) (b : T) -> T {
 ```
 
 The definition of `T` is read as "for T, such that T is Orderable".
-
-
 
 ----
 
@@ -162,7 +163,7 @@ destructuring it.
 
 ```draft
 // Read a line from standard-input and try to parse it as an integer
-var num : Optional Int = parse (readLine !);
+var num : Optional[Int] = parse (readLine !);
 
 match num {
 	Nil {
@@ -185,12 +186,12 @@ match num {
 Enums can also be used to easily build recursive data structures like trees.
 
 ```draft
-enum Tree T {
-	Node (Tree T) T (Tree T), // left, right
+enum Tree[T] {
+	Node Tree[T], T Tree[T], // left, right
 	Empty,                    // (parent is a leaf)
 }
 
-func sum (tree : Tree Int) -> Int {
+func sum (tree : Tree[Integer]) -> Integer {
 	match tree {
 		Empty {
 			// An empty tree has a total sum of 0
@@ -217,10 +218,10 @@ For example, a person in a contact book could be defined as a struct.
 
 ```
 struct Person {
-	name : String,
-	birth : Date,
-	nickname : String,
-	address : Location,
+	name: String,
+	birth: Date,
+	nickname: String,
+	address: Location,
 }
 ```
 
@@ -247,7 +248,7 @@ statements.
 
 ```
 func main ! IO -> Unit {
-	var a : Int = 5;
+	var a: Integer = 5;
 	a = a + 5;
 }
 ```
@@ -260,22 +261,21 @@ if a < 10 {
 }
 ```
 
-Functions can be invoked in the standard C-style with parentheses and commas.
+Functions can be invoked in the typical C-style with parentheses and commas.
 
 ```
-var x : T = fun(a, b+1, c+2);
+var x: T = fun(a, b+1, c+2);
 ```
 
 Functions can also be invoked in Haskell style, with spaces marking partial
 function application.
 
 ```
-var x : T = fun a (b+1) (c+2);
+var x: T = fun a (b+1) (c+2);
 ```
 
-Operators are formed by punctuation operators, excluding period, comma,
-parentheses, braces, the colon, the at sign, single/double quotes, and the
-backtick.
+Operators are formed by using one or more of the characters `#$%^&*-+=|<>/?.`
+(excepting the special symbols `.`, `=`, and `//`)
 
 ```
 var foo = bar &*# baz;
