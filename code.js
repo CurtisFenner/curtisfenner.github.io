@@ -345,6 +345,7 @@ CodeLines.stepBlocks = function() {
 }
 
 CodeLines.animation = null;
+CodeLines.blockTypingUntil = 0;
 
 // Update the simulating coding
 CodeLines.animateBlocks = function() {
@@ -352,14 +353,21 @@ CodeLines.animateBlocks = function() {
 		CodeLines.animation = CodeLines.stepBlocks();
 	}
 	setTimeout(function() {
-		CodeLines.animation = CodeLines.animation.fun();
-		CodeLines.animateBlocks();
+		// Pause until the (old) blocker
+		// XXX: untangle this
+		// This prevents typing while deleting lines is happening
+		// (which is necessary to look smooth, not for correctness)
+		let blocked = Math.max(0, CodeLines.blockTypingUntil - Date.now());
+		setTimeout(function() {
+			CodeLines.animation = CodeLines.animation.fun();
+			CodeLines.animateBlocks();
+		}, blocked);
 	}, CodeLines.animation.delay);
 }
 
 // "Scroll down" to avoid ever filling the whole page with code
 CodeLines.clearLines = function() {
-	var kill = Math.random() * CodeLines.lines.length * 2/3;
+	var kill = Math.random() * CodeLines.lines.length * 1/2;
 	for (var i = 0; i < kill; i++) {
 		setTimeout(function() {
 			if (CodeLines.lines.length > 0) {
@@ -369,6 +377,8 @@ CodeLines.clearLines = function() {
 		}, i * 200 + Math.random() * 400);
 	}
 	setTimeout(CodeLines.clearLines, Math.random() * 10000);
+
+	CodeLines.blockTypingUntil = Date.now() + kill * 200 + 400;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
