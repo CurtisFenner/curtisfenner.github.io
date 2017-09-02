@@ -7,6 +7,7 @@ function escape(str)
 end
 
 function format(str)
+	-- TODO: support * and ** for emphasis and strong respectively
 	local result = str:gsub("%b``", function(n)
 		return "<code>" .. n:sub(2, -2) .. "</code>"
 	end):gsub("<code></code>", "``"):gsub("``.-``", function(n)
@@ -30,7 +31,7 @@ local function isAlone(line)
 			print("could not open file `" .. fileName .. "`")
 			os.exit(1)
 		end
-		
+
 		-- Sanitize HTML by replacing special characters with their entities
 		local contents = file:read("*all")
 		contents = contents:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&lt;")
@@ -174,6 +175,11 @@ function process(path)
 end
 
 local dir = arg[1]
+if not dir then
+	print("usage:\n\tlua preprocess.lua <outdirectory>")
+	os.exit(1)
+end
+
 for line in io.popen("ls " .. dir .. ".note"):lines() do
 	local pattern = line:match("^(.-)%.md$")
 	if pattern then
