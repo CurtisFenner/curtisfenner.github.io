@@ -12,11 +12,13 @@ body {
 	background: white;
 	box-shadow: 0 0 50px -4px #AAA;
 	font-family: "Merriweather";
-	width: 8.5in;
-	padding: 0.75in;
+	width: 7.5in;
+	padding: 0.5in;
+	margin-top: 0;
+	margin-bottom: 0;
 	margin-left: auto;
 	margin-right: auto;
-	font-size: 15px;
+	font-size: 12px;
 }
 
 address {
@@ -48,6 +50,14 @@ ul, ol, p {
 	padding: 0;
 }
 
+li > ul, li > ol {
+	margin-top: 0.125em;
+}
+
+.twocolumn {
+	column-count: 2;
+}
+
 .fourcolumn {
 	column-count: 5;
 }
@@ -62,7 +72,7 @@ h1 {
 	padding: 0;
 }
 
-h2 {
+section > h2 {
 	text-align: left;
 	border-bottom: 2px black solid;
 	margin-left: -2em;
@@ -99,7 +109,9 @@ table.aligned td {
 	</style>
 </head>
 <body>
-	<div style="position: absolute; right: 1em; bottom: 1em; font-size:70%">Updated 25 January 2017</div>
+	<div style="position: absolute; right: 1em; bottom: 1em; font-size:70%">
+		Updated 14 September 2017
+	</div>
 	<h1>Curtis W. Fenner</h1>
 
 	<address>
@@ -118,26 +130,40 @@ table.aligned td {
 		<h3>University of Michigan College of Engineering</h3>
 		<div class=setting>Ann Arbor, Michigan. 2014 &ndash; 2018</div>
 		<ul>
-			<li>Pursuing Computer Science B.S.E.
+			<li>Senior Pursuing Computer Science B.S.E.
 			<li>4.0 GPA &mdash;
 				Dean's List
-		</ul>
-		<ul>
 			<li><strong>Selected Coursework</strong>
-				<ul>
-					<li>Compiler Construction (current)
-					<li>Distributed Systems (current)
+				<ul class=twocolumn>
+					<li>Compiler Construction (Winter 2017)
+					<li>Distributed Systems (Winter 2017)
+					<li>Advanced Programming Languages (Current)
 					<li>Intro. Operating Systems (Fall 2016)
-					<li>Introduction to Computer Security (Winter 2016)
-					<li>Database Management Systems (Fall 2016)
 				</ul>
 			</li>
+			<li>2017 ACM International Collegiate Programming Contest
+				World Finalist
+			<li>Instructional Aide for Distributed Systems (current)
 		</ul>
 
 	</section>
 
 	<section class=experience>
 		<h2>Experience</h2>
+		<h3>Qualtrics &mdash; Software Engineering Intern</h3>
+		<div class=setting>Seattle, Washington. 2017</div>
+		<ul>
+			<li>Wrote Scala code and used Elasticsearch as member of
+				data platform team
+				<ul>
+					<li>Redesigned a data aggregation
+						feature after discovering failure conditions
+						in existing implementation
+					<li>Investigated the use of Elasticsearch for log
+						management and indexing additional response information
+				</ul>
+		</ul>
+
 		<h3>Qumulo &mdash; Software Engineer Intern</h3>
 		<div class=setting>Seattle, Washington. 2016</div>
 		<ul>
@@ -169,9 +195,10 @@ table.aligned td {
 		<h2>Projects &amp; Skills</h2>
 
 		<h3>Computer Programming</h3>
-		<p>Programmed for 10 years on many various personal projects and two
-			software engineering internships
+		<p>Programmed for 10+ years on many various team and personal projects
+			and three software engineering internships
 		<ul class=fourcolumn>
+			<li>Scala
 			<li>Go
 			<li>C
 			<li>C++
@@ -184,11 +211,21 @@ table.aligned td {
 
 		<h3>WeBWorK Proof Checker</h3>
 		<ul>
-			<li>Designed and built a  simple automatic proof-verifier for students
-			learning proofs in JavaScript and Perl.<br>
+			<li>Designed and built an interface that verifies simple natural
+			deduction proofs for
+			students learning logic<br>
 			The checker manipulates symbolic representations of mathematical
-			statements and verifies the steps taken in a formal proof.
+			statements and verifies the steps taken in a formal, two-column
+			proof.
 			<li><a href="http://curtisfenner.com/prove">http://curtisfenner.com/prove</a>
 		</ul>
+
+		<h3>Smol Programming Language &amp; Compiler</h3>
+		<ul>
+			<li>Designing and implementing a toy programming language and
+				compiler that includes statically checked types, generics, and
+				interfaces.
+		</ul>
+
 	</section>
 </body>
