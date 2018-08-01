@@ -1,0 +1,1003 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>The Part Time Parliament, Reduced</title>
+		<style>
+body {
+	max-width: 7.5in;
+	padding: 0.5in;
+	margin-top: 0;
+	margin-bottom: 1in;
+	margin-left: auto;
+	margin-right: auto;
+
+	background: white;
+	color: #111;
+
+	font-size: 18px;
+	font-family: "Roboto";
+
+	text-align: justify;
+	hyphens: auto;
+}
+
+h2 {
+	margin-top: 3em;
+}
+
+:link {
+	color: #4AF;
+	font-weight: bold;
+}
+
+:visited {
+	color: #269;
+}
+
+section.parliament {
+	background: #FED;
+	padding: 1em;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+section.computers {
+	background: #DEF;
+	padding: 1em;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+section.aside {
+	background: #DDD;
+	padding: 1em;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+p {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0;
+}
+
+section > p:last-child {
+	margin-bottom: 0;
+}
+
+section > p:first-child {
+	margin-top: 0;
+}
+
+math {
+	font-family: "CMU Serif", Cambria, serif;
+	display: inline-block;
+}
+
+math.center {
+	display: block;
+	margin: auto;
+	text-align: center;
+}
+
+mi {
+	font-style: italic;
+}
+
+msub :last-child {
+	vertical-align: sub;
+	font-size: smaller;
+}
+
+mi[mathvariant="small-caps"] {
+	font-style: normal;
+	font-stretch: condensed;
+	letter-spacing: -1px;
+	font-variant: small-caps;
+}
+
+mi[mathvariant="normal"] {
+	font-style: normal;
+}
+
+munder {
+	vertical-align: middle;
+	display: inline-flex;
+	flex-direction: column;
+}
+
+munder > :last-child {
+	font-size: smaller;
+}
+
+u.small-caps {
+	text-decoration: none;
+	font-variant: small-caps;
+}
+
+section.proof {
+	margin-left: 2em;
+	padding-left: 1em;
+	box-shadow: -2em 0px 3em -2em rgba(0, 0, 0, 0.1);
+}
+
+section.proof::before {
+	position: absolute;
+	content: attr(data-side);
+	font-variant: small-caps;
+	margin-left: -3em;
+}
+
+section.proof[data-qed]::after {
+	text-align: right;
+	display: block;
+	content: "∎";
+}
+
+		</style>
+	</head>
+	<body>
+		<h1>The Part Time Parliament, Reduced</h1>
+		<p>
+			In the 1998 paper
+			<a href="https://lamport.azurewebsites.net/pubs/lamport-paxos.pdf">The Part Time Parliament</a>,
+			ACM Turing Award winner Leslie Lamport puts forth a description of
+			the <em>consensus problem</em> and an algorithm called
+			<strong>Paxos</strong> that can solve it even when there are many
+			network failures or machine failures.
+		</p>
+		<p>
+			Lamport's paper used an extended metaphor that explained the
+			algorithm in the context of a parliament on the fictional island of
+			Paxos, placed in Ancient Greece. Here, the analogy will be
+			borrowed but will be displayed alongside the more direct use of the
+			protocol in the language of servers and networks.
+		</p>
+
+		<h3>Reading this Document</h3>
+		<p>
+			Paragraphs with a white background describe the algorithm abstractly
+			with mathematical notation.
+		</p>
+		<section class="parliament">
+			<p>
+				Paragraphs with a yellow background explain the protocol in the
+				governing metaphore provided by
+				<cite>The Part Time Parliament</cite>.
+			</p>
+		</section>
+		<section class="computers">
+			<p>
+				Paragraphs with a blue background explain the protocol in the
+				application context of networked computers, possibly spread
+				across multiple datacenters.
+			</p>
+		</section>
+		<section class=aside>
+			<p>
+				Paragraphs with a gray background are asides with additional
+				details. Their contents can be safely skipped, but may contain
+				interesting information that might help understanding.
+			</p>
+		</section>
+		<p>
+			The "most important" text is found in the white-background
+			paragraphs. The colored boxes provide more examples and more
+			context for understanding the algorithm and math.
+		</p>
+
+
+		<h2>The Consensus Problem</h2>
+		<p>
+			The <strong>consenus problem</strong> tasks a number of peers with
+			carrying out their work so that when asked for a result, each peer
+			responds with an <em>identical</em> result.
+		</p>
+		<p>
+			Each peer <math><msub><mi>p</mi><mi>k</mi></msub></math> has a value
+			<math><msub><mi>v</mi><mi>k</mi></msub></math> that it offers. The
+			consensus problem tasks the set of peers with choosing
+			<em>exactly one</em> value from the set of values for the system
+			to expose.
+		</p>
+		<section class="parliament">
+			<p>
+				In the parliament metaphor, "peers" are members of parliament.
+				Each member of parliament must agree on which decrees and
+				resolutions have been passed.
+			</p>
+			<p>
+				It would not do if a vote for peace won in parliament, yet still
+				some minority party acted as though the land was still at war.
+			</p>
+			<p>
+				The value each parliamentarian offers could be particular
+				parameters for laws (such as tax-rates, fines, or a number of
+				years a law will be in effect)
+			</p>
+		</section>
+		<section class="computers">
+			<p>
+				In the language of computers, each "peer" is a server.
+				
+				Each server must expose an identical version of the data in
+				their data stores.
+			</p>
+			<p>
+				The values associated with peers are the WRITE requests that the
+				server is trying to service. Since the system is a distributed
+				system, different peers might been sent different values to
+				write (for example, because they are in different datacenters
+				and are serving different people).
+			</p>
+			<p>
+				If one server has a table that looks like
+				<pre>
+Account Holder | Amount
+---------------+--------
+Alice          |  $1000
+Bob            |   $750
+				</pre>
+				then every other server <em>must</em> agree that Alice has
+				exactly $1000 and Bob has exactly $750 on-the-books.
+			</p>
+		</section>
+		<p>
+			More formally, we have a set <math><mi>P</mi></math> of peers
+			executing a consensus protocol around a key-value store.
+			During the execution of the protocol, for each
+			<math><mi>key</mi></math>, each pair of peers
+			<math>
+				<msub><mi>p</mi><mn>1</mn></msub>,
+				<msub><mi>p</mi><mn>2</mn></msub>
+				<mo>&isin;</mo>
+				<mi>P</mi>
+			</math> must be such that
+		</p>
+		<ul>
+			<li>
+				<math>
+					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>1</mn></msub><!--
+					--><mo>)</mo>
+					<mo>=</mo>
+					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>2</mn></msub><!--
+					--><mo>)</mo>
+				</math>
+			</li>
+			<li>
+				OR
+				<math>
+					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>1</mn></msub><!--
+					--><mo>)</mo>
+					<mo>=</mo>
+					<mi>?</mi>
+				</math>
+			</li>
+			<li>
+				OR
+				<math>
+					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>2</mn></msub><!--
+					--><mo>)</mo>
+					<mo>=</mo>
+					<mi>?</mi>
+				</math>
+			</li>
+		</ul>
+		<p>
+			A value of <math><mi>?</mi></math> indicates that the peer answers
+			"I don't know (yet)". Thus, if two peers advertise a value, they
+			<em>must</em> advertise the <em>same</em> value. However, it is OK
+			for only one peer to know the value so-far. This "agreement" is the
+			<strong>consistency property</strong> required by the consensus
+			problem.
+		</p>
+		<p>
+			In addition, the exposed value must be drawn from the set of values
+			offered by the peers. If the set of values is
+			<math><mi>V</mi> =
+				{<msub><mi>v</mi><mn>1</mn></msub>, ..., <msub><mi>v</mi><mn>N</mn></msub>}
+			</math>
+			then for every peer <math><msub><mi>p</mi><mi>k</mi></msub></math>,
+		</p>
+		<ul>
+			<li>
+				<math>
+					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mi>k</mi></msub><!--
+					--><mo>)</mo>
+					<mo>&ne;</mo>
+					<mi>?</mi>
+					<mo>&xrArr;</mo>
+					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mi>k</mi></msub><!--
+					--><mo>)</mo>
+					<mo>&isin;</mo>
+					<mi>V</mi>
+				</math>
+			</li>
+		</ul>
+
+		<h3>Why Consensus is Hard: Failures are allowed</h3>
+		<p>
+			If all peers can communicate easily and quickly with each other,
+			solving the consensus problem is not difficult: 
+			one simple way is to designate a particular peer as the
+			<strong>leader</strong>. Then, all non-leader peers simply ask the
+			leader for the value.
+		</p>
+		<section class="parliament">
+			<p>
+				The most-senior member of parliament could be chosen as its
+				<em>president</em>. Then, the president makes all the decisions
+				on behalf of the parliament (it becomes an autocracy). Since
+				only one person makes decisions, everyone will agree on the
+				value (<math><mi>?</mi></math> until a member of parliament has
+				heard from the president)
+			</p>
+		</section>
+		<section class="computers">
+			<p>
+				The first leader server can be chosen arbitrarily (for example,
+				the server with the smallest UUID). This leader server would
+				serve all read an write requests; the rest of the servers would
+				act as backups and forward all requests to the leader.
+			</p>
+		</section>
+		<p>
+			However, this solution has a problem. It introduces a
+			<em>single point of failure</em>, the leader peer. Whenever the
+			leader peer is unavailable, the system can no longer make any
+			progress.
+		</p>
+		<p>
+			However, replacing an unavailable leader is not easy: in the
+			event of a <strong>partition</strong>, the leader may only be
+			able to communicate with <em>some</em> of the peers. In that event,
+			some of the peers would think it is necessary to elect a new leader,
+			while those still in contact with the old one would not. This would
+			lead to two presidents, and lose the consistency property.
+		</p>
+		<section class="parliament">
+			<p>
+				If the president of the parliament were to be hospitalized or go
+				missing, the parliament would screech to a halt, because no one
+				else can make a decision without risk of contradicting the
+				president. They would have to work from their bed until they
+				are well!
+			</p>
+			<p>
+				However, if a storm prevented some of their letters to some of
+				their peers, those peers might think the president is not getting
+				any work done and needs to be replaced. Those peers would be
+				mistaken, and an election of a second president would cause
+				inconsistency!
+			</p>
+		</section>
+		<section class="computers">
+			<p>
+				If the datacenter containing the leader server lost its
+				internet connection, the other datacenters would see a need to
+				elect a new leader. However, the isolated data center could
+				still continue working as the servers within it continue
+				communicating about ongoing processing.
+			</p>
+			<p>
+				Thus, when the datacenter regains its internet connection, its
+				state could contain updates that the new leader server does not
+				have.
+			</p>
+		</section>
+		<p>
+			The Paxos algorithm can achieve consistency <em>in spite of</em>
+			the loss of messages or the loss of peers. In detail, here are the
+			assumptions made:
+		</p>
+		<ul>
+			<li>A message sent from <math><mi>A</mi></math> to
+				<math><mi>B</mi></math> can be
+				<ul>
+					<li>lost entirely</li>
+					<li>OR successfully delivered</li>
+					<li>OR delayed for an arbitrarily long time before
+						arriving unchanged</li>
+				</ul>
+			</li>
+		</ul>
+		<section class=aside>
+			<p>
+				This version of Paxos will not address
+				<em>Byzantine failures</em>. Messages will <em>not</em> be altered
+				or corrupted after they are sent, and all peers will execute the
+				algorithm <em>correctly</em>.
+				Paxos <em>can</em> be altered to work despite Byzantine failures,
+				but that modification will not be covered in this document.
+			</p>
+		</section>
+		<p>
+			Paxos also provides a <strong>liveness guarantee</strong> (aka an
+			<strong>availability guarantee</strong>):
+		</p>
+		<p>
+			Whenever a clique containing a majority of the peers are able to
+			communicate with each other for a sufficient number of communication
+			trips, that majority can write a value to the database.
+		</p>
+		<p>
+			That is, if currently 
+			<math>
+				<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+				--><mi>key</mi><mo>, </mo><mi>p</mi><!--
+				--><mo>)</mo>
+				<mo>=</mo>
+				<mi>?</mi>
+			</math>, and peer <math><mi>p</mi></math> wants to write a value,
+			then after the <math><mi>p</mi></math> has been in a clique able to
+			communicate with a majority of peers, it will be
+			<math>
+				<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+				--><mi>key</mi><mo>, </mo><mi>p</mi><!--
+				--><mo>)</mo>
+				<mo>&ne;</mo>
+				<mi>?</mi>
+			</math>.
+		</p>
+
+		<h3>Formally, the Consensus Problem</h3>
+		<p>
+			A protocol <math><mi mathvariant="small-caps">X</mi></math> run on
+			a set <math><mi>P</mi></math> of peers with a set
+			<math><msub><mi>V</mi><mi>key</mi></msub></math> of associated values
+			<em>solves the consensus problem</em> on key
+			<math><mi>key</mi></math> when
+			<ul>
+				<li>
+					(Consistency)
+					At every time <math><mi>t</mi></math>, for every pair of
+					peers <math><mi><msub><mi>p</mi><mn>1</mn></msub></mi></math>,
+					<math><mi><msub><mi>p</mi><mn>2</mn></msub></mi></math>
+					<math class=center>
+						<mrow>
+							<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+							--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>1</mn></msub><!--
+							--><mo>)</mo>
+							<mo>=</mo>
+							<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+							--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>2</mn></msub><!--
+							--><mo>)</mo>
+						</mrow>
+						<mo>
+						&or;
+						</mo>
+						<mrow>
+							<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+							--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>1</mn></msub><!--
+							--><mo>)</mo>
+							<mo>=</mo>
+							<mi>?</mi>
+						</mrow>
+						<mo>
+						&or;
+						</mo>
+						<mrow>
+							<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+							--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>2</mn></msub><!--
+							--><mo>)</mo>
+							<mo>=</mo>
+							<mi>?</mi>
+						</mrow>
+					</math>
+				</li>
+				<li>
+					(Consistency)
+					At every time <math><mi>t</mi></math>, for each peer
+					<math><mi>p</mi> <mo>&isin;</mo> <mi>P</mi></math>,
+					<math class=center>
+						<mrow>
+							<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+							--><mi>key</mi><mo>, </mo><mi>p</mi><!--
+							--><mo>)</mo>
+							<mo>&ne;</mo>
+							<mi>?</mi>
+						</mrow>
+						<mo>&xrArr;</mo>
+						<mrow>
+							<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+							--><mi>key</mi><mo>, </mo><mi>p</mi><!--
+							--><mo>)</mo>
+							<mo>&isin;</mo>
+							<msub><mi>V</mi><mi>key</mi></msub>
+						</mrow>
+					</math>
+				</li>
+				<li>
+					(Liveness)
+					If at time <math><mi>t</mi></math> there is a set
+					<math><mi>Q</mi></math> of peers that contains a majority of
+					the peers in <math><mi>P</mi></math>, and from 
+					time <math><mi>t</mi></math> to
+					<math><mi>t</mi> <mo>+</mo> <mrow><mn>10</mn><mo></mo><mi>m</mi></mrow></math>
+					every message between a pair of peers
+					<math><msub><mi>q</mi><mn>a</mn></msub>, <msub><mi>q</mi><mn>b</mn></msub> <mo>&isin;</mo> <mi>Q</mi></math>
+					is delivered within <math><mi>m</mi></math> time,
+					then there is a correct execution of protocol <math><mi>X</mi></math> such that
+					at time <math><mi>t</mi> <mo>+</mo> <mrow><mn>10</mn><mo></mo><mi>m</mi></mrow></math>
+					every member <math><mi>q</mi> <mo>&isin;</mo> <mi>Q</mi></math> has
+					<math class=center>
+						<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
+						--><mi>key</mi><mo>, </mo><mi>q</mi><!--
+						--><mo>)</mo>
+						<mo>&ne;</mo>
+						<mi>?</mi>
+					</math>
+				</li>
+			</ul>
+		</p>
+		<section class=aside>
+			<p>
+				The liveness property can be strengthened, such that
+				"there is a correct execution" becomes
+				"after all correct executions". However, in the simple version
+				of Paxos, a <em>livelock</em> is possible where no progress is
+				made (but with high probability, progress will be
+				<em>eventually</em> made).
+			</p>
+			<p>
+				A section at the end of this document explains how to strengthen
+				this by choosing a leader node in a safe way. TODO!
+			</p>
+		</section>
+		<section class=parliament>
+			<p>
+				In a majority rule system, no progress can be made if you do not
+				have a majority of the voters present.
+			</p>
+			<p>
+				When a majority of voters <em>are</em> present, a legislature
+				is said to have a <strong>quorum</strong> present (since it is
+				possible for a law to be passed, as long as all those present
+				agree).
+			</p>
+			<p>
+				The liveness property states that if a quorum is present for a
+				vote, then some measure will succeed.
+			</p>
+		</section>
+		<section class=computers>
+			<p>
+				Informally,
+			</p>
+			<ul>
+				<li>
+					If you send a READ request to two different servers, if you
+					get a response, the responses will be the same.
+				</li>
+				<li>
+					If you get a READ response from a server, the read value was
+					once sent in a WRITE request (as opposed to something
+					useless/random)
+				</li>
+				<li>
+					If there are no network failures and no server failures
+					involving some majority of servers for at least a brief
+					amount of time, the servers will successfully process
+					WRITE requests
+				</li>
+			</ul>
+		</section>
+
+		<h2>The Paxos Protocol</h2>
+		<p>
+			The <strong>Paxos algorithm</strong> is a protocol that
+			<strong>solves the consensus problem</strong>.
+		</p>
+		<p>
+			To prove that it works, first an abstract lemma will be proven.
+			Then, it will be shown that the Paxos protocol fulfills the
+			requirements of the lemma. This leaves as a corollary that the
+			Paxos algorithm solves the consensus problem.
+		</p>
+		<p>
+			Paxos works by having peers <em>propose</em> a particular value.
+			Each proposal solicits <em>promises</em> from other peers that
+			ensure consistency isn't violated. Each proposal is captured
+			abstractly as a <em>ballot</em> (borrowing from the parliament
+			metaphor).
+		</p>
+		<h3>A Sufficient Condition</h3>
+		<p>
+			A <strong>ballot</strong> <math><mi>b</mi></math> put forth before a
+			set <math><im>P</im></math> of peers has four components:
+		</p>
+		<ul>
+			<li>
+				A <strong>ballot identifier</strong>
+				<math><mi mathvariant=normal>id</mi><mo>(</mo><mi>b</mi><mo>)</mo></math>,
+				a natural number identifying the ballot
+			</li>
+			<li>
+				A <strong>ballot value</strong>
+				<math><mi mathvariant=normal>value</mi><mo>(</mo><mi>b</mi><mo>)</mo></math>,
+				a string which is the value to be written
+			</li>
+			<li>
+				A <strong>quorum</strong>
+				<math>
+					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+					<mo>&subset;</mo>
+					<mi>P</mi>
+				</math>,
+				a non-empty set of peers
+			</li>
+			<li>
+				A <strong>endorsement set</strong>
+				<math>
+					<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+					<mo>&subset;</mo>
+					<mi>P</mi>
+				</math>,
+				a set of peers who actual <em>endorsed</em> this ballot
+			</li>
+		</ul>
+
+		<p>
+			A ballot <math><mi>b</mi></math> is a
+			<strong>successful ballot</strong> when
+			<math class=center>
+				<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+				<mo>&subset;</mo>
+				<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+			</math>
+			That is, when every member of the ballot's quorum endorsed the
+			ballot.
+		</p>
+
+		<section class=aside>
+			<p>
+				It may be simpler to think of
+				<math class=center>
+					<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+					<mo>&subset;</mo>
+					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+				</math>
+				which makes the condition for <math><mi>b</mi></math> being successful
+				<math class=center>
+					<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+					<mo>=</mo>
+					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+				</math>
+			</p>
+			<p>
+				However, the proof (and algorithm) works even when
+				<math class=center>
+					<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+					<mo>&nsub;</mo>
+					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+				</math>
+				Thus, this restriction is not explicitly included in this proof.
+			</p>
+		</section>
+		<p>
+			The value of a successful ballot is called a
+			<strong>chosen value</strong>.
+		</p>
+		<p>
+			The protocol must ensure <em>consistency</em>: only one string is
+			chosen. A set <math><mi>B</mi></math> of ballots is called a
+			<strong>consistent set</strong> when all successful ballots
+			<math><mi>x</mi>, <mi>y</mi> <mo>&isin;</mo> <mi>B</mi></math> have
+			the same value: <math>
+				<mi mathvariant=normal>value</mi><mo>(</mo><mi>x</mi><mo>)</mo>
+				<mo>=</mo>
+				<mi mathvariant=normal>value</mi><mo>(</mo><mi>y</mi><mo>)</mo>
+			</math>
+		</p>
+		<p>
+			There is a sufficient property that ensures consistency without
+			allowing deadlock to occur. This sufficient property is called
+			<em>adequacy</em>.
+		</p>
+		<p>
+			A set <math><mi>B</mi></math> of ballots is
+			<strong>adequate</strong> when it satisfies these three properties:
+		</p>
+		<ol>
+			<li>
+				Each ballot in <math><mi>B</mi></math> has a unique ballot
+				identifier
+			</li>
+			<li>
+				The quorums of any two ballots in <math><mi>B</mi></math> have
+				at least one peer in common
+			</li>
+			<li>
+				If any member of ballot <math><mi>b</mi></math>'s quorum has
+				endorsed a ballot with a smaller ballot identifier, then the
+				value of <math><mi>b</mi></math> is the same as the value of
+				the ballot with the highest ballot identifier less than
+				<math><mi mathvariant=normal>id</mi><mo>(</mo><mi>b</mi><mo>)</mo></math>
+				that was endorsed by a member of
+				<math><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></math>:
+
+				<p>
+					More formally, for every ballot in <math><mi>B</mi></math>,
+					define the preceding set of a ballot to be
+
+					<math class=center>
+						<mrow><mi mathvariant=normal>Pre</mi>(<mi>b</mi>)</mrow>
+						<mo>=</mo>
+						<mrow>
+							{
+								<mi>v</mi> <mo>&isin;</mo> <mi>B</mi>
+								|
+								<mrow>
+									<mrow>
+										<mi mathvariant=normal>id</mi>(<mi>v</mi>)
+										<mo>&lt;</mo>
+										<mi mathhvariant=normal>id</mi>(<mi>b</mi>)
+									</mrow>
+									<mo>&and;</mo>
+									<mrow>
+										<mrow>
+											<mi mathvariant=normal>endorse</mi>(<mi>v</mi>)
+											<mo>&cap;</mo>
+											<mi mathvariant=normal>quorum</mi>(<mi>b</mi>)
+										</mrow>
+										<mo>&ne;</mo>
+										<mi>&empty;</mi>
+									</mrow>
+								</mrow>
+							}
+						</mrow>
+					</math>
+
+					and
+					<math class=center>
+						<mrow><mi mathvariant=normal>M</mi>(<mi>S</mi>)</mrow>
+						<mo>=</mo>
+						<mrow>
+							<munder>
+								<mi mathvariant=normal>argmax</mi>
+								<mrow>
+									<mi>s</mi> <mo>&isin;</mo> <mi>S</mi>
+								</mrow>
+							</munder>
+							<mrow>
+								<mi mathvariant=normal>id</mi>(<mi>s</mi>)
+							</mrow>
+						</mrow>
+					</math>
+				</p>
+				<p>
+					Then for every
+					<math><mi>b</mi> <mo>&isin;</mo> <mi>B</mi></math>,
+					<math class=center>
+						<mrow>
+							<mi mathvariant=normal>Pre</mi>(<mi>b</mi>) <mo>&ne;</mo> <mi>&emptyset;</mi>
+						</mrow>
+						<mo>&xrArr;</mo>
+						<mrow>
+							<mi mathvariant=normal>value</mi>(<mi>b</mi>)
+							<mo>=</mo>
+							<mi mathvariant=normal>value</mi>(<mrow><mi mathvariant=normal>M</mi>(<mi mathvariant=normal>Pre</mi>(<mi>b</mi>))</mrow>)
+						</mrow>
+					</math>
+				</p>
+			</li>
+		</ol>
+		<section class=computers>
+			<p>
+				Providing property (1) is easy: make ballot IDs using the
+				server's UUID combined with an incrementing counter.
+			</p>
+			<p>
+				Providing property (2) is also easy: if every quorum is made of
+				a majority of the servers, then every quorum overlaps (since
+				strict majorities overlap).
+			</p>
+			<p>
+				More sophisticated schemes also satisfy (2), but won't tolerate
+				<em>as many</em> machine failures. For example, arranging the
+				servers in a grid and making a quorum be the union of a row and
+				column. This requires involving only
+				<math>&Theta;(&radic;<mi>n</mi>)</math> servers
+				in a read or write, but can only survive a failure of
+				<math>&Theta;(&radic;<mi>n</mi>)</math>
+				servers. This is a tradeoff that can be made for less
+				communication but slightly less fault-tolerance.
+			</p>
+			<p>
+				Providing property (3) is more challenging, and is the purpose
+				of most of the Paxos algorithm.
+			</p>
+		</section>
+
+		<h4>Lemma: An Adequate Set of Ballots is a Consistent Set</h4>
+		<p>
+			<u class="small-caps">Lemma.</u>
+			Let <math><mi>B</mi></math> be an adequate set of ballots.
+			<u class="small-caps">Then</u> <math><mi>B</mi></math> is a
+			consistent set of ballots: for successful ballots
+			<math><mi>a</mi>, <mi>b</mi> <mo>&isin;</mo> <mi>B</mi></math>,
+			<math>
+				<mi mathvariant=normal>value</mi>(<mi>a</mi>)
+				<mo>=</mo>
+				<mi mathvariant=normal>value</mi>(<mi>b</mi>)</mi>
+			</math>
+		</p>
+		<section class="proof" data-side="Pf." data-qed>
+			<p>
+				By property (1), <math>
+					<mi mathvariant=normal>id</mi>(<mi>a</mi>)
+					<mo>&ne;</mo>
+					<mi mathvariant=normal>id</mi>(<mi>b</mi>)
+				</math>.
+				Without loss of generality, let <math>
+					<mi mathvariant=normal>id</mi>(<mi>a</mi>)
+					<mo>&lt;</mo>
+					<mi mathvariant=normal>id</mi>(<mi>b</mi>)
+				</math>.
+			</p>
+			<p>
+				Let <math>(<msub><mi>s</mi><mi>i</mi></msub>)</math> be the
+				sequence of ballots with <math>
+					<mi mathvariant=normal>id</mi>(<mi>a</mi>)
+					<mo>&le;</mo>
+					<mi mathvariant=normal>id</mi>(<msub><mi>s</mi><mi>i</mi></msub>)
+				</math>
+				numbered such that <math>
+					<msub><mi>s</mi><mn>0</mn></msub>
+					<mo>=</mo>
+					<mi>a</mi>
+				</math>.
+			</p>
+			<p>
+				By induction, it is shown that
+				<math>
+					&forall;<mi>s</mi>
+					<mo>&isin;</mo>
+					<mrow>{<msub><mi>s</mi><mi>i</mi></msub>}</mrow>,
+					<mi mathvariant=normal>value</mi>(<mi>s</mi>)
+					<mo>=</mo>
+					<mi mathvariant=normal>value</mi>(<mi>a</mi>)
+				</math>:
+			</p>
+			<section class=proof>
+				<p>
+					Assume for some <math>
+						<mi>k</mi> <mo>&isin;</mo>
+						<mi mathvariant=normal>ℕ</mi>
+					</math>
+					that <math>
+						&forall;<mi>i</mi>,
+						<mrow><mn>0</mn> <mo>&le;</mo> <mi>i</mi> <mo>&lt;</mo> <mi>k</mi></mrow>
+						<mo>&xrArr;</mo>
+						<mrow>
+							<mi mathvariant=normal>value</mi>(<msub><mi>s</mi><mi>i</mi></msub>)
+							<mo>=</mo>
+							<mi mathvariant=normal>value</mi>(<mi>a</mi>)
+						</mrow>
+					</math>
+				</p>
+				<p>
+					By property (2), there is a <math>
+						<msub><mi>p</mi><mi>k</mi></msub>
+						<mo>&isin;</mo>
+						<mi mathvariant=normal>quorum</mi>(<mi>a</mi>)
+						<mo>&cap;</mo>
+						<mi mathvariant=normal>quorum</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
+					</math>. Since <math><mi>a</mi></math> was a successful ballot,
+					<math>
+						<msub><mi>p</mi><mi>k</mi></msub>
+						<mo>&isin;</mo>
+						<mi mathvariant=normal>endorse</mi>(<mi>a</mi>)
+					</math>.
+				</p>
+				<p>
+					Thus, <math>
+						<mi>a</mi> <mo>&isin;</mo>
+						<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
+					</math>.
+				</p>
+				<p>
+					Let <math>
+						<msub><mi>m</mi><mi>k</mi></msub> <mo>=</mo>
+						<mi mathvariant=normal>M</mi>(<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>))
+					</math> be the ballot in <math><mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>)</math>
+					with the largest ballot identifier.
+				</p>
+				<p>
+					Since also <math>
+						<mi>a</mi> <mo>&isin;</mo>
+						<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
+					</math>, <math>
+						<mi mathvariant=normal>id</mi>(<mi>a</mi>)
+						<mo>&le;</mo>
+						<mi mathvariant=normal>id</mi>(<msub><mi>m</mi><mi>k</mi></msub>)
+					</math>. Thus <math>
+						<msub><mi>m</mi><mi>k</mi></msub>
+						<mo>&isin;</mo>
+						<mrow>{<msub><mi>s</mi><mi>i</mi></msub>}</mrow>
+					</math> with <math>
+						<mi mathvariant=normal>id</mi>(<msub><mi>m</mi><mi>k</mi></msub>)
+						<mo>&le;</mo>
+						<mi mathvariant=normal>id</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
+					</math>.
+				</p>
+				<p>
+					Thus by the induction hypothesis, <math>
+						<mi mathvariant=normal>value</mi>(<mrow>
+							<mi mathvariant=normal>M</mi>(<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>))
+						</mrow>)
+						<mo>=</mo>
+						<mi mathvariant=normal>value</mi>(<mi>a</mi>)
+					</math>.
+				</p>
+				<p>
+					By property (3), this means <math>
+						<mi mathvariant=normal>value</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
+						<mo>=</mo>
+						<mi mathvariant=normal>value</mi>(<mi>a</mi>)
+					</math>.
+				</p>
+				<p>
+					Since the induction hypothesis holds trivially for
+					<math><mi>k</mi><mo>=</mo><mn>0</mn></math>, the principle
+					of (strong) induction proves that this holds for all
+					<math><mi>k</mi></math>. That is,
+					<math class=center>
+						&forall;<mi>s</mi>
+						<mo>&isin;</mo>
+						<mrow>{<msub><mi>s</mi><mi>i</mi></msub>}</mrow>,
+						<mi mathvariant=normal>value</mi>(<mi>s</mi>)
+						<mo>=</mo>
+						<mi mathvariant=normal>value</mi>(<mi>a</mi>)
+					</math>
+				</p>
+			</section>
+			<p>
+				Because <math>
+					<mi mathvariant=normal>id</mi>(<mi>a</mi>)
+					<mo>&lt;</mo>
+					<mi mathvariant=normal>id</mi>(<mi>b</mi>)
+				</math>,
+				<math><mi>b</mi> <mo>&isin;</mo> <mrow>
+					{<msub><mi>s</mi><mi>i</mi></msub>}
+				</mrow></math>. Thus, from the above,
+				<math class=center>
+					<mi mathvariant=normal>value</mi>(<mi>b</mi>)
+					<mo>=</mo>
+					<mi mathvariant=normal>value</mi>(<mi>a</mi>)</mi>
+				</math>
+			</p>
+		</section>
+
+		<h4>Lemma: An Adequate Set of Ballots can Always Make Progress</h4>
+		<p>
+			As a technical detail, it is helpful to show that the "adequate"
+			property is not <em>too</em> strict (in particular, property (3)):
+			It is necessary to show that an adequate set of ballots can't get
+			<em>deadlocked</em>, unable to make progress because the properties
+			prevent the addition of any successful ballot.
+		</p>
+		<p>
+			<u class="small-caps">Lemma.</u>
+			Let <math><mi>B</mi></math> be an adequate set of ballots.
+			<u class="small-caps">Then</u> there is a ballot
+			<math><mi>b</mi> <mo>&notin;</mo> <mi>B</mi></math> such that
+			<math><mi>b</mi></math> is successful and <math>
+				<mi>B</mi> <mo>&cup;</mo> <mrow>{<mi>b</mi>}</mrow>
+			</math>
+			is also an adequate set.
+		</p>
+		<section class="proof" data-side="Pf." data-qed>
+			TODO
+		</section>
+	</body>
+</html>
