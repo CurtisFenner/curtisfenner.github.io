@@ -165,7 +165,7 @@ section.proof[data-qed]::after {
 		<section class="parliament">
 			<p>
 				Paragraphs with a yellow background explain the protocol in the
-				governing metaphore provided by
+				governing metaphor provided by
 				<cite>The Part Time Parliament</cite>.
 			</p>
 		</section>
@@ -193,13 +193,14 @@ section.proof[data-qed]::after {
 		<h2>The Consensus Problem</h2>
 		<p>
 			The <strong>consenus problem</strong> tasks a number of peers with
-			carrying out their work so that when asked for a result, each peer
-			responds with an <em>identical</em> result.
+			choosing a single value from a set of values such that when asked
+			for the chosen value, each peer responds with an <em>identical</em>
+			result.
 		</p>
 		<p>
 			Each peer <math><msub><mi>p</mi><mi>k</mi></msub></math> has a value
 			<math><msub><mi>v</mi><mi>k</mi></msub></math> that it offers. The
-			consensus problem tasks the set of peers with choosing
+			consensus problem tasks the peers with collaborating to choose
 			<em>exactly one</em> value from the set of values for the system
 			to expose.
 		</p>
@@ -235,12 +236,14 @@ section.proof[data-qed]::after {
 			</p>
 			<p>
 				If one server has a table that looks like
-				<pre>
+			</p>
+			<pre>
 Account Holder | Amount
 ---------------+--------
 Alice          |  $1000
 Bob            |   $750
-				</pre>
+			</pre>
+			<p>
 				then every other server <em>must</em> agree that Alice has
 				exactly $1000 and Bob has exactly $750 on-the-books.
 			</p>
@@ -251,7 +254,7 @@ Bob            |   $750
 			During the execution of the protocol, for each
 			<math><mi>key</mi></math>, each pair of peers
 			<math>
-				<msub><mi>p</mi><mn>1</mn></msub>,
+				<msub><mi>p</mi><mn>1</mn></msub><mo>, </mo>
 				<msub><mi>p</mi><mn>2</mn></msub>
 				<mo>&isin;</mo>
 				<mi>P</mi>
@@ -294,15 +297,18 @@ Bob            |   $750
 			A value of <math><mi>?</mi></math> indicates that the peer answers
 			"I don't know (yet)". Thus, if two peers advertise a value, they
 			<em>must</em> advertise the <em>same</em> value. However, it is OK
-			for only one peer to know the value so-far. This "agreement" is the
-			<strong>consistency property</strong> required by the consensus
-			problem.
+			for only some of the peers to know the value so-far.
+		</p>
+		<p>
+			This equality is the <strong>consistency property</strong>
+			required by the consensus problem.
 		</p>
 		<p>
 			In addition, the exposed value must be drawn from the set of values
-			offered by the peers. If the set of values is
-			<math><mi>V</mi> =
-				{<msub><mi>v</mi><mn>1</mn></msub>, ..., <msub><mi>v</mi><mn>N</mn></msub>}
+			offered by the peers (as opposed to being something arbitrary that
+			was not suggested by any peer). If the set of values is
+			<math><mi>V</mi> <mo>=</mo>
+				<mrow>{<msub><mi>v</mi><mn>1</mn></msub>, ..., <msub><mi>v</mi><mn>N</mn></msub>}</mrow>
 			</math>
 			then for every peer <math><msub><mi>p</mi><mi>k</mi></msub></math>,
 		</p>
@@ -345,39 +351,38 @@ Bob            |   $750
 		<section class="computers">
 			<p>
 				The first leader server can be chosen arbitrarily (for example,
-				the server with the smallest UUID). This leader server would
-				serve all read an write requests; the rest of the servers would
+				the server with the smallest UUID). This leader server can
+				serve all read and write requests; the rest of the servers would
 				act as backups and forward all requests to the leader.
 			</p>
 		</section>
 		<p>
 			However, this solution has a problem. It introduces a
 			<em>single point of failure</em>, the leader peer. Whenever the
-			leader peer is unavailable, the system can no longer make any
-			progress.
+			leader peer is unavailable, the system can no longer do its work.
 		</p>
 		<p>
 			However, replacing an unavailable leader is not easy: in the
 			event of a <strong>partition</strong>, the leader may only be
 			able to communicate with <em>some</em> of the peers. In that event,
 			some of the peers would think it is necessary to elect a new leader,
-			while those still in contact with the old one would not. This would
-			lead to two presidents, and lose the consistency property.
+			while those still in contact with the old one would not. This
+			disagreement would lead to two presidents, and lose the consistency
+			property.
 		</p>
 		<section class="parliament">
 			<p>
-				If the president of the parliament were to be hospitalized or go
-				missing, the parliament would screech to a halt, because no one
-				else can make a decision without risk of contradicting the
-				president. They would have to work from their bed until they
-				are well!
+				If the president of the parliament were to pass away, the
+				parliament would screech to a halt, because only the president
+				is allowed to make decisions. The parliament would have to
+				replace them or allow the government to collapse!
 			</p>
 			<p>
-				However, if a storm prevented some of their letters to some of
-				their peers, those peers might think the president is not getting
-				any work done and needs to be replaced. Those peers would be
+				However, if the president was merely sick or their letters
+				delayed by a storm, some peers might think the president has
+				passed and needs to be replaced. Those peers would be
 				mistaken, and an election of a second president would cause
-				inconsistency!
+				inconsistency when the previous president returns!
 			</p>
 		</section>
 		<section class="computers">
@@ -386,22 +391,22 @@ Bob            |   $750
 				internet connection, the other datacenters would see a need to
 				elect a new leader. However, the isolated data center could
 				still continue working as the servers within it continue
-				communicating about ongoing processing.
+				communicating about ongoing jobs.
 			</p>
 			<p>
 				Thus, when the datacenter regains its internet connection, its
-				state could contain updates that the new leader server does not
-				have.
+				state could contain updates that the new leader server in
+				another datacenter does not have.
 			</p>
 		</section>
 		<p>
 			The Paxos algorithm can achieve consistency <em>in spite of</em>
-			the loss of messages or the loss of peers. In detail, here are the
-			assumptions made:
+			the loss of messages or the loss of <em>many</em> peers. In detail,
+			here are the assumptions made:
 		</p>
 		<ul>
-			<li>A message sent from <math><mi>A</mi></math> to
-				<math><mi>B</mi></math> can be
+			<li>A message sent from peer <math><mi>A</mi></math> to
+				peer <math><mi>B</mi></math> can be
 				<ul>
 					<li>lost entirely</li>
 					<li>OR successfully delivered</li>
@@ -413,11 +418,12 @@ Bob            |   $750
 		<section class=aside>
 			<p>
 				This version of Paxos will not address
-				<em>Byzantine failures</em>. Messages will <em>not</em> be altered
-				or corrupted after they are sent, and all peers will execute the
-				algorithm <em>correctly</em>.
-				Paxos <em>can</em> be altered to work despite Byzantine failures,
-				but that modification will not be covered in this document.
+				<em>Byzantine failures</em>. Messages will <em>not</em> be
+				altered or corrupted after they are sent, and all peers will
+				execute the protocol <em>correctly</em>.
+				Paxos <em>can</em> be altered to work despite Byzantine
+				failures, but that modification will not be covered in this
+				document.
 			</p>
 		</section>
 		<p>
@@ -425,9 +431,10 @@ Bob            |   $750
 			<strong>availability guarantee</strong>):
 		</p>
 		<p>
-			Whenever a clique containing a majority of the peers are able to
-			communicate with each other for a sufficient number of communication
-			trips, that majority can write a value to the database.
+			Whenever a clique containing merely a majority of the peers are able
+			to communicate with each other for a sufficient number of
+			communication steps, that majority has a path to writing a value to
+			the data-store.
 		</p>
 		<p>
 			That is, if currently 
@@ -439,7 +446,8 @@ Bob            |   $750
 				<mi>?</mi>
 			</math>, and peer <math><mi>p</mi></math> wants to write a value,
 			then after the <math><mi>p</mi></math> has been in a clique able to
-			communicate with a majority of peers, it will be
+			communicate with a majority of peers, it is always possible to reach
+			a state where
 			<math>
 				<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
 				--><mi>key</mi><mo>, </mo><mi>p</mi><!--
@@ -451,7 +459,7 @@ Bob            |   $750
 
 		<h3>Formally, the Consensus Problem</h3>
 		<p>
-			A protocol <math><mi mathvariant="small-caps">X</mi></math> run on
+			A protocol <math><mi>X</mi></math> run on
 			a set <math><mi>P</mi></math> of peers with a set
 			<math><msub><mi>V</mi><mi>key</mi></msub></math> of associated values
 			<em>solves the consensus problem</em> on key
@@ -559,10 +567,10 @@ Bob            |   $750
 				have a majority of the voters present.
 			</p>
 			<p>
-				When a majority of voters <em>are</em> present, a legislature
-				is said to have a <strong>quorum</strong> present (since it is
-				possible for a law to be passed, as long as all those present
-				agree).
+				When even a bare majority of voters <em>are</em> present, a
+				legislature is said to have a <strong>quorum</strong> present
+				(since it is possible for a law to be passed, as long as all
+				those present agree).
 			</p>
 			<p>
 				The liveness property states that if a quorum is present for a
@@ -613,7 +621,7 @@ Bob            |   $750
 		<h3>A Sufficient Condition</h3>
 		<p>
 			A <strong>ballot</strong> <math><mi>b</mi></math> put forth before a
-			set <math><im>P</im></math> of peers has four components:
+			set <math><mi>P</mi></math> of peers has four components:
 		</p>
 		<ul>
 			<li>
@@ -971,9 +979,9 @@ Bob            |   $750
 					{<msub><mi>s</mi><mi>i</mi></msub>}
 				</mrow></math>. Thus, from the above,
 				<math class=center>
-					<mi mathvariant=normal>value</mi>(<mi>b</mi>)
+					<mrow><mi mathvariant=normal>value</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
 					<mo>=</mo>
-					<mi mathvariant=normal>value</mi>(<mi>a</mi>)</mi>
+					<mrow><mi mathvariant=normal>value</mi><mo>(</mo><mi>a</mi><mo>)</mo></mrow>
 				</math>
 			</p>
 		</section>
