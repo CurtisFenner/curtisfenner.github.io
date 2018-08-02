@@ -600,16 +600,18 @@ Bob            |   $750
 			</ul>
 		</section>
 
-		<h2>The Paxos Protocol</h2>
+		<h2>The Paxos Protocol &ndash; A Proof</h2>
 		<p>
 			The <strong>Paxos algorithm</strong> is a protocol that
 			<strong>solves the consensus problem</strong>.
 		</p>
 		<p>
-			To prove that it works, first an abstract lemma will be proven.
-			Then, it will be shown that the Paxos protocol fulfills the
-			requirements of the lemma. This leaves as a corollary that the
-			Paxos algorithm solves the consensus problem.
+			To prove that it works, first a lemma will be proven about an
+			abstract concept of <em>ballots</em>.
+			Then, the Paxos protocol will be detailed and it will be shown that
+			the Paxos protocol fulfills the requirements of the lemma.
+			This leaves as a corollary that the Paxos algorithm solves the
+			consensus problem.
 		</p>
 		<p>
 			Paxos works by having peers <em>propose</em> a particular value.
@@ -619,6 +621,26 @@ Bob            |   $750
 			metaphor).
 		</p>
 		<h3>A Sufficient Condition</h3>
+		<p>
+			A set <math><mi>P</mi></math> of peers want to establish a protocol
+			for achieving consensus.
+			They create a set <math><mi>Q</mi></math> of
+			<strong>quorums</strong>. A <strong>quorum</strong> is a
+			non-empty set of peers that constitutes "enough" for the protocol
+			to make a decision. <em>What exactly constitutes a quorum is up to
+			the implementation and is not detailed here;</em> possibilities for
+			quorums are explained in the description of the protocol.
+		</p>
+		<section class=parliament>
+			<p>
+				In a majority-rule system of <math><mi>N</mi></math>
+				members of parliament, the set of <em>quorums</em> would be
+				every set of more than
+				<math><mi>N</mi><mo>/</mo><mn>2</mn></math> members of
+				parliament (since from these sets at least a majority of all
+				seats is possible).
+			</p>
+		</section>
 		<p>
 			A <strong>ballot</strong> <math><mi>b</mi></math> put forth before a
 			set <math><mi>P</mi></math> of peers has four components:
@@ -638,10 +660,10 @@ Bob            |   $750
 				A <strong>quorum</strong>
 				<math>
 					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
-					<mo>&subset;</mo>
-					<mi>P</mi>
+					<mo>&isin;</mo>
+					<mi>Q</mi>
 				</math>,
-				a non-empty set of peers
+				a non-empty set of peers drawn from the set of quorums
 			</li>
 			<li>
 				A <strong>endorsement set</strong>
@@ -656,41 +678,50 @@ Bob            |   $750
 
 		<p>
 			A ballot <math><mi>b</mi></math> is a
-			<strong>successful ballot</strong> when
+			<strong>successful ballot</strong> when its endorse set intersects
+			with every possible quorum. That is, when
 			<math class=center>
-				<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
-				<mo>&subset;</mo>
+				<mo>&forall;</mo><mi>q</mi> <mo>&isin;</mo> <mi>Q</mi><mo>,</mo>
+
 				<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
+				<mo>&cap;</mo> <mi>q</mi> <mo>&ne;</mo> <mi>&emptyset;</mi>
 			</math>
-			That is, when every member of the ballot's quorum endorsed the
-			ballot.
 		</p>
 
 		<section class=aside>
 			<p>
-				It may be simpler to think of
+				It might seem simpler to think of
 				<math class=center>
 					<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
 					<mo>&subset;</mo>
 					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
 				</math>
-				which makes the condition for <math><mi>b</mi></math> being successful
-				<math class=center>
-					<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
-					<mo>=</mo>
-					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
-				</math>
 			</p>
 			<p>
-				However, the proof (and algorithm) works even when
+				However, the proof and protocol work even when
 				<math class=center>
 					<mrow><mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
 					<mo>&nsub;</mo>
 					<mrow><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></mrow>
 				</math>
-				Thus, this restriction is not explicitly included in this proof.
+				(and in fact, this is useful for some implementations).
+				Thus, that restriction is not included in this proof.
 			</p>
 		</section>
+		<section class=computers>
+			<p>
+				For extra fault-tolerance, an implementation might put extra
+				requirements on quorums and successful endorse sets.
+			</p>
+			<p>
+				For example, it might require that not all members of a 
+				quorum or successful endorse set come from
+				a single datacenter or a single rack within a datacenter (so
+				that losing any one datacenter or any one rack does not lose
+				information)
+			</p>
+		</section>
+
 		<p>
 			The value of a successful ballot is called a
 			<strong>chosen value</strong>.
@@ -721,22 +752,24 @@ Bob            |   $750
 				identifier
 			</li>
 			<li>
+				<del>
 				The quorums of any two ballots in <math><mi>B</mi></math> have
 				at least one peer in common
+				</del>
 			</li>
 			<li>
-				If any member of ballot <math><mi>b</mi></math>'s quorum has
-				endorsed a ballot with a smaller ballot identifier, then the
-				value of <math><mi>b</mi></math> is the same as the value of
+				For each ballot
+				<math><mi>b</mi> <mo>&isin;</mo> <mi>B</mi></math>, if any
+				member of ballot <math><mi>b</mi></math>'s quorum has endorsed a
+				ballot with a smaller ballot identifier, then the value of
+				<math><mi>b</mi></math> is the same as the value of
 				the ballot with the highest ballot identifier less than
 				<math><mi mathvariant=normal>id</mi><mo>(</mo><mi>b</mi><mo>)</mo></math>
 				that was endorsed by a member of
 				<math><mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo></math>:
 
 				<p>
-					More formally, for every ballot in <math><mi>B</mi></math>,
-					define the preceding set of a ballot to be
-
+					More formally, define the preceding set of a ballot to be
 					<math class=center>
 						<mrow><mi mathvariant=normal>Pre</mi>(<mi>b</mi>)</mrow>
 						<mo>=</mo>
@@ -798,6 +831,9 @@ Bob            |   $750
 					</math>
 				</p>
 			</li>
+			<li>
+				The set <math><mi>B</mi></math> is finite.
+			</li>
 		</ol>
 		<section class=computers>
 			<p>
@@ -805,20 +841,24 @@ Bob            |   $750
 				server's UUID combined with an incrementing counter.
 			</p>
 			<p>
-				Providing property (2) is also easy: if every quorum is made of
-				a majority of the servers, then every quorum overlaps (since
-				strict majorities overlap).
+				<del>
+					Providing property (2) is also easy: if every quorum is made of
+					a majority of the servers, then every quorum overlaps (since
+					strict majorities overlap).
+				</del>
 			</p>
 			<p>
-				More sophisticated schemes also satisfy (2), but won't tolerate
-				<em>as many</em> machine failures. For example, arranging the
-				servers in a grid and making a quorum be the union of a row and
-				column. This requires involving only
-				<math>&Theta;(&radic;<mi>n</mi>)</math> servers
-				in a read or write, but can only survive a failure of
-				<math>&Theta;(&radic;<mi>n</mi>)</math>
-				servers. This is a tradeoff that can be made for less
-				communication but slightly less fault-tolerance.
+				<del>
+					More sophisticated schemes also satisfy (2), but won't tolerate
+					<em>as many</em> machine failures. For example, arranging the
+					servers in a grid and making a quorum be the union of a row and
+					column. This requires involving only
+					<math>&Theta;(&radic;<mi>n</mi>)</math> servers
+					in a read or write, but can only survive a failure of
+					<math>&Theta;(&radic;<mi>n</mi>)</math>
+					servers. This is a tradeoff that can be made for less
+					communication but slightly less fault-tolerance.
+				</del>
 			</p>
 			<p>
 				Providing property (3) is more challenging, and is the purpose
@@ -829,7 +869,9 @@ Bob            |   $750
 		<h4>Lemma: An Adequate Set of Ballots is a Consistent Set</h4>
 		<p>
 			<u class="small-caps">Lemma.</u>
-			Let <math><mi>B</mi></math> be an adequate set of ballots.
+			Let <math><mi>B</mi></math> be an adequate set of ballots for a set
+			<math><mi>P</mi></math> of peers with set <math><mi>Q</mi></math>
+			of quorums.
 			<u class="small-caps">Then</u> <math><mi>B</mi></math> is a
 			consistent set of ballots: for successful ballots
 			<math><mi>a</mi>, <mi>b</mi> <mo>&isin;</mo> <mi>B</mi></math>,
@@ -859,7 +901,8 @@ Bob            |   $750
 					<mo>&le;</mo>
 					<mi mathvariant=normal>id</mi>(<msub><mi>s</mi><mi>i</mi></msub>)
 				</math>
-				numbered such that <math>
+				ordered by ballot identifier, with
+				numbering such that <math>
 					<msub><mi>s</mi><mn>0</mn></msub>
 					<mo>=</mo>
 					<mi>a</mi>
@@ -894,17 +937,13 @@ Bob            |   $750
 					</math>
 				</p>
 				<p>
-					By property (2), there is a <math>
-						<msub><mi>p</mi><mi>k</mi></msub>
-						<mo>&isin;</mo>
-						<mi mathvariant=normal>quorum</mi>(<mi>a</mi>)
-						<mo>&cap;</mo>
-						<mi mathvariant=normal>quorum</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
-					</math>. Since <math><mi>a</mi></math> was a successful ballot,
+					By the definition of <em>successful ballot</em>, there is a
 					<math>
 						<msub><mi>p</mi><mi>k</mi></msub>
 						<mo>&isin;</mo>
 						<mi mathvariant=normal>endorse</mi>(<mi>a</mi>)
+						<mo>&cap;</mo>
+						<mi mathvariant=normal>quorum</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
 					</math>.
 				</p>
 				<p>
@@ -919,40 +958,54 @@ Bob            |   $750
 						<mi mathvariant=normal>M</mi>(<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>))
 					</math> be the ballot in <math><mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>)</math>
 					with the largest ballot identifier.
+					(Such a ballot must exist because <math><mi>a</mi></math>
+					has been shown to be in the preceding set and
+					<math><mi>B</mi></math> is finite).
 				</p>
 				<p>
 					Since also <math>
 						<mi>a</mi> <mo>&isin;</mo>
-						<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
+						<mi mathvariant=normal>Pre</mi><mo>(</mo><msub><mi>s</mi><mi>k</mi></msub><mo>)</mo>
 					</math>, <math>
-						<mi mathvariant=normal>id</mi>(<mi>a</mi>)
+						<mi mathvariant=normal>id</mi><mo>(</mo><mi>a</mi><mo>)</mo>
 						<mo>&le;</mo>
-						<mi mathvariant=normal>id</mi>(<msub><mi>m</mi><mi>k</mi></msub>)
+						<mi mathvariant=normal>id</mi><mo>(</mo><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo>
+						<mo>&lt;</mo>
+						<mi mathvariant=normal>id</mi><mo>(</mo><msub><mi>s</mi><mi>k</mi></msub><mo>)</mo>
 					</math>. Thus <math>
 						<msub><mi>m</mi><mi>k</mi></msub>
 						<mo>&isin;</mo>
 						<mrow>{<msub><mi>s</mi><mi>i</mi></msub>}</mrow>
-					</math> with <math>
-						<mi mathvariant=normal>id</mi>(<msub><mi>m</mi><mi>k</mi></msub>)
-						<mo>&le;</mo>
-						<mi mathvariant=normal>id</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
 					</math>.
 				</p>
 				<p>
 					Thus by the induction hypothesis, <math>
-						<mi mathvariant=normal>value</mi>(<mrow>
-							<mi mathvariant=normal>M</mi>(<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>))
-						</mrow>)
+						<mi mathvariant=normal>value</mi><mo>(</mo><mrow><!--
+							--><msub><mi>m</mi><mi>k</mi></msub><!--
+							--></mrow><mo>)</mo>
 						<mo>=</mo>
 						<mi mathvariant=normal>value</mi>(<mi>a</mi>)
 					</math>.
 				</p>
 				<p>
-					By property (3), this means <math>
+					By property (3), this means
+					<math class=center>
 						<mi mathvariant=normal>value</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
 						<mo>=</mo>
+						<mrow>
+							<mi mathvariant=normal>value<mo>(</mo><!--
+							--><mi mathvariant=normal>M</mi>(<mi mathvariant=normal>Pre</mi>(<msub><mi>s</mi><mi>k</mi></msub>))<!--
+							--><mo>)</mo>
+						</mrow>
+						<mo>=</mo>
+						<mrow>
+							<mi mathvariant=normal>value<mo>(</mo><!--
+							--><msub><mi>m</mi><mi>k</mi></msub><!--
+							--><mo>)</mo>
+						</mrow>
+						<mo>=</mo>
 						<mi mathvariant=normal>value</mi>(<mi>a</mi>)
-					</math>.
+					</math>
 				</p>
 				<p>
 					Since the induction hypothesis holds trivially for
