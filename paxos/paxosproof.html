@@ -64,6 +64,12 @@ p {
 	padding: 0;
 }
 
+p.important {
+	position: relative;
+	border-left: 0.5em solid #DD5;
+	padding-left: 0.5em;
+}
+
 section > p:last-child {
 	margin-bottom: 0;
 }
@@ -137,6 +143,55 @@ section.proof[data-qed]::after {
 	content: "∎";
 }
 
+var {
+	display: inline-block;
+	font-style: normal;
+	font-family: monospace;
+	background: rgba(0, 0, 0, 0.1);
+	border-radius: 2px;
+	padding: 2px;
+}
+
+.phone {
+	position: relative;
+	max-width: 50%;
+	margin: auto;
+	border: 1px solid #AAA;
+	padding: 1em;
+	border-radius: 1.5em;
+	overflow: hidden;
+
+	margin-bottom: 1em;
+}
+
+.phone .message {
+	background: rgb(33, 81, 153);
+	color: white;
+	padding: 0.5em;
+	border-radius: 1em;
+	position: relative;
+	padding-right: 2em;
+}
+
+.phone .message::after {
+	color: #90A8CC;
+	content: attr(data-from);
+	font-size: smaller;
+	position: absolute;
+	right: 1em;
+}
+
+.phone .status {
+	background: #EEE;
+	color: #888;
+	font-style: italic;
+	position: absolute;
+	bottom: -1em;
+	left: 0em;
+	right: 0em;
+	padding-left: 2em;
+}
+
 		</style>
 	</head>
 	<body>
@@ -144,7 +199,8 @@ section.proof[data-qed]::after {
 		<p>
 			In the 1998 paper
 			<a href="https://lamport.azurewebsites.net/pubs/lamport-paxos.pdf">The Part Time Parliament</a>,
-			ACM Turing Award winner Leslie Lamport puts forth a description of
+			Leslie Lamport (who won the ACM Turing Award for his work on
+			distributed systems) puts forth a description of
 			the <em>consensus problem</em> and an algorithm called
 			<strong>Paxos</strong> that can solve it even when there are many
 			network failures or machine failures.
@@ -152,15 +208,20 @@ section.proof[data-qed]::after {
 		<p>
 			Lamport's paper used an extended metaphor that explained the
 			algorithm in the context of a parliament on the fictional island of
-			Paxos, placed in Ancient Greece. Here, the analogy will be
-			borrowed but will be displayed alongside the more direct use of the
-			protocol in the language of servers and networks.
+			Paxos, placed in Ancient Greece. While the metaphor can be useful,
+			it is also limited (as a metaphor) and has often been called
+			confusing.
+		</p>
+		<p>
+			Here, the analogy will be borrowed but will be displayed
+			<em>alongside</em> the more direct use of the protocol in the
+			language of servers and networks.
 		</p>
 
 		<h3>Reading this Document</h3>
 		<p>
-			Paragraphs with a white background describe the algorithm abstractly
-			with mathematical notation.
+			Paragraphs with a white background describe the algorithm itself,
+			often with mathematical notation.
 		</p>
 		<section class="parliament">
 			<p>
@@ -183,6 +244,10 @@ section.proof[data-qed]::after {
 				interesting information that might help understanding.
 			</p>
 		</section>
+		<p class=important>
+			Paragraphs with critical definitions and remarks will be highlighted
+			with a yellow left margin.
+		</p>
 		<p>
 			The "most important" text is found in the white-background
 			paragraphs. The colored boxes provide more examples and more
@@ -192,17 +257,112 @@ section.proof[data-qed]::after {
 
 		<h2>The Consensus Problem</h2>
 		<p>
-			The <strong>consenus problem</strong> tasks a number of peers with
-			choosing a single value from a set of values such that when asked
-			for the chosen value, each peer responds with an <em>identical</em>
-			result.
+			You and your friends are planning dinner over your favorite
+			messaging platform!
+		</p>
+
+		<div class="phone">
+			<p class=message data-from=alex>
+				Where should we get dinner?
+			</p>
+			<p class=status>
+				several people are typing...
+			</p>
+		</div>
+
+		<p>
+			(If you have tried to do this before, you know it's not as easy it
+			sounds)
+		</p>
+
+		<div class="phone">
+			<p class=message data-from=alex>
+				Where should we get dinner?
+			</p>
+			<p class=message data-from=blake>
+				🍕
+			</p>
+			<p class=message data-from=chris>
+				🌯?
+			</p>
+			<p class=message data-from=devin>
+				🍔!!
+			</p>
+			<p class=message data-from=eli>
+				🍣🍥🍣
+			</p>
+			<p class=message data-from=frankie>
+				🥣
+			</p>
+			<p class=message data-from=gabriel>
+				🍦🍧🍨
+			</p>
+			<p class=message data-from=alex>🍝?</p>
+			<p class=status>
+			</p>
+		</div>
+
+		<p>
+			All of the suggestions are good options, but the point is for
+			everyone to eat <em>together</em>. There may be some negotiating
+			(some people are closer to some restaurants and may have food
+			preferences), but the most important thing is that everyone makes
+			it to the same place.
+		</p>
+
+		<div class="phone">
+			<p class=message data-from=alex>🍣 seems like a good choice</p>
+			<p class=message data-from=devin>
+				Phone is going to die, see you there!
+			</p>
+			<p class=message data-from=blake>
+				But we went to 🍣 last week! Let's go somewhere else!
+			</p>
+			<p class=message data-from=eli>Devin?</p>
+			<p class=status></p>
+		</div>
+
+		<p>
+			If messages can be lost (or an app crashes or a phone battery dies),
+			then someone might end up going to the wrong place, which is
+			<em>no good at all!</em>
+		</p>
+
+		<div class="phone">
+			<p class=message data-from=frankie>
+				OK, let's do 🌯
+			</p>
+			<p class=message data-from=gabriel>
+				Sounds good, but I'll be an hour late!
+			</p>
+			<p class=message data-from=chris>
+				That's okay, see you later!
+			</p>
+		</div>
+
+		<p>
+			If someone ends up being late, that's OK (as long as they're busy
+			doing other things and not wasting time going to the wrong place).
+			So it's OK for not everyone to arrive at exactly the same time, as
+			long as the others will be able to catch up.
+		</p>
+
+		<p class=important>
+			The <strong>consenus problem</strong> tasks a number of
+			<em>peers</em> (you and your friends) with
+			choosing a single <em>value</em> from a set of values
+			(where you are going to meet for dinner)
+			such that when asked for the chosen value, each
+			peer responds with an <em>identical</em> result (everyone
+			goes to the same place) in spite of communication failures.
 		</p>
 		<p>
 			Each peer <math><msub><mi>p</mi><mi>k</mi></msub></math> has a value
-			<math><msub><mi>v</mi><mi>k</mi></msub></math> that it offers. The
-			consensus problem tasks the peers with collaborating to choose
-			<em>exactly one</em> value from the set of values for the system
-			to expose.
+			<math><msub><mi>v</mi><mi>k</mi></msub></math> that it initially
+			offers (that friend's restaurant suggestion).
+			The consensus problem tasks the peers with collaborating to
+			choose <em>exactly one</em> value from the set of values for the
+			system to expose.
 		</p>
 		<section class="parliament">
 			<p>
@@ -211,13 +371,14 @@ section.proof[data-qed]::after {
 				resolutions have been passed.
 			</p>
 			<p>
-				It would not do if a vote for peace won in parliament, yet still
-				some minority party acted as though the land was still at war.
-			</p>
-			<p>
 				The value each parliamentarian offers could be particular
 				parameters for laws (such as tax-rates, fines, or a number of
 				years a law will be in effect)
+			</p>
+			<p>
+				It would not do if a vote for 10 years of peace won in
+				parliament, yet still some minority party acted as though the
+				land was still at war! The decrees must match <em>exactly</em>.
 			</p>
 		</section>
 		<section class="computers">
@@ -229,10 +390,10 @@ section.proof[data-qed]::after {
 			</p>
 			<p>
 				The values associated with peers are the WRITE requests that the
-				server is trying to service. Since the system is a distributed
+				peers have received. Since the system is a distributed
 				system, different peers might been sent different values to
 				write (for example, because they are in different datacenters
-				and are serving different people).
+				and are serving different clients).
 			</p>
 			<p>
 				If one server has a table that looks like
@@ -249,86 +410,17 @@ Bob            |   $750
 			</p>
 		</section>
 		<p>
-			More formally, we have a set <math><mi>P</mi></math> of peers
-			executing a consensus protocol around a key-value store.
-			During the execution of the protocol, for each
-			<math><mi>key</mi></math>, each pair of peers
-			<math>
-				<msub><mi>p</mi><mn>1</mn></msub><mo>, </mo>
-				<msub><mi>p</mi><mn>2</mn></msub>
-				<mo>&isin;</mo>
-				<mi>P</mi>
-			</math> must be such that
-		</p>
-		<ul>
-			<li>
-				<math>
-					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
-					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>1</mn></msub><!--
-					--><mo>)</mo>
-					<mo>=</mo>
-					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
-					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>2</mn></msub><!--
-					--><mo>)</mo>
-				</math>
-			</li>
-			<li>
-				OR
-				<math>
-					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
-					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>1</mn></msub><!--
-					--><mo>)</mo>
-					<mo>=</mo>
-					<mi>?</mi>
-				</math>
-			</li>
-			<li>
-				OR
-				<math>
-					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
-					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mn>2</mn></msub><!--
-					--><mo>)</mo>
-					<mo>=</mo>
-					<mi>?</mi>
-				</math>
-			</li>
-		</ul>
-		<p>
-			A value of <math><mi>?</mi></math> indicates that the peer answers
-			"I don't know (yet)". Thus, if two peers advertise a value, they
-			<em>must</em> advertise the <em>same</em> value. However, it is OK
-			for only some of the peers to know the value so-far.
+			The peers are <em>not</em> required to all become
+			aware of the chosen value simultaneously.
+			Before a peer knows which value has been chosen,
+			it may answer with a value of <math><mi>?</mi></math> to indicate
+			"I don't know (yet)".
 		</p>
 		<p>
-			This equality is the <strong>consistency property</strong>
-			required by the consensus problem.
+			If a peer answers with a value other than <math><mi>?</mi></math>,
+			that answer <em>must</em> be the single value chosen by the
+			consensus protocol.
 		</p>
-		<p>
-			In addition, the exposed value must be drawn from the set of values
-			offered by the peers (as opposed to being something arbitrary that
-			was not suggested by any peer). If the set of values is
-			<math><mi>V</mi> <mo>=</mo>
-				<mrow>{<msub><mi>v</mi><mn>1</mn></msub>, ..., <msub><mi>v</mi><mn>N</mn></msub>}</mrow>
-			</math>
-			then for every peer <math><msub><mi>p</mi><mi>k</mi></msub></math>,
-		</p>
-		<ul>
-			<li>
-				<math>
-					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
-					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mi>k</mi></msub><!--
-					--><mo>)</mo>
-					<mo>&ne;</mo>
-					<mi>?</mi>
-					<mo>&xrArr;</mo>
-					<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
-					--><mi>key</mi><mo>, </mo><msub><mi>p</mi><mi>k</mi></msub><!--
-					--><mo>)</mo>
-					<mo>&isin;</mo>
-					<mi>V</mi>
-				</math>
-			</li>
-		</ul>
 
 		<h3>Why Consensus is Hard: Failures are allowed</h3>
 		<p>
@@ -362,13 +454,13 @@ Bob            |   $750
 			leader peer is unavailable, the system can no longer do its work.
 		</p>
 		<p>
-			However, replacing an unavailable leader is not easy: in the
-			event of a <strong>partition</strong>, the leader may only be
-			able to communicate with <em>some</em> of the peers. In that event,
-			some of the peers would think it is necessary to elect a new leader,
-			while those still in contact with the old one would not. This
-			disagreement would lead to two presidents, and lose the consistency
-			property.
+			Replacing an unavailable leader is not easy! In the
+			event of a <strong>network partition</strong>, the leader may only
+			be able to communicate with <em>some</em> of the peers.
+			In that event, some of the peers would think it is necessary to
+			elect a new leader, while those still in contact with the old one
+			would not. This disagreement would lead to two presidents, and lose
+			the consistency property.
 		</p>
 		<section class="parliament">
 			<p>
@@ -426,9 +518,10 @@ Bob            |   $750
 				document.
 			</p>
 		</section>
-		<p>
+		<p class=important>
 			Paxos also provides a <strong>liveness guarantee</strong> (aka an
-			<strong>availability guarantee</strong>):
+			<strong>availability guarantee</strong> or
+			<strong>progress guarantee</strong>):
 		</p>
 		<p>
 			Whenever a clique containing merely a majority of the peers are able
@@ -445,9 +538,9 @@ Bob            |   $750
 				<mo>=</mo>
 				<mi>?</mi>
 			</math>, and peer <math><mi>p</mi></math> wants to write a value,
-			then after the <math><mi>p</mi></math> has been in a clique able to
-			communicate with a majority of peers, it is always possible to reach
-			a state where
+			then after the peer <math><mi>p</mi></math> has been in a clique
+			able to communicate with a majority of peers, it is always
+			possible to reach a state where
 			<math>
 				<mi mathvariant="small-caps">Value</mi><mo>(</mo><!--
 				--><mi>key</mi><mo>, </mo><mi>p</mi><!--
@@ -458,7 +551,7 @@ Bob            |   $750
 		</p>
 
 		<h3>Formally, the Consensus Problem</h3>
-		<p>
+		<p class=important>
 			A protocol <math><mi>X</mi></math> run on
 			a set <math><mi>P</mi></math> of peers with a set
 			<math><msub><mi>V</mi><mi>key</mi></msub></math> of associated values
@@ -601,7 +694,7 @@ Bob            |   $750
 		</section>
 
 		<h2>The Paxos Protocol &ndash; A Proof</h2>
-		<p>
+		<p class=important>
 			The <strong>Paxos algorithm</strong> is a protocol that
 			<strong>solves the consensus problem</strong>.
 		</p>
@@ -722,11 +815,11 @@ Bob            |   $750
 			</p>
 		</section>
 
-		<p>
+		<p class=important>
 			The value of a successful ballot is called a
 			<strong>chosen value</strong>.
 		</p>
-		<p>
+		<p class=important>
 			The protocol must ensure <em>consistency</em>: only one string is
 			chosen. A set <math><mi>B</mi></math> of ballots is called a
 			<strong>consistent set</strong> when all successful ballots
@@ -742,20 +835,14 @@ Bob            |   $750
 			allowing deadlock to occur. This sufficient property is called
 			<em>adequacy</em>.
 		</p>
-		<p>
-			A set <math><mi>B</mi></math> of ballots is
+		<p class=important>
+			A finite set <math><mi>B</mi></math> of ballots is
 			<strong>adequate</strong> when it satisfies these three properties:
 		</p>
 		<ol>
 			<li>
 				Each ballot in <math><mi>B</mi></math> has a unique ballot
-				identifier
-			</li>
-			<li>
-				<del>
-				The quorums of any two ballots in <math><mi>B</mi></math> have
-				at least one peer in common
-				</del>
+				identifier that totally orders the ballots
 			</li>
 			<li>
 				For each ballot
@@ -831,9 +918,6 @@ Bob            |   $750
 					</math>
 				</p>
 			</li>
-			<li>
-				The set <math><mi>B</mi></math> is finite.
-			</li>
 		</ol>
 		<section class=computers>
 			<p>
@@ -841,33 +925,13 @@ Bob            |   $750
 				server's UUID combined with an incrementing counter.
 			</p>
 			<p>
-				<del>
-					Providing property (2) is also easy: if every quorum is made of
-					a majority of the servers, then every quorum overlaps (since
-					strict majorities overlap).
-				</del>
-			</p>
-			<p>
-				<del>
-					More sophisticated schemes also satisfy (2), but won't tolerate
-					<em>as many</em> machine failures. For example, arranging the
-					servers in a grid and making a quorum be the union of a row and
-					column. This requires involving only
-					<math>&Theta;(&radic;<mi>n</mi>)</math> servers
-					in a read or write, but can only survive a failure of
-					<math>&Theta;(&radic;<mi>n</mi>)</math>
-					servers. This is a tradeoff that can be made for less
-					communication but slightly less fault-tolerance.
-				</del>
-			</p>
-			<p>
-				Providing property (3) is more challenging, and is the purpose
+				Providing property (2) is more challenging, and is the purpose
 				of most of the Paxos algorithm.
 			</p>
 		</section>
 
 		<h4>Lemma: An Adequate Set of Ballots is a Consistent Set</h4>
-		<p>
+		<p class=important>
 			<u class="small-caps">Lemma.</u>
 			Let <math><mi>B</mi></math> be an adequate set of ballots for a set
 			<math><mi>P</mi></math> of peers with set <math><mi>Q</mi></math>
@@ -896,7 +960,7 @@ Bob            |   $750
 			</p>
 			<p>
 				Let <math>(<msub><mi>s</mi><mi>i</mi></msub>)</math> be the
-				sequence of ballots with <math>
+				sequence of ballots in <math><mi>B</mi></math> with <math>
 					<mi mathvariant=normal>id</mi>(<mi>a</mi>)
 					<mo>&le;</mo>
 					<mi mathvariant=normal>id</mi>(<msub><mi>s</mi><mi>i</mi></msub>)
@@ -921,11 +985,11 @@ Bob            |   $750
 			</p>
 			<section class=proof>
 				<p>
-					Assume for some <math>
+					Assume (as the induction hypothesis) for some <math>
 						<mi>k</mi> <mo>&isin;</mo>
 						<mi mathvariant=normal>ℕ</mi>
 					</math>
-					that <math>
+					that <math class=center>
 						&forall;<mi>i</mi>,
 						<mrow><mn>0</mn> <mo>&le;</mo> <mi>i</mi> <mo>&lt;</mo> <mi>k</mi></mrow>
 						<mo>&xrArr;</mo>
@@ -988,7 +1052,7 @@ Bob            |   $750
 					</math>.
 				</p>
 				<p>
-					By property (3), this means
+					By property (2), this means
 					<math class=center>
 						<mi mathvariant=normal>value</mi>(<msub><mi>s</mi><mi>k</mi></msub>)
 						<mo>=</mo>
@@ -1042,23 +1106,122 @@ Bob            |   $750
 		<h4>Lemma: An Adequate Set of Ballots can Always Make Progress</h4>
 		<p>
 			As a technical detail, it is helpful to show that the "adequate"
-			property is not <em>too</em> strict (in particular, property (3)):
+			property is not <em>too</em> strict (in particular, property (2)):
 			It is necessary to show that an adequate set of ballots can't get
 			<em>deadlocked</em>, unable to make progress because the properties
 			prevent the addition of any successful ballot.
 		</p>
-		<p>
+		<p class=important>
 			<u class="small-caps">Lemma.</u>
 			Let <math><mi>B</mi></math> be an adequate set of ballots.
 			<u class="small-caps">Then</u> there is a ballot
 			<math><mi>b</mi> <mo>&notin;</mo> <mi>B</mi></math> such that
 			<math><mi>b</mi></math> is successful and <math>
-				<mi>B</mi> <mo>&cup;</mo> <mrow>{<mi>b</mi>}</mrow>
+				<mi>B</mi> <mo>&cup;</mo> <mrow><mo>{</mo><mi>b</mi><mo>}</mo></mrow>
 			</math>
 			is also an adequate set.
 		</p>
 		<section class="proof" data-side="Pf." data-qed>
-			TODO
+			<p>
+				Choose <math>
+					<mi mathvariant=normal>id</mi><mo>(</mo><mi>b</mi><mo>)</mo>
+				</math> to be larger than all identifiers
+				in <math><mi>B</mi></math>.
+			</p>
+			<p>
+				Choose <math>
+					<mi mathvariant=normal>quorum</mi><mo>(</mo><mi>b</mi><mo>)</mo>
+				</math> to be any quorum
+				<math><mi>q</mi> <mo>&isin;</mo> <mi>Q</mi></math>
+			</p>
+			<p>
+				Choose <math>
+					<mi mathvariant=normal>endorse</mi><mo>(</mo><mi>b</mi><mo>)</mo>
+					<mo>=</mo> <mi>P</mi>
+				</math>
+			</p>
+			<p>
+				Choose <math>
+					<mi mathvariant=normal>value</mi><mo>(</mo><mi>b</mi><mo>)</mo>
+					<mo>=</mo>
+					<mi mathvariant=normal>value</mi><mo>(</mo>
+					<mi mathvariant=normal>Pre</mi><mo>(</mo><mi>B</mi><mo>)</mo>
+					<mo>)</mo>
+				</math>
+			</p>
+			<p>
+				Then, immediately <math><mi>b</mi></math> is successful and
+				<math><mi>B</mi> <mo>&cup;</mo> <mrow><mo>{</mo><mi>b</mi><mo>}</mo></mrow></math>
+				satisfies property (1). By construction of
+				<math><mi mathvariant=normal>value</mi><mo>(</mo><mi>b</mi><mo>)</mo></math>,
+				it also immediately satisfies property (2).
+			</p>
 		</section>
+
+		<h3>The Paxos Protocol in Detail</h3>
+		<p>
+			The above <em>adequacy</em> property can be used to induce a
+			protocol that solves the consensus problem for a set of peers
+			<math><mi>P</mi></math> with associated set of quorums
+			<math><mi>Q</mi></math> and values <math><mi>V</mi></math>.
+		</p>
+		<p>
+			Because ballot identifiers must be unique, the peers devise a scheme
+			to partition ballot identifiers between them, with each peer
+			<math><msub><mi>p</mi><mi>k</mi></msub></math> having an
+			inexhaustable set of identifiers
+			<math><msub><mi>N</mi><mi>k</mi></msub></math>.
+		</p>
+		<section class=computers>
+			<p>
+				A simple partitioning scheme among <var>N</var> peers assigns to
+				peer <var>i</var> all the ballot identifiers that are
+				congruent to <var>i</var> mod <var>N</var>.
+			</p>
+		</section>
+
+		<p>
+			Peer <math><msub><mi>p</mi><mi>k</mi></msub></math> wishing to
+			start consensus will choose a ballot number from its set
+			<math><msub><mi>N</mi><mi>k</mi></msub></math> a ballot identifier,
+			denoted <var>n</var>. As indicated in the progress lemma, the number
+			should be larger than all other ballot identifiers that the peer
+			has been communicated.
+		</p>
+		<p>
+			First, it will contact all of the peers (including itself) a
+			"proposal" message that includes the chosen ballot identifier
+			<var>n</var>.
+			<math>
+				<mi mathvariant="small-caps">Propose</mi><mo>(</mo><!--
+				--><mi>n</mi><!--
+				--><mo>)</mo>
+			</math> message.
+		</p>
+		<p>
+			At this point, the recipient of a
+			<math><mi mathvariant="small-caps">Propose</mi></math> message
+			must consider property (2). If the recipient
+			<math><msub><mi>p</mi><mi>i</mi></msub></math> has most recently
+			<em>endorsed</em> a ballot with identifier
+			<math><msub><mi>n</mi><mi>i</mi></msub></math> and value
+			<math><msub><mi>v</mi><mi>i</mi></msub></math>, it <em>may</em>
+			be the endorsement that binds the value of ballot with identifier
+			<math><mi>n</mi></math> to satisfy property (2).
+		</p>
+		<p>
+			Let <math><mi>S</mi></math> be the set of peers from which
+			<math><msub><mi>p</mi><mi>k</mi></msub></math> received a response.
+			From that set, a quorum
+			<math><mi>q</mi> <mo>&isin;</mo> <mi>Q</mi></math> can be chosen,
+			<math><mi>q</mi> <mo>&subset;</mo> <mi>S</mi></math>.
+		</p>
+		<p>
+			A peer <math><msub><mi>p</mi><mi>k</mi></msub></math> initially has
+			associated value <math><msub><mi>v</mi><mi>k</mi></msub></math> that
+			it will "nominate" to be the chosen value. After it has a quorum
+			<math><mi>q</mi></math>,
+			to each member of that quorum it sends a
+		</p>
 	</body>
 </html>
