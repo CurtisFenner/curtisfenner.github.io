@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+	<meta charset="utf-8">
+	<title>Paxos: a protocol for strongly consistent distributed systems</title>
+	<style>
+body {
+	background: #E0E8EF;
+	color: #000;
+	max-width: 9.5in;
+	margin: auto;
+
+	text-align: justify;
+	hyphens: auto;
+	font-size: 18px;
+}
+
+article {
+	padding: 0.5in;
+	margin: 0;
+}
+
+* {
+	scroll-behavior: smooth;
+}
+
+.subheading {
+	display: block;
+	font-style: italic;
+	font-weight: normal;
+	text-align: center;
+	font-size: 18px;
+}
+
+h1, h2, h3 {
+	text-align: center;
+}
+
+dfn {
+	display: inline-block;
+	font-weight: bold;
+	font-style: inherit;
+	background: #A0B0BF;
+	padding: 0.2em;
+	border-radius: 0.15em;
+	margin: -0.2em;
+}
+
+pre dfn {
+	background: transparent;
+}
+
+dfn:target {
+	background: #4588C6;
+	box-shadow: 0 0 1.5em 0.25em #A0B0BF;
+	position: relative;
+	z-index: 1;
+}
+
+:target {
+	box-shadow: 0 0 1.5em 0.25em #A0B0BF;
+	border-radius: 0.3em;
+}
+
+.theorem {
+	background: #C7DBED;
+	padding: 2em;
+}
+
+.subproof {
+	border-left: 0.5em solid #82B0D8;
+	padding-left: 0.5em;
+}
+
+section .lead {
+	font-style: italic;
+}
+
+span.label {
+	float: left;
+	font-weight: bold;
+	background: #82B0D8;
+	padding: 0.25em;
+}
+
+section > span.label {
+	margin-left: -2em;
+	padding-left: 2em;
+	padding-right: 0.75em;
+	margin-right: 0.75em;
+}
+
+.subproof > .label {
+	margin-left: -1em;
+	padding-left: 1em;
+}
+
+figure {
+	margin: 0em;
+	padding: 0em;
+	border: 1px dotted #A0B0BF;
+}
+
+.padding {
+	padding: 1em;
+}
+
+figure pre {
+	background: #234;
+	color: #DDD;
+	padding: 1em;
+	margin: 0;
+}
+
+pre .comment {
+	color: #6A8;
+}
+
+a.source, math a {
+	color: inherit;
+	text-decoration: underline #999;
+}
+
+math.dfn, math .dfn {
+	font-weight: bold;
+}
+
+/******************************************************************************/
+
+math {
+	font-family: "CMU Serif", Cambria, serif;
+	display: inline-block;
+}
+
+math.center {
+	display: block;
+	margin: 0.6em;
+	text-align: center;
+}
+
+mi {
+	font-style: italic;
+}
+
+msub > :last-child {
+	vertical-align: baseline;
+	font-size: smaller;
+	position: relative;
+	padding-left: 0.05em;
+	top: 0.4em;
+}
+
+mi[mathvariant="small-caps"] {
+	font-style: normal;
+	font-stretch: condensed;
+	letter-spacing: -1px;
+	font-variant: small-caps;
+}
+
+mi[mathvariant="normal"] {
+	font-style: normal;
+}
+
+munder {
+	vertical-align: middle;
+	display: inline-flex;
+	flex-direction: column;
+}
+
+munder > :last-child {
+	font-size: smaller;
+}
+
+/******************************************************************************/
+
+
+	</style>
+</head>
+<body>
+<article>
+	<h1>
+		Paxos
+		<span class="subheading">
+			A protocol for strongly consistent distributed systems
+		</span>
+	</h1>
+	<p>
+		<dfn>Paxos</dfn> is a protocol designed by Leslie Lamport that solves
+		the <i>consensus problem</i> in the face of numerous network failures.
+	</p>
+	<p>
+		The <dfn id="dfn-consensus-problem">consensus problem</dfn>
+		tasks a cluster of servers with
+		choosing a <em>single</em> value from a collection of possibilities.
+	</p>
+	<p>
+		Each server is booted up knowing
+	</p>
+	<ul>
+		<li>a value, which is one of the possibilities
+		<li>a way to send to and receive messages from all of its peer servers
+	</ul>
+	<p>
+		After they communicate, we will ask the servers what value they
+		<dfn id="dfn-decided">decided</dfn>. We require two things of this
+		decision:
+	</p>
+	<ul>
+		<li>
+			The decided value was one of the possibile values assigned to
+			(at least) one server.
+		</li>
+		<li>
+			Any two servers response with the <em>same</em> decided value
+			(i.e., the servers have <em>reached a consensus</em>).
+		</li>
+	</ul>
+	<p>
+		Because some of the servers may have been "left out" of the consensus
+		process (either because they were unavailable or not needed), some may
+		not (yet) know what value was decided.
+	</p>
+	<ul>
+		<li>
+			Any server may response <samp>I don't know</samp> when asked what
+			value was decided.
+		</li>
+		<li>
+			<em>Eventually</em>, we want every functioning server to respond
+			with a decided value.
+		</li>
+	</ul>
+
+	<h2>Forming Consensus: Majorities</h2>
+	<p>
+		No "minority" group of servers can be allowed to come to consensus
+		entirely on its own.
+	</p>
+	<p>
+		For example, no three of seven servers can form a consensus, because
+		that would allow disjoint groups to decide different values
+		independently.
+	</p>
+	<figure class="padding">
+		1 2 3 | 4 5 6 | 7
+		<figcaption>
+			Servers 1, 2, 3 chose value &alpha;
+			while servers 4, 5, 6 chose value &beta;.
+		</figcaption>
+	</figure>
+	<p>
+		Paxos is built around this idea. The simplest variation of
+		Paxos uses <dfn id="dfn-majority">majorities</dfn>:
+		two sets containing a majority of
+		servers necessarily have a server in common.
+		Everywhere that "majority" is used, I mean a
+		<em>strict majority</em>: strictly more than half of the possible
+		members, such as 6 of 10 or 7 of 13.
+		The overlapping-nature of majorities means that if we can
+		communicate with <em>any</em> majority of servers, we can gain "enough"
+		of an understanding of the <em>entire</em> system.
+	</p>
+
+	<h2 id="h-paxos-protocol">Paxos: The protocol</h2>
+	<p>
+		Paxos, in its barest form, is actually quite simple.
+	</p>
+	<p>
+		Progress is made by servers starting
+		<em>attempts to drive consensus</em>.
+		Each attempt follows three steps:
+	</p>
+	<figure>
+<pre>Attempt Consensus {
+	<span class="comment">// 1: Choose attempt number.</span>
+	var n := chooseAttemptNumber();
+
+	<span class="comment">// 2: Send `Promise` RPCs.</span>
+	var promises := empty set;
+	for each server {
+		var reply := send Promise(n) to server;
+		promises.add(reply);
+	}
+	if !(enough `promises` are successful) {
+		abort;
+	}
+
+	<span class="comment">// 3: Send `Accept` RPCs.</span>
+	var value := value of reply with biggest accept number;
+		or else seedValue() if biggest accept number is -1;
+	var accepts := empty set;
+	for each server {
+		var reply Boolean := send Accept(n, value) to server;
+		accepts.add(reply);
+	}
+
+	if enough `accepts` are successful {
+		decided(value);
+	}
+}</pre>
+	</figure>
+	<p>
+		The RPC handlers for Promise and Accept are also very simple:
+	</p>
+	<figure>
+<pre><span class="comment">// The most recent <em>promise</em> I made.
+// I will not make promises or accept values for smaller attempt numbers.</span>
+var lastPromiseMade := 0;
+
+<span class="comment">// The most recent attempt I <em>accepted</em>.</span>
+var lastAcceptNumber := -1;
+var lastAcceptValue := "?";
+
+rpc Promise(n) {
+	if n &le; lastPromiseMade {
+		<span class="comment">// I've already promised to not accept `n`s this low.</span>
+		reply failure;
+	} else {
+		<span class="comment">// I'm promising to not accept `n`s lower than this.</span>
+		lastPromiseMade := n;
+
+		reply ok(lastAcceptNumber, lastAcceptValue);
+	}
+}
+
+rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
+	if n &lt; lastPromiseMade {
+		<span class="comment">// I've already promised not to accept `n`s this low.</span>
+		reply reject;
+	} else {
+		<span class="comment">// Also make a promise.</span>
+		lastPromiseMade := n;
+
+		<span class="comment">// Accept this value.</span>
+		lastAcceptNumber := n;
+		lastAcceptValue := value;
+		reply ok;
+	}
+}
+</pre>
+	</figure>
+	<p>
+		In short, consensus attempts look like this:
+	</p>
+	<ol>
+		<li>
+			Select an attempt number. This number must be globally unique
+			to this attempt.
+		</li>
+		<li>
+			Ask for <em>promises</em> from all servers. If enough don't reply
+			positively, give up. Using the replies, select a value for this
+			attempt.
+		</li>
+		<li>
+			Ask for <em>acceptance</em> from all servers. If enough don't reply
+			positively, give up.
+		</li>
+		<li>
+			The value selected in (2) is the <em>decided</em> vlaue.
+		</li>
+	</ol>
+	<p>
+		There are a few undefined procedures in the above pseudocode.
+	</p>
+	<ul>
+		<li>
+			<code>chooseAttemptNumber()</code>: Choose a new attempt number.
+			We require the attempt numbers to be globally unique, but any
+			scheme to accomplish that will still be correct. A simple way to
+			ensure globally unique attempt numbers is to use an increasing
+			counter paired with the machine's ID.
+		</li>
+		<li>
+			<code>seedValue()</code>: Retrieve the initial value assigned to
+			this machine, which is one of the possible values to be selected
+			in consensus.
+		</li>
+		<li>
+			What constitutes <code>enough</code> promises or accepts to be move
+			forward:
+			What exactly
+			is needed here will be detailed below through
+			<em>proposal schemes</em>.
+		</li>
+	</ul>
+	<p>
+		So there's the basic Paxos protocol! It can be implemented in about 100
+		lines of real code.
+	</p>
+	<p>
+		The Paxos protocol is designed so that it is <em>safe</em> to drop any
+		reply or request; if messages are lost, it might take longer to achieve
+		consensus, but you will still be <em>guaranteed</em> to decide on
+		exactly one value across the system.
+	</p>
+
+	<h2>Proving Paxos Correct</h2>
+	<p>
+		Distributed systems can be difficult to prove correct, because not only
+		are they highly <em>concurrent</em>, they also need to handle
+		<em>failures</em> in any number of places.
+	</p>
+	<p>
+		First, an abstract lemma will be proven. It turns out that the lemma
+		can be mapped onto the Paxos protocol in a very straightforward way.
+	</p>
+
+	<p>
+		An <dfn id="dfn-attempt">attempt</dfn>
+		<math>
+			<mi>&alpha;</mi>
+			<mo>=</mo>
+			<mo>(</mo><mi>n</mi><mo>,</mo> <mi>v</mi><mo>,</mo> <mi>P</mi><mo>,</mo> <mi>A</mi><mo>)</mo>
+		</math>
+		is an abstract tuple of four pieces:
+	</p>
+	<ul>
+		<li>
+			An <dfn id="dfn-attempt-number">attempt number</dfn>
+			<math><mi>n</mi></math>, also denoted <math><mo>#(</mo><mi>&alpha;</mi><mo>)</mo></math>.
+		<li>
+			An <dfn id="dfn-attempt-value">attempted value</dfn>
+			<math><mi>v</mi></math>, denoted <math><mo>value(</mo><mi>&alpha;</mi><mo>)</mo></math>.
+		<li>
+			A set of <dfn id="dfn-promising-set">promising servers set</dfn>,
+			<math><mi>P</mi></math>.
+		<li>
+			A set of <dfn id="dfn-accepting-set">accepting servers set</dfn>,
+			<math><mi>A</mi></math>.
+	</ul>
+	<p>
+		We will design a <dfn id="dfn-proposal-scheme">proposal scheme</dfn>
+		on a collection of servers
+		<math><mi>S</mi></math> which determines what
+		constitutes "enough" replies in the Paxos protocol to advance
+		(either to move on to the Accept phase or to consider the value
+		decided). In particular, a proposal scheme defines the predicates
+		<dfn id="dfn-quorum-set">quorum</dfn> and
+		<dfn id="dfn-successful-predicate">successful</dfn>
+		on sets of servers.
+	</p>
+	<p>
+		An attempt has a <dfn id="dfn-quorum-attempt">quorum</dfn> if its
+		<a href="#dfn-promising-set" class="source">promising set</a> is a
+		<a href="#dfn-quorum-set" class="source">quorum set</a>.
+	</p>
+	<p>
+		An attempt is <dfn id="dfn-successful-attempt">successful</dfn> if its
+		<a href="#dfn-accepting-set" class="source">accepting set</a> is a
+		<a href="#dfn-successful-predicate" class="source">successful set</a>.
+	</p>
+
+	<h3>The Majority Scheme for Consistency</h3>
+	<p>
+		A set <math><mi>X</mi></math> of attempts is
+		<dfn id="dfn-consistent-set">consistent</dfn> when
+		any two <a href="#dfn-successful-attempt" class="source">successful attempts</a>
+		in <math><mi>X</mi></math> have the same
+		<a href="#dfn-attempt-value" class="source">value</a>.
+		This models the goal of solving the
+		<a href="#dfn-consensus-problem" class="source">consensus problem</a>.
+	<p>
+		The simplest <a href="#dfn-proposal-scheme" class="source">proposal scheme</a> that works is the
+		<dfn id="dfn-majority-scheme">majority scheme</dfn>.
+		In this scheme,
+		<math class=center>
+			<mrow>
+				<mi mathvariant=normal>quorum</mi><mo>(</mo><mi>X</mi><mo>)</mo>
+			</mrow>
+			<mo>&equiv;</mo>
+			<mrow>
+				<mi mathvariant=normal>successful</mi><mo>(</mo><mi>X</mi><mo>)</mo>
+			</mrow>
+			<mo>&equiv;</mo>
+			<mrow>
+				<mrow>
+					<mo>|</mo><mi>X</mi><mo>|</mo>
+				</mrow>
+				<mo>&gt;</mo>
+				<mrow>
+					<mo>|</mo><mi>S</mi><mo>|</mo> <mo>/</mo> <mn>2</mn>
+				</mrow>
+			</mrow>
+		</math>
+
+	<h3>An Adequate Condition</h3>
+	<p>
+		A finite set <math><mi>X</mi></math> of attempts is called
+		<dfn id="dfn-adequate-set">adequate</dfn> within the majority scheme when the
+		following conditions hold:
+	</p>
+	<ol type="i">
+		<li id="dfn-adequacy-i">
+			Each <a href="#dfn-attempt" class="source">attempt</a>
+			in <math><mi>X</mi></math>
+			has a distinct
+			<a href="#dfn-attempt-number" class="source">attempt number</a>.
+		<li id="dfn-adequacy-ii">
+			Every attempt in <math><mi>X</mi></math>
+			has a <a href="#dfn-quorum-attempt" class="source">quorum</a>
+			(in the majority scheme, this means that the promising set of
+			<math><mi>x</mi></math> is a majority of the servers).
+		<li id="dfn-adequacy-iii">
+			For each attempt <math><mi>x</mi></math> in <math><mi>X</mi></math>,
+			let <math><msub><mi>x</mi><mo>0</mo></msub></math> be the 
+			successful attempt with the largest attempt number less than
+			<math><mo>#(</mo><mi>x</mi><mo>)</mo></math>. Call such an attempt
+			the <dfn id="dfn-predecessor">predecessor</dfn> of
+			<math><mi>x</mi></math> in <math><mi>X</mi></math>.
+			<br>
+			Then, <math><mo>value(</mo><mi>x</mi><mo>)</mo></math>
+			must be the same as
+			<math><mo>value(</mo><msub><mi>x</mi><mn>0</mn></msub><mo>)</mo></math>.
+			<br>
+			If no such predecessor
+			<math><msub><mi>x</mi><mn>0</mn></msub></math> exists,
+			there is no restriction on
+			<math><mo>value(</mo><mi>x</mi><mo>)</mo></math>.
+	</ol>
+	<p>
+		It turns out that the
+		<a href="#dfn-adequate-set" class="source">above adequacy condition</a>
+		actually ensures that the set is
+		<a href="#dfn-consistent-set" class="source">consistent</a>!
+	<section class=theorem>
+		<span class="label">Theorem.</span>
+			An <i>adequate</i> set of attempts
+			is a <i>consistent</i> set.
+		<p>
+			<span class="lead">Proof.</span> Let <math><mi>A</mi></math> be an
+			adequate set of <math><mi>N</mi></math> attempts.
+			It will be shown that <math><mi>A</mi></math> is a
+			consistent set by induction.
+		<p>
+			Define <math><msub><mi>a</mi><mi>i</mi></msub></math> to be the
+			attempt in <math><mi>A</mi></math> with the
+			<math><mi>i</mi></math><sup>th</sup> smallest attempt number.
+			This is well-defined by the uniqueness of attempt numbers,
+			<a href="#dfn-adequacy-i" class="source">adequacy condition (i)</a>.
+			
+			Define <math><msub><mi>A</mi><mi>i</mi></msub></math> to be the set
+			<math>
+				<msub><mi>A</mi><mi>i</mi></msub>
+				<mo>=</mo>
+				<mrow>
+					<mo>{</mo><msub><mi>a</mi><mn>1</mn></msub><mo>, ..., </mo>
+						<msub><mi>a</mi><mi>N</mi></msub><mo>}</mo>
+				</mrow>
+			</math>
+			of the <math><mi>i</mi></math> attempts in <math><mi>A</mi></math>
+			with the smallest attempt numbers.
+		<p>
+			Then <math>
+				<msub><mi>A</mi><mn>1</mn></msub>
+				<mo>=</mo>
+				<mrow>
+					<mo>{</mo><msub><mi>a</mi><mn>1</mn></msub><mo>}</mo>
+				</mrow>
+			</math> is trivially a
+			consistent set, as it has only one attempt.
+		<p>
+			For induction, consider the set
+			<math><msub><mi>A</mi><mi>k</mi></msub></math>
+			for <math><mi>k</mi> <mo>&ge;</mo> <mn>2</mn></math>,
+			and assume that
+			<math>
+				<msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub>
+			</math>
+			is a consistent set.
+		<p>
+			For <math><msub><mi>A</mi><mi>k</mi></msub></math> to be a
+			<a href="#dfn-consistent-set" class="source">consistent set</a> means that
+
+			<math class="center">
+				<mo>&forall;</mo><mi>b</mi><mo>,</mo> <mi>c</mi>
+				<mo>&in;</mo>
+				<msub><mi>A</mi><mi>k</mi></msub><mo>,</mo>
+				<mrow>
+					<mrow>
+						<mrow><mo><a href="#dfn-successful-attempt">successful(</a></mo><mi>b</mi><mo>)</mo></mrow>
+						<mo>and</mo>
+						<mrow><mo>successful(</mo><mi>c</mi><mo>)</mo></mrow>
+					</mrow>
+					<mo>&xrArr;</mo>
+					<mrow>
+						<mo><a href="#dfn-attempt-value">value(</a></mo><mi>b</mi><mo>)</mo>
+						<mo>=</mo>
+						<mo>value(</mo><mi>c</mi><mo>)</mo>
+					</mrow>
+				</mrow>
+			</math>
+		<p>
+			The induction hypothesis tells us that
+			<math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
+			is a consistent set. Since
+			<math>
+				<msub><mi>A</mi><mi>k</mi></msub>
+				<mo>=</mo>
+				<msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub>
+				<mo>&cup;</mo>
+				<mrow>
+					<mo>{</mo><msub><mi>a</mi><mi>k</mi></msub><mo>}</mo>
+				</mrow>
+			</math>,
+			the above can be simplified to
+			<math class="center">
+				<mo>&forall;</mo><mi>b</mi>
+				<mo>&in;</mo>
+				<msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub><mo>,</mo>
+				<mrow>
+					<mrow>
+						<mrow><mo>successful(</mo><mi>b</mi><mo>)</mo></mrow>
+						<mo>and</mo>
+						<mrow><mo>successful(</mo><msub><mi>a</mi><mi>k</mi></msub><mo>)</mo></mrow>
+					</mrow>
+					<mo>&xrArr;</mo>
+					<mrow>
+						<mo>value(</mo><mi>b</mi><mo>)</mo>
+						<mo>=</mo>
+						<mo>value(</mo><msub><mi>a</mi><mi>k</mi></msub><mo>)</mo>
+					</mrow>
+				</mrow>
+			</math>
+		<p>
+			Define <math><msub><mi>b</mi><mi>k</mi></msub></math> to be the
+			successful attempt in <math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
+			with the largest <a href="#dfn-attempt-number" class="source">attempt number</a>.
+			If there is no such attempt, then <math><msub><mi>A</mi><mi>k</mi></msub></math>
+			is trivially consistent. If there is,
+			<math><msub><mi>b</mi><mi>k</mi></msub></math> is well-defined
+			because of the uniqueness of attempt-numbers from
+			<a href="#dfn-adequacy-i" class="source">adequacy property (i)</a>.
+		<p>
+			Then <math><msub><mi>b</mi><mi>k</mi></msub></math> is the
+			successful attempt with the largest attempt number less than
+			<math><mo>#(</mo><msub><mi>a</mi><mi>k</mi></msub><mo>)</mo></math>
+			in <math><msub><mi>A</mi><mi>k</mi></msub></math>.
+			Thus, <a href="#dfn-adequacy-iii" class="source">adequacy property (iii)</a> applies,
+			and
+			<math>
+				<mo>value(</mo><msub><mi>b</mi><mi>k</mi></msub><mo>)</mo>
+				<mo>=</mo>
+				<mo>value(</mo><msub><mi>a</mi><mi>k</mi></msub><mo>)</mo>
+			</math>.
+		<p>
+			Since <math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
+			is a consistent set, all of its successful attempts have the same value.
+			Thus, showing that <math><msub><mi>a</mi><mi>k</mi></msub></math>
+			matches one of them shows that
+			<math><msub><mi>A</mi><mi>k</mi></msub></math> is a consistent
+			set.
+		<p>
+			Thus, by induction on <math><mi>k</mi></math>, the size of the set,
+			this shows that <math><mi>A</mi></math> is a consistent set.
+	</section>
+
+	<h3>An Adequate Protocol</h3>
+	<p>
+		The above theorem can be applied to prove that the
+		<a href="#h-paxos-protocol" class="source">Paxos protocol</a>
+		is correct. The above theorem is very abstract;
+		<!-- i.e., hard to understand-->
+		while our protocol doesn't directly construct
+		abstract "<a href="#dfn-attempt" class="source">attempt</a>"
+		tuples,
+		we can model the execution of the protocol with them as follows:
+	<p>
+		Let <math><mi>S</mi></math> be a set of servers executing the 
+		Paxos protocol.
+	<p>
+		Construct the set of
+		<a href="#dfn-attempt" class="source">attempts</a> as follows:
+		Let <math><mi>A</mi></math> be the set of attempts that have passed the
+		first stage of a consensus attempt; each consensus attempt generates a
+		tuple as follows:
+	<ul>
+		<li>
+			The attempt number <math><mi>n</mi></math> is the attempt
+			number chosen in step (1).
+		<li>
+			The set of promising servers is the set from which a positive
+			Promise reply was received.
+			(Those which were <em>sent</em> but lost
+			or delayed before moving onto step (3) are <em>not</em>
+			included)
+		<li>
+			The value <math><mi>v</mi></math> is the value selected at the end
+			of  step (2).
+		<li>
+			The set of accepting servers is the set of servers which have
+			sent a positive reply from the Accept RPC. (Those replies which
+			did not reach the server driving consensus <em>are</em>
+			included).
+	</ul>
+	<p>
+		By construction, all attempts in <math><mi>A</mi></math> have a quorum.
+	<p>
+		And, in fact, <math><mi>A</mi></math> is an
+		<a href="#dfn-adequate-set" class="source">adequate set</a>!
+
+	<section class="theorem">
+		<span class="label">Theorem.</span>
+		<span class="block">
+			The set <math><mi>A</mi></math> constructed above
+			in the <a href="#dfn-majority-scheme" class="source">majority scheme</a>
+			with a set <math><mi>S</mi></math> of servers
+			is an <a href="#dfn-adequate-set" class="source">adequate set</a>.
+		</span>
+		<p>
+			<span class="lead">Proof.</span>
+			<a href="#dfn-adequacy-i" class="source">Adequacy condition (i)</a>
+			holds because
+			<a href="#dfn-attempt-number" class="source">attempt numbers</a>
+			are generated in a globally unique way.
+			<a href="#dfn-adequacy-ii" class="source">Adequacy condition (ii)</a>
+			holds because each attempt only moves onto step (3) after receiving
+			a <a href="#dfn-quorum-attempt" class="source">quorum</a>
+			of promises.
+			<a href="#dfn-adequacy-iii" class="source">Adequacy condition (iii)</a>
+			will be shown inductively, inducting on the possible (finite)
+			traces of executing Paxos.
+		<p>
+			First, the initial state is an empty set of attempts,
+			which trivially satisfies condition (iii).
+			Thus, the initial state of the system is adequate.
+		<p>
+			Now, consider the events that affect the abstract set
+			<math><mi>A</mi></math> of attempts:
+		<ol type="a">
+			<li>
+				An attempt moving to the Accept phase (3) after receiving a
+				<a href="#dfn-quorum-set" class="source">quorum of promises</a>.
+				This introduces an additional tuple to the set
+				<math><mi>A</mi></math>.
+			<li>
+				A server responding positively to an Accept RPC.
+				This grows the
+				<a href="#dfn-accepting-set" class="source">accepting servers set</a>
+				of one attempt.
+			</li>
+		</ol>
+		<div class="subproof">
+			<span class="label">a. Moving onto Accept phase.</span><br>
+			<p>
+				In this case, an adequate set <math><mi>A</mi></math>
+				is transformed into
+				<math class="center">
+					<mi>A'</mi>
+					<mo>=</mo>
+					<mrow>
+						<mi>A</mi> <mo>&cup;</mo> <mo>{</mo><mi>x</mi><mo>}</mo>
+					</mrow>
+					<mo>=</mo>
+					<mrow>
+						<mi>A</mi> <mo>&cup;</mo>
+						<mrow>
+						<mo>{</mo><mo>(</mo><mi>n</mi><mo>,</mo> <mi>v</mi><mo>,</mo>
+							<mi>s</mi><mo>,</mo>
+							<mi>&empty;</mi><mo>)</mo><mo>}</mo>
+						</mrow>
+					</mrow>
+				</math>
+				Because the new attempt <math><mi>x</mi></math> initially has no
+				accepting servers
+				(which is not a
+				<a href="#dfn-majority-scheme" class="source">majority</a>,
+				and so not a successful set), it is not initially
+				<a href="#dfn-successful-attempt" class="source">successful</a>.
+				Thus it does not impose any additional constraint on the
+				<a href="#dfn-attempt-value" class="source">values</a>
+				of attempts already in <math><mi>A</mi></math>.
+				However,
+				<a href="#dfn-adequacy-iii" class="source">adequacy condition (iii)</a>
+				still requires <math><mi>x</mi></math>
+				must reflect the value selected by a prior
+				successful attempt.
+			<p>
+				Let <math><mi>P</mi></math> be the set of
+				attempts in <math><mi>A</mi></math> that are successful with
+				attempt numbers smaller than <math><mi>n</mi></math>.
+				If <math><mi>P</mi></math> is empty, then
+				<math><mi>A'</mi></math> is an adequate set.
+			<p>
+				Otherwise, there is a successful attempt
+				<math>
+					<mi>p</mi>
+					<mo>=</mo>
+					<mo>(</mo><msub><mi>n</mi><mn>0</mn></msub><mo>,</mo>
+					<msub><mi>v</mi><mn>0</mn></msub><mo>,</mo>
+					<msub><mi>s</mi><mn>0</mn></msub><mo>,</mo>
+					<msub><mi>t</mi><mn>0</mn></msub><mo>)</mo>
+				</math>
+				in <math><mi>P</mi></math>
+				with a largest attempt number.
+			<p>
+				By the construction of <math><mi>p</mi></math>, there is no
+				other successful attempt in <math><mi>A</mi></math> with a
+				proposal number between
+				<math><mo>#(</mo><mi>p</mi><mo>)</mo></math>
+				and
+				<math><mo>#(</mo><mi>x</mi><mo>)</mo></math>. 
+				As a result, because <math><mi>A</mi></math> is an adequate set,
+				every proposal in <math><mi>A</mi></math> with a
+				proposal number in that range 
+				<math>
+					<mo>(</mo><mo>#(</mo><mi>p</mi><mo>)</mo><mo>,</mo> <mo>#(</mo><mi>x</mi><mo>)</mo><mo>)</mo>
+				</math>
+				must have the value <math><msub><mi>v</mi><mn>0</mn></msub></math>.
+			<p>
+				Because <math><mi>x</mi></math> has a quorum in the
+				<a href="#dfn-majority-scheme" class="source">majority scheme</a>,
+				a server that promised to <math><mi>x</mi></math> also accepted
+				the successful proposal <math><mi>p</mi></math>. Thus, at the
+				time of positively Promising, that server's
+				<code>lastAcceptNumber</code> was necessarily at least
+				<math><mo>#(</mo>p<mo>)</mo></math>
+				and less than
+				<math><mo>#(</mo><mi>x</mi><mo>)</mo></math>. As a result, the
+				reply with the biggest proposal number necessarily had the value
+				<math><msub><mi>v</mi><mn>0</mn></msub></math>.
+			<p>
+				Thus, <math>
+					<mo>value(</mo><mi>x</mi><mo>)</mo>
+					<mo>=</mo>
+					<mo>value(</mo><mi>p</mi><mo>)</mo>
+				</math>, so <math><mi>A'</mi></math> is adequate.
+		</div>
+		<div class="subproof">
+			<span class="label">b. Responding positively to an Accept RPC.</span><br>
+			<p>
+				In this case, an adequate set
+				<math>
+					<mi>A</mi>
+					<mo>=</mo>
+					<mrow>
+						<mi>X</mi>
+						<mo>&cup;</mo>
+						<mo>{</mo><mi>x</mi><mo>}</mo>
+					</mrow>
+					<mo>=</mo>
+					<mrow>
+						<mi>X</mi>
+						<mo>&cup;</mo>
+						<mrow>
+							<mo>{(</mo><mi>n</mi><mo>,</mo> 
+								<mi>v</mi><mo>,</mo> 
+								<mi>s</mi><mo>,</mo> 
+								<mi>a</mi><mo>)}</mo>
+						</mrow>
+					</mrow>
+				</math>
+				is
+				transformed into
+				<math class="center">
+					<mi>A'</mi>
+					<mo>=</mo>
+					<mrow>
+						<mi>X</mi>
+						<mo>&cup;</mo>
+						<mo>{</mo><mi>x'</mi><mo>}</mo>
+					<mrow>
+					<mo>=</mo>
+					<mrow>
+						<mi>X</mi>
+						<mo>&cup;</mo>
+						<mrow>
+							<mo>{(</mo><mi>n</mi><mo>,</mo> 
+								<mi>v</mi><mo>,</mo> 
+								<mi>s</mi><mo>,</mo> 
+								<mi>a</mi> <mo>&cup;</mo> <mo>{</mo><mi>p</mi><mo>}</mo><mo>)}</mo>
+						</mrow>
+					</mrow>
+				</math>
+			<p>
+				immediately after <math><mi>p</mi></math> responds positively in
+				its <a href="#dfn-accept-rpc" class="source">Accept</a> RPC handler.
+			<p>
+				The new set <math><mi>A'</mi></math> could only not satisfy
+				adequacy property (iii) if the <math><mi>x'</mi></math> is
+				successful but <math><mi>x</mi></math> is not. In that case,
+				there is a new constraint that any proposals in
+				<math><mi>A</mi></math> with a proposal number higher than
+				<math><mo>#(</mo><mi>x'</mi><mo>)</mo></math> must have the same
+				value as <math><mi>x'</mi></math>.
+		</div>
+
+		<!--
+		<p>
+			Then we must show that adequacy property (2) holds.
+			Let <math>a</math> be an in
+			<math><mi>A</mi></math> such that <math>quorum(a)</math>.
+			Let <math><mi>l</mi></math> be an attempt in <math><mi>A</mi></math>
+			such that
+			<ul>
+				<li><math>#(<mi>l</mi>) &lt; #(<mi>a</mi>)</math>
+				<li><math>successful(<mi>l</mi>)</math>
+				<li>
+					<math>#(<mi>l</mi>)</math> is maximal:
+					No other successful attempt has a proposal number between
+					<math>#(<mi>l</mi>)</math> and <math>#(<mi>a</mi>)</math>. 
+				</li>
+			</ul>
+		<p>
+			If there is no such <math><mi>l</mi></math>, <math><mi>a</mi></math>
+			is unrestricted, and the adequacy property holds for
+			<math><mi>a</mi></math>.
+		</p>
+		<p>
+			Since <math>quorum(<mi>a</mi>)</math>, the set of promisers of
+			<math><mi>a</mi></math> constitutes a majority of members of
+			<math><mi>S</mi></math>.
+		</p>
+		<p>
+			Since <math>successful(<mi>l</mi>)</math>, the set of acceptors of
+			<math><mi>l</mi></math> also constitutes a majority of members of
+			<math><mi>S</mi></math>.
+		</p>
+		<p>
+			By the property that any two majority sets overlap, 
+			the acceptors of <math><mi>l</mi></math> and the promisers of
+			<math><mi>a</mi></math> have a member in common.
+		</p>
+		<p>
+			That server in common necessarily replied with
+			<math><mi>l</mi></math> in its Promise RPC:
+			<ul>
+				<li>
+					We know it replied positively to a Promise for
+					<math><mi></mi></math>,
+					meaning at the time of its reply,
+					<code>lastPromiseMade</code> &le; <math><mi>a</mi></math>
+				</li>
+				<li>
+					We know it accepted <math><mi>l</mi></math>.
+					That could not
+					have happend <em>after</em> promising for
+					<math><mi>a</mi></math> because
+					<math>#(<mi>l</mi>) <mo>&lt;</mo> #(<mi>a</mi>)</math>.
+				</li>
+				<li>
+					Thus, immediately before replying positively to a promise
+					for <math><mi>a</mi></math>, 
+					<code>lastAcceptNumber</code> &ge;
+					<math>#(<mi>l</mi>)</math>.
+				</li>
+				<li>
+					Tch, fix this. Actually, there could be an intervening
+					other (non successful) proposal in here.
+					What we need is for <math><mi>a</mi></math> to be the
+					<em>earliest</em> counterexample; that would prevent this
+					(because all in between would agree in value with
+					<math><mi>l</mi></math>
+					because of the adequacy property, inductively)
+				</li>
+			</ul>
+		</p>
+		-->
+	</section>
+</article>
+<aside>
+</aside>
+</body>
