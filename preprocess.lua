@@ -169,6 +169,7 @@ function process(path)
 	local out = io.open(output, "wb")
 	if not out then
 		print("cannot write file '" .. output .. "'")
+		os.exit(1)
 	end
 	out:write(compileMD(f:read("*all")))
 	out:close()
