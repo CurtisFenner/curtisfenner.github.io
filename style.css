@@ -3,6 +3,7 @@
 html, body {
 	height: 100%;
 }
+
 #body {
 	min-height: 100%;
 }
@@ -26,7 +27,7 @@ body {
 	margin: 0;
 	padding: 0;
 	color: #444;
-	font-family: "Merriweather";
+	font-family: "Verdana";
 	font-size: 16px;
 	position: relative;
 	z-index: 0;
@@ -77,11 +78,13 @@ code, pre {
 	background: #234;
 	color: #EEE;
 }
+
 pre {
 	overflow-x: auto;
 	position: relative;
 	padding: 0.5em;
 }
+
 code {
 	padding: 0.25em;
 	display: inline-block;
@@ -132,6 +135,7 @@ nav {
 	margin: 0;
 	text-align: center;
 }
+
 nav :link, nav :visited {
 	color: white;
 }
@@ -203,6 +207,7 @@ h1 {
 	padding-left: 32px;
 	padding-bottom: 0;
 }
+
 h1::after {
 	height: 0;
 	position: absolute;
@@ -320,7 +325,8 @@ ol.tree, ol.tree ol {
 	padding: 0;
 	padding-left: 2em;
 }
-ol.tree > li {
+
+ol.tree>li {
 	list-style-type: none;
 }
 
