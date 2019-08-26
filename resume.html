@@ -2,23 +2,21 @@
 <html>
 <head>
 	<title>Curtis Fenner Resume</title>
-	<link href='https://fonts.googleapis.com/css?family=Merriweather:400,700,400italic,700italic,900' rel='stylesheet' type='text/css'>
 	<style>
 html {
-	background: white;
+	background: #EEE;
 }
 body {
 	position: relative;
 	background: white;
-	box-shadow: 0 0 50px -4px #AAA;
-	font-family: "Merriweather";
+	font-family: Verdana;
 	width: 7.5in;
 	padding: 0.5in;
 	margin-top: 0;
 	margin-bottom: 0;
 	margin-left: auto;
 	margin-right: auto;
-	font-size: 12px;
+	font-size: 13px;
 }
 
 address {
@@ -74,15 +72,20 @@ h1 {
 
 section > h2 {
 	text-align: left;
-	border-bottom: 2px black solid;
-	margin-left: -2em;
-	padding-left: 0.5em;
+	border-bottom: 1px black solid;
+	margin-left: -4em;
+	margin-right: -2.5em;
+	padding-left: 2.5em;
+	font-size: 1.25em;
+	font-variant: small-caps;
+	font-weight: normal;
 }
 
 h3 {
 	/* Events/places/projects */
 	border-bottom: 1px dotted black;
-	margin-top: 1.5em;
+	font-size: 1.125em;
+	margin-top: 1em;
 }
 
 section {
@@ -110,7 +113,7 @@ table.aligned td {
 </head>
 <body>
 	<div style="position: absolute; right: 1em; bottom: 1em; font-size:70%">
-		Updated 31 July 2018
+		Updated 25 August 2019
 	</div>
 	<h1>Curtis W. Fenner</h1>
 
@@ -130,14 +133,12 @@ table.aligned td {
 		<h3>University of Michigan College of Engineering</h3>
 		<div class=setting>Ann Arbor, Michigan. 2014 &ndash; 2018</div>
 		<ul>
-			<li>Computer Science B.S.E. with minor in Mathematics
-			<li>4.0 GPA &mdash; Dean's List
+			<li>Computer Science B.S.E. with minor in Mathematics.
+				4.0 GPA &mdash; Dean's List
 			<li><strong>Selected Coursework</strong>
-				<ul class=twocolumn>
-					<li>Compiler Construction (Winter 2017)
+				<ul>
 					<li>Distributed Systems (Winter 2017)
-					<li>Advanced Programming Languages (Fall 2017)
-					<li>Intro. Operating Systems (Fall 2016)
+					<li>Graduate Programming Languages (Fall 2017)
 				</ul>
 			</li>
 			<li>Instructional Aide for Distributed Systems (Fall 2017)
@@ -147,6 +148,25 @@ table.aligned td {
 
 	<section class=experience>
 		<h2>Experience</h2>
+		<h3>Square &mdash; Software Engineer</h3>
+		<div class=setting>Atlanta, Georgia. 2018&ndash;present</div>
+		<ul>
+			<li>Writing Java code for a service in Square's public API to accept
+				and manage orders that appear in Square POS and dashboard.
+		</ul>
+
+		<h3>Qualtrics &mdash; Software Engineering Intern</h3>
+		<div class=setting>Seattle, Washington. Summer 2017</div>
+		<ul>
+			<li>Wrote Scala code and used Elasticsearch as member of
+				data platform team
+			<li>Redesigned a data aggregation
+				feature after discovering failure conditions
+				in existing implementation
+			<li>Investigated the use of Elasticsearch for log
+				management and indexing additional response information
+		</ul>
+
 		<h3>Qumulo &mdash; Software Engineer Intern</h3>
 		<div class=setting>Seattle, Washington. Summer 2016</div>
 		<ul>
@@ -164,21 +184,9 @@ table.aligned td {
 		<div class=setting>San Francisco, California. Summer 2015</div>
 		<ul>
 			<li>Wrote Go and JavaScript as member of public API team
-			<li>Optimized and refactored public API server to halve latency
-			<li>Wrote backend code in Go for the second version of Square's
-				public API
-		</ul>
-
-		<h3>Qualtrics &mdash; Software Engineering Intern</h3>
-		<div class=setting>Seattle, Washington. Summer 2017</div>
-		<ul>
-			<li>Wrote Scala code and used Elasticsearch as member of
-				data platform team
-			<li>Redesigned a data aggregation
-				feature after discovering failure conditions
-				in existing implementation
-			<li>Investigated the use of Elasticsearch for log
-				management and indexing additional response information
+				<li>Optimized and refactored public API server to halve latency
+					<li>Wrote backend code in Go for the second version of Square's
+						public API
 		</ul>
 	</section>
 
@@ -186,8 +194,7 @@ table.aligned td {
 		<h2>Projects &amp; Skills</h2>
 
 		<h3>Computer Programming</h3>
-		<p>Programmed for 10+ years on many various team and personal projects
-			and three software engineering internships
+		<p>Have programmed for 10+ years with a variety of technologies
 		<ul class=fourcolumn>
 			<li>Scala
 			<li>Go
@@ -214,8 +221,8 @@ table.aligned td {
 		<h3>Smol Programming Language &amp; Compiler</h3>
 		<ul>
 			<li>Designing and implementing a toy programming language and
-				compiler that includes statically checked types, generics, and
-				interfaces.
+				compiler that includes statically checked types and functional
+				correctness assertions.
 		</ul>
 
 	</section>
