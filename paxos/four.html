@@ -109,7 +109,9 @@ code {
 	background: #234;
 	color: #DDD;
 	padding: 0.25em;
-	margin: -0.125em;
+	display: inline-block;
+	margin-top: -.25em;
+	margin-bottom: -.25em;
 }
 
 figure pre {
@@ -328,7 +330,7 @@ rpc <dfn id="dfn-promise-rpc">Promise</dfn>(n) {
 		<span class="comment">// I'm promising to not accept `n`s lower than this.</span>
 		lastPromiseMade := n;
 
-		reply ok(lastAcceptNumber, lastAcceptValue);
+		reply PromiseOK(lastAcceptNumber, lastAcceptValue);
 	}
 }
 
@@ -343,7 +345,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 		<span class="comment">// Accept this value.</span>
 		lastAcceptNumber := n;
 		lastAcceptValue := value;
-		reply ok;
+		reply AcceptOK;
 	}
 }
 </pre>
@@ -529,14 +531,14 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			let <math><msub><mi>x</mi><mo>0</mo></msub></math> be the 
 			successful attempt with the largest attempt number less than
 			<math><mo>#(</mo><mi>x</mi><mo>)</mo></math>. Call such an attempt
-			the <dfn id="dfn-predecessor">predecessor</dfn> of
+			the <dfn id="dfn-successful-predecessor">sucessful predecessor</dfn> of
 			<math><mi>x</mi></math> in <math><mi>X</mi></math>.
 			<br>
 			Then, <math><mo>value(</mo><mi>x</mi><mo>)</mo></math>
 			must be the same as
 			<math><mo>value(</mo><msub><mi>x</mi><mn>0</mn></msub><mo>)</mo></math>.
 			<br>
-			If no such predecessor
+			If no such successful predecessor
 			<math><msub><mi>x</mi><mn>0</mn></msub></math> exists,
 			there is no restriction on
 			<math><mo>value(</mo><mi>x</mi><mo>)</mo></math>.
@@ -734,9 +736,8 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			included).
 	</ul>
 	<p>
-		By construction, all attempts in <math><mi>A</mi></math> have a quorum.
-	<p>
-		And, in fact, <math><mi>A</mi></math> is an
+		At any point during the execution of the Paxos protocol, the set
+		<math><mi>A</mi></math> constructed in the above way is in fact an
 		<a href="#dfn-adequate-set" class="source">adequate set</a>!
 
 	<section class="theorem">
@@ -748,25 +749,31 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			is an <a href="#dfn-adequate-set" class="source">adequate set</a>.
 		</span>
 		<p>
-			<span class="lead">Proof.</span>
+			<span class="lead">Proof.</span> Let <math><mi>A</mi></math> be the
+			set of attempts generated from an execution of the Paxos protocol as
+			described above.
+		<p>
 			<a href="#dfn-adequacy-i" class="source">Adequacy condition (i)</a>
-			holds because
+			holds for <math><mi>A</mi></math> because
 			<a href="#dfn-attempt-number" class="source">attempt numbers</a>
 			are generated in a globally unique way.
+		<p>
 			<a href="#dfn-adequacy-ii" class="source">Adequacy condition (ii)</a>
-			holds because each attempt only moves onto step (3) after receiving
+			holds for <math><mi>A</mi></math> because
+			each attempt only moves onto step (3) after receiving
 			a <a href="#dfn-quorum-attempt" class="source">quorum</a>
 			of promises.
+		<p>
 			<a href="#dfn-adequacy-iii" class="source">Adequacy condition (iii)</a>
-			will be shown inductively, inducting on the possible (finite)
-			traces of executing Paxos.
+			will be shown for <math><mi>A</mi></math> inductively, inducting on
+			the possible traces of executing Paxos.
 		<p>
 			First, the initial state is an empty set of attempts,
 			which trivially satisfies condition (iii).
 			Thus, the initial state of the system is adequate.
 		<p>
 			Now, consider the events that affect the abstract set
-			<math><mi>A</mi></math> of attempts:
+			<math><mi>A</mi></math> of attempts during the execution of Paxos:
 		<ol type="a">
 			<li>
 				An attempt moving to the Accept phase (3) after receiving a
@@ -783,17 +790,28 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 		<div class="subproof">
 			<span class="label">a. Moving onto Accept phase.</span><br>
 			<p>
-				In this case, an adequate set <math><mi>A</mi></math>
-				is transformed into
+				In this case, a new attempt
+				<math>
+					<mi>x</mi> <mo>=</mo>
+					<mrow>
+						<mo>(</mo><mi>n</mi><mo>,</mo>
+						<mi>v</mi><mo>,</mo>
+						<mi>s</mi><mo>,</mo>
+						<mi>&empty;</mi><mo>)</mo>
+					</mrow>
+				</math>
+				is added to a (by induction, adequate) set <math><mi>A'</mi></math>
+				after successful replies from a quorum <math><mi>s</mi></math>
+				have been received for an attempt:
 				<math class="center">
-					<mi>A'</mi>
+					<mi>A</mi>
 					<mo>=</mo>
 					<mrow>
-						<mi>A</mi> <mo>&cup;</mo> <mo>{</mo><mi>x</mi><mo>}</mo>
+						<mi>A'</mi> <mo>&cup;</mo> <mo>{</mo><mi>x</mi><mo>}</mo>
 					</mrow>
 					<mo>=</mo>
 					<mrow>
-						<mi>A</mi> <mo>&cup;</mo>
+						<mi>A'</mi> <mo>&cup;</mo>
 						<mrow>
 						<mo>{</mo><mo>(</mo><mi>n</mi><mo>,</mo> <mi>v</mi><mo>,</mo>
 							<mi>s</mi><mo>,</mo>
@@ -813,16 +831,20 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				However,
 				<a href="#dfn-adequacy-iii" class="source">adequacy condition (iii)</a>
 				still requires <math><mi>x</mi></math>
-				must reflect the value selected by a prior
-				successful attempt.
+				must reflect the value selected by a successful attempt in
+				<math><mi>A'</mi></math> with a proposal number smaller than
+				<math><mi>n</mi></math>.
 			<p>
-				Let <math><mi>P</mi></math> be the set of
-				attempts in <math><mi>A</mi></math> that are successful with
-				attempt numbers smaller than <math><mi>n</mi></math>.
-				If <math><mi>P</mi></math> is empty, then
-				<math><mi>A'</mi></math> is an adequate set.
+				If there is no successful attempt in <math><mi>A'</mi></math>
+				with a proposal number smaller than <math><mi>n</mi></math>,
+				the set <math><mi>A</mi></math> trivially satisfies
+				condition (iii) and is an adequate set.
+				So, assume that <math><mi>x</mi></math> has a
+				successful predecessor in <math><mi>A</mi></math>.
 			<p>
-				Otherwise, there is a successful attempt
+				Let <math><mi>p</mi></math> be the
+				<a href="dfn-successful-predecessor" class="source">successful predecessor</a>
+				of <math><mi>x</mi></math>, that is, the successful attempt
 				<math>
 					<mi>p</mi>
 					<mo>=</mo>
@@ -831,8 +853,8 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 					<msub><mi>s</mi><mn>0</mn></msub><mo>,</mo>
 					<msub><mi>t</mi><mn>0</mn></msub><mo>)</mo>
 				</math>
-				in <math><mi>P</mi></math>
-				with a largest attempt number.
+				in <math><mi>A'</mi></math>
+				with the largest attempt number.
 			<p>
 				By the construction of <math><mi>p</mi></math>, there is no
 				other successful attempt in <math><mi>A</mi></math> with a
@@ -848,11 +870,34 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				</math>
 				must have the value <math><msub><mi>v</mi><mn>0</mn></msub></math>.
 			<p>
-				Because <math><mi>x</mi></math> has a quorum in the
-				<a href="#dfn-majority-scheme" class="source">majority scheme</a>,
-				a server that promised to <math><mi>x</mi></math> also accepted
-				the successful proposal <math><mi>p</mi></math>. Thus, at the
-				time of positively Promising, that server's
+				Because attempt <math><mi>x</mi></math> has a quorum,
+				<math><mi>s</mi></math> is a majority of the servers.
+			<p>
+				Because <math><mi>p</mi></math> was successful,
+				<math><msub><mi>t</mi><mn>0</mn></msub></math>
+				is a majority of servers.
+			<p>
+				Thus, at least one server in <math><mi>s</mi></math> is also in
+				<math><msub><mi>t</mi><mn>0</mn></msub></math>. Call that server
+				<math><mi>c</mi></math>.
+			<p>
+				Server <math><mi>c</mi></math> must have responded with
+				<code>PromiseOK</code> for <math><mi>x</mi></math> 
+				<em>after</em> responding <code>AcceptOK</code> for
+				<math><mi>p</mi></math> since <math>#(x) &gt; #(p)</math>.
+				(controlled by checking <code>lastPromiseMade</code>)
+			<p>
+				As a result, at the time server <math><mi>c</mi></math> replied
+				<code>PromiseOK</code> to attempt <math><mi>x</mi><math>,
+				its <code>lastAcceptValue</code> must have been <math>value(p)</math>:
+			<p>
+				Server <math><mi>c</mi></math> accepted <math>value(p)</math>,
+				and every attempt with a proposal number between <math>#(p)</math>
+				and <math>#(x)</math> has that same value.
+			<p>
+				
+
+				of positively Promising, that server's
 				<code>lastAcceptNumber</code> was necessarily at least
 				<math><mo>#(</mo><mi>p</mi><mo>)</mo></math>
 				and less than
