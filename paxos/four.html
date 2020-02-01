@@ -105,6 +105,13 @@ figure {
 	padding: 1em;
 }
 
+code {
+	background: #234;
+	color: #DDD;
+	padding: 0.25em;
+	margin: -0.125em;
+}
+
 figure pre {
 	background: #234;
 	color: #DDD;
@@ -211,7 +218,7 @@ munder > :last-child {
 			(at least) one server.
 		</li>
 		<li>
-			Any two servers response with the <em>same</em> decided value
+			Any two servers respond with the <em>same</em> decided value
 			(i.e., the servers have <em>reached a consensus</em>).
 		</li>
 	</ul>
@@ -303,15 +310,17 @@ munder > :last-child {
 		The RPC handlers for Promise and Accept are also very simple:
 	</p>
 	<figure>
-<pre><span class="comment">// The most recent <em>promise</em> I made.
-// I will not make promises or accept values for smaller attempt numbers.</span>
-var lastPromiseMade := 0;
+<pre>server state {
+	<span class="comment">// The most recent <em>promise</em> I made.
+	// I will not make promises or accept values for smaller attempt numbers.</span>
+	var lastPromiseMade := 0;
 
-<span class="comment">// The most recent attempt I <em>accepted</em>.</span>
-var lastAcceptNumber := -1;
-var lastAcceptValue := "?";
+	<span class="comment">// The most recent attempt I <em>accepted</em>.</span>
+	var lastAcceptNumber := -1;
+	var lastAcceptValue := "?";
+}
 
-rpc Promise(n) {
+rpc <dfn id="dfn-promise-rpc">Promise</dfn>(n) {
 	if n &le; lastPromiseMade {
 		<span class="comment">// I've already promised to not accept `n`s this low.</span>
 		reply failure;
@@ -466,16 +475,16 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 		In this scheme,
 		<math class=center>
 			<mrow>
-				<mi mathvariant=normal>quorum</mi><mo>(</mo><mi>X</mi><mo>)</mo>
+				<mi mathvariant=normal>quorum</mi><mo>(</mo><mi>U</mi><mo>)</mo>
 			</mrow>
 			<mo>&equiv;</mo>
 			<mrow>
-				<mi mathvariant=normal>successful</mi><mo>(</mo><mi>X</mi><mo>)</mo>
+				<mi mathvariant=normal>successful</mi><mo>(</mo><mi>U</mi><mo>)</mo>
 			</mrow>
 			<mo>&equiv;</mo>
 			<mrow>
 				<mrow>
-					<mo>|</mo><mi>X</mi><mo>|</mo>
+					<mo>|</mo><mi>U</mi><mo>|</mo>
 				</mrow>
 				<mo>&gt;</mo>
 				<mrow>
@@ -483,7 +492,21 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				</mrow>
 			</mrow>
 		</math>
-
+	<p>
+		That is, in the majority scheme,
+	<ul>
+		<li>
+			an attempt
+			<a href="#dfn-quorum-attempt" class="source">has a quorum</a> when
+			its <a href="#dfn-promising-set" class="source">promising set</a>
+			contains a majority of servers.
+		<li>
+			an attempt
+			<a href="#dfn-successful-attempt" class="source">is successful</a>
+			when its
+			<a href="#dfn-accepting-set" class="source">accepting set</a>
+			contains a majority of servers.
+	</ul>
 	<h3>An Adequate Condition</h3>
 	<p>
 		A finite set <math><mi>X</mi></math> of attempts is called
@@ -545,7 +568,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				<mo>=</mo>
 				<mrow>
 					<mo>{</mo><msub><mi>a</mi><mn>1</mn></msub><mo>, ..., </mo>
-						<msub><mi>a</mi><mi>N</mi></msub><mo>}</mo>
+						<msub><mi>a</mi><mi>i</mi></msub><mo>}</mo>
 				</mrow>
 			</math>
 			of the <math><mi>i</mi></math> attempts in <math><mi>A</mi></math>
@@ -570,7 +593,8 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			is a consistent set.
 		<p>
 			For <math><msub><mi>A</mi><mi>k</mi></msub></math> to be a
-			<a href="#dfn-consistent-set" class="source">consistent set</a> means that
+			<a href="#dfn-consistent-set" class="source">consistent set of attempts</a>
+			means that
 
 			<math class="center">
 				<mo>&forall;</mo><mi>b</mi><mo>,</mo> <mi>c</mi>
@@ -623,13 +647,25 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				</mrow>
 			</math>
 		<p>
+			If <math><msub><mi>a</mi><mi>k</mi></msub></math> is not sucessful,
+			<math><msub><mi>A</mi><mi>k</mi></msub></math>
+			is trivially consistent.
+			So, assume that <math><msub><mi>a</mi><mi>k</mi></msub></math> is
+			successful.
+		<p>
+			If
+			<math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
+			contains no successful attempts, then 
+			<math><msub><mi>A</mi><mi>k</mi></msub></math>
+			is trivially consistent.
+			So, assume that
+			<math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
+			contains at least one successful attempt.
+		<p>
 			Define <math><msub><mi>b</mi><mi>k</mi></msub></math> to be the
 			successful attempt in <math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
 			with the largest <a href="#dfn-attempt-number" class="source">attempt number</a>.
-			If there is no such attempt, then <math><msub><mi>A</mi><mi>k</mi></msub></math>
-			is trivially consistent. If there is,
-			<math><msub><mi>b</mi><mi>k</mi></msub></math> is well-defined
-			because of the uniqueness of attempt-numbers from
+			This well-defined because of the uniqueness of attempt-numbers from
 			<a href="#dfn-adequacy-i" class="source">adequacy property (i)</a>.
 		<p>
 			Then <math><msub><mi>b</mi><mi>k</mi></msub></math> is the
@@ -647,9 +683,12 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			Since <math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>
 			is a consistent set, all of its successful attempts have the same value.
 			Thus, showing that <math><msub><mi>a</mi><mi>k</mi></msub></math>
-			matches one of them shows that
-			<math><msub><mi>A</mi><mi>k</mi></msub></math> is a consistent
-			set.
+			has the same value as <math><msub><mi>b</mi><mi>k</mi></msub></math>
+			shows that it has the same value as all successful attempts in
+			<math><msub><mi>A</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub></math>.
+			Thus,
+			<math><msub><mi>A</mi><mi>k</mi></msub></math>
+			is a consistent set.
 		<p>
 			Thus, by induction on <math><mi>k</mi></math>, the size of the set,
 			this shows that <math><mi>A</mi></math> is a consistent set.
@@ -660,7 +699,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 		The above theorem can be applied to prove that the
 		<a href="#h-paxos-protocol" class="source">Paxos protocol</a>
 		is correct. The above theorem is very abstract;
-		<!-- i.e., hard to understand-->
+		<!-- i.e., hard to understand -->
 		while our protocol doesn't directly construct
 		abstract "<a href="#dfn-attempt" class="source">attempt</a>"
 		tuples,
@@ -670,7 +709,8 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 		Paxos protocol.
 	<p>
 		Construct the set of
-		<a href="#dfn-attempt" class="source">attempts</a> as follows:
+		<a href="#dfn-attempt" class="source">attempts</a>
+		<math><mi>A</mi></math> as follows:
 		Let <math><mi>A</mi></math> be the set of attempts that have passed the
 		first stage of a consensus attempt; each consensus attempt generates a
 		tuple as follows:
@@ -814,7 +854,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				the successful proposal <math><mi>p</mi></math>. Thus, at the
 				time of positively Promising, that server's
 				<code>lastAcceptNumber</code> was necessarily at least
-				<math><mo>#(</mo>p<mo>)</mo></math>
+				<math><mo>#(</mo><mi>p</mi><mo>)</mo></math>
 				and less than
 				<math><mo>#(</mo><mi>x</mi><mo>)</mo></math>. As a result, the
 				reply with the biggest proposal number necessarily had the value
@@ -859,7 +899,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 						<mi>X</mi>
 						<mo>&cup;</mo>
 						<mo>{</mo><mi>x'</mi><mo>}</mo>
-					<mrow>
+					</mrow>
 					<mo>=</mo>
 					<mrow>
 						<mi>X</mi>
