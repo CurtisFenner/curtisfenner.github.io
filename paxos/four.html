@@ -200,7 +200,7 @@ munder > :last-child {
 	<p>
 		The <dfn id="dfn-consensus-problem">consensus problem</dfn>
 		tasks a cluster of servers with
-		choosing a <em>single</em> value from a collection of possibilities.
+		choosing a <em>single</em> value from a collection of possible values.
 	</p>
 	<p>
 		Each server is booted up knowing
@@ -226,8 +226,8 @@ munder > :last-child {
 	</ul>
 	<p>
 		Because some of the servers may have been "left out" of the consensus
-		process (either because they were unavailable or not needed), some may
-		not (yet) know what value was decided.
+		process (either because they were unavailable or not merely needed),
+		some may not (yet) know what value was decided.
 	</p>
 	<ul>
 		<li>
@@ -284,18 +284,18 @@ munder > :last-child {
 	<span class="comment">// 1: Choose attempt number.</span>
 	var n := chooseAttemptNumber();
 
-	<span class="comment">// 2: Send `Promise` RPCs.</span>
+	<span class="comment">// 2: Promise Phase. Send `Promise` RPCs.</span>
 	var promises := empty set;
 	for each server {
 		var reply := send Promise(n) to server;
 		promises.add(reply);
 	}
-	if !(enough `promises` are successful) {
+	if not attempt_has_quorum(promises) {
 		abort;
 	}
 
-	<span class="comment">// 3: Send `Accept` RPCs.</span>
-	var value := value of reply with biggest accept number;
+	<span class="comment">// 3: Accept Phase. Send `Accept` RPCs.</span>
+	var value := value of reply in promises with biggest accept number,
 		or else seedValue() if biggest accept number is -1;
 	var accepts := empty set;
 	for each server {
@@ -303,7 +303,7 @@ munder > :last-child {
 		accepts.add(reply);
 	}
 
-	if enough `accepts` are successful {
+	if attempt_is_successful(accepts) {
 		decided(value);
 	}
 }</pre>
@@ -388,10 +388,10 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			in consensus.
 		</li>
 		<li>
-			What constitutes <code>enough</code> promises or accepts to be move
-			forward:
-			What exactly
-			is needed here will be detailed below through
+			What constitutes enough promises (<code>attempt_has_quorum</code>)
+			or enough accepts (<code>attempt_is_successful</code>)
+			to move forward:
+			What exactly is needed here will be detailed below through
 			<em>proposal schemes</em>.
 		</li>
 	</ul>
@@ -778,7 +778,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			<li>
 				An attempt moving to the Accept phase (3) after receiving a
 				<a href="#dfn-quorum-set" class="source">quorum of promises</a>.
-				This introduces an additional tuple to the set
+				This introduces an additional attempt tuple to the set
 				<math><mi>A</mi></math>.
 			<li>
 				A server responding positively to an Accept RPC.
@@ -788,7 +788,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			</li>
 		</ol>
 		<div class="subproof">
-			<span class="label">a. Moving onto Accept phase.</span><br>
+			<span class="label">Induction Case a: Moving onto Accept phase.</span><br>
 			<p>
 				In this case, a new attempt
 				<math>
@@ -912,7 +912,7 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				</math>, so <math><mi>A'</mi></math> is adequate.
 		</div>
 		<div class="subproof">
-			<span class="label">b. Responding positively to an Accept RPC.</span><br>
+			<span class="label">Induction Case b: Responding positively to an Accept RPC.</span><br>
 			<p>
 				In this case, an adequate set
 				<math>
