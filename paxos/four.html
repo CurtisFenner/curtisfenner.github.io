@@ -434,10 +434,10 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			An <dfn id="dfn-attempt-value">attempted value</dfn>
 			<math><mi>v</mi></math>, denoted <math><mo>value(</mo><mi>&alpha;</mi><mo>)</mo></math>.
 		<li>
-			A set of <dfn id="dfn-promising-set">promising servers set</dfn>,
+			A set of <dfn id="dfn-promising-set">promising servers</dfn>,
 			<math><mi>P</mi></math>.
 		<li>
-			A set of <dfn id="dfn-accepting-set">accepting servers set</dfn>,
+			A set of <dfn id="dfn-accepting-set">accepting servers</dfn>,
 			<math><mi>A</mi></math>.
 	</ul>
 	<p>
@@ -501,13 +501,13 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			an attempt
 			<a href="#dfn-quorum-attempt" class="source">has a quorum</a> when
 			its <a href="#dfn-promising-set" class="source">promising set</a>
-			contains a majority of servers.
+			contains a strict majority of servers.
 		<li>
 			an attempt
 			<a href="#dfn-successful-attempt" class="source">is successful</a>
 			when its
 			<a href="#dfn-accepting-set" class="source">accepting set</a>
-			contains a majority of servers.
+			contains a strict majority of servers.
 	</ul>
 	<h3>An Adequate Condition</h3>
 	<p>
@@ -857,13 +857,13 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				with the largest attempt number.
 			<p>
 				By the construction of <math><mi>p</mi></math>, there is no
-				other successful attempt in <math><mi>A</mi></math> with a
+				other successful attempt in <math><mi>A'</mi></math> with a
 				proposal number between
 				<math><mo>#(</mo><mi>p</mi><mo>)</mo></math>
 				and
 				<math><mo>#(</mo><mi>x</mi><mo>)</mo></math>. 
-				As a result, because <math><mi>A</mi></math> is an adequate set,
-				every proposal in <math><mi>A</mi></math> with a
+				As a result, because <math><mi>A'</mi></math> is an adequate set,
+				every proposal in <math><mi>A'</mi></math> with a
 				proposal number in that range 
 				<math>
 					<mo>(</mo><mo>#(</mo><mi>p</mi><mo>)</mo><mo>,</mo> <mo>#(</mo><mi>x</mi><mo>)</mo><mo>)</mo>
@@ -895,33 +895,25 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				and every attempt with a proposal number between <math>#(p)</math>
 				and <math>#(x)</math> has that same value.
 			<p>
-				
-
-				of positively Promising, that server's
-				<code>lastAcceptNumber</code> was necessarily at least
-				<math><mo>#(</mo><mi>p</mi><mo>)</mo></math>
-				and less than
-				<math><mo>#(</mo><mi>x</mi><mo>)</mo></math>. As a result, the
-				reply with the biggest proposal number necessarily had the value
-				<math><msub><mi>v</mi><mn>0</mn></msub></math>.
+				WIP.
 			<p>
 				Thus, <math>
 					<mo>value(</mo><mi>x</mi><mo>)</mo>
 					<mo>=</mo>
 					<mo>value(</mo><mi>p</mi><mo>)</mo>
-				</math>, so <math><mi>A'</mi></math> is adequate.
+				</math>, so <math><mi>A</mi></math> is adequate.
 		</div>
 		<div class="subproof">
 			<span class="label">Induction Case b: Responding positively to an Accept RPC.</span><br>
 			<p>
 				In this case, an adequate set
 				<math>
-					<mi>A</mi>
+					<mi>A'</mi>
 					<mo>=</mo>
 					<mrow>
 						<mi>X</mi>
 						<mo>&cup;</mo>
-						<mo>{</mo><mi>x</mi><mo>}</mo>
+						<mo>{</mo><mi>x'</mi><mo>}</mo>
 					</mrow>
 					<mo>=</mo>
 					<mrow>
@@ -938,12 +930,12 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 				is
 				transformed into
 				<math class="center">
-					<mi>A'</mi>
+					<mi>A</mi>
 					<mo>=</mo>
 					<mrow>
 						<mi>X</mi>
 						<mo>&cup;</mo>
-						<mo>{</mo><mi>x'</mi><mo>}</mo>
+						<mo>{</mo><mi>x</mi><mo>}</mo>
 					</mrow>
 					<mo>=</mo>
 					<mrow>
@@ -958,16 +950,18 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 					</mrow>
 				</math>
 			<p>
-				immediately after <math><mi>p</mi></math> responds positively in
+				immediately after <math><mi>p</mi></math> responds <code>AcceptOK</code> in
 				its <a href="#dfn-accept-rpc" class="source">Accept</a> RPC handler.
 			<p>
-				The new set <math><mi>A'</mi></math> could only not satisfy
+				The new set <math><mi>A</mi></math> could only not satisfy
 				adequacy property (iii) if the <math><mi>x'</mi></math> is
 				successful but <math><mi>x</mi></math> is not. In that case,
 				there is a new constraint that any proposals in
 				<math><mi>A</mi></math> with a proposal number higher than
 				<math><mo>#(</mo><mi>x'</mi><mo>)</mo></math> must have the same
 				value as <math><mi>x'</mi></math>.
+			<p>
+				WIP.
 		</div>
 
 		<!--
@@ -1041,6 +1035,17 @@ rpc <dfn id="dfn-accept-rpc">Accept</dfn>(n, value) {
 			</ul>
 		</p>
 		-->
+	</section>
+
+	<p>
+		Since adequate sets of attempts are consistent sets of attempts, this
+		means the Paxos protocol solves the consensus problem.
+
+	<section class="theorem">
+		<span class="label">Corollary.</span>
+		<span class="block">
+			Paxos solves the Consensus Problem.
+		</span>
 	</section>
 </article>
 <aside>
