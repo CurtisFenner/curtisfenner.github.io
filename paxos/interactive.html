@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+<head>
+	<title>Interactive Paxos Proof</title>
+	<style>
+body {
+	font-size: 16px;
+	font-family: sans-serif;
+	max-width: 7.5in;
+	padding: 0.5in;
+	margin-top: 0;
+	margin-left: auto;
+	margin-right: auto;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+.overall {
+	display: grid;
+	grid-template-columns: 9em 1fr;
+}
+
+.clients {
+	background: #EEF;
+}
+
+.servers {
+	background: #FEE;
+}
+
+table.bordered {
+	border-collapse: collapse;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+}
+table.bordered th, table.bordered td {
+	text-align: center;
+	padding: 0.25em;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	min-width: 2em;
+}
+
+	</style>
+</head>
+<body>
+	<h1>Interactive Paxos Proof</h1>
+
+	<div class="overall">
+		<div class="clients">
+			<div class="client">
+				<table class="bordered">
+					<tr>
+						<th colspan=3>Attempt
+					<tr>
+						<th colspan=2>n
+						<td>1
+					<tr>
+						<th colspan=2>Initial
+						<td>A
+							
+					<tr>
+						<th colspan=3>Promises
+					<tr>
+						<td><button>&RightArrow;</button>
+						<td>&RightArrow;
+						<td>&RightArrow;
+					<tr>
+						<td>&LeftArrow;
+						<td>&RightArrow;
+						<td>7,B
+					<tr>
+						<td>
+							&#10008;<!-- x mark -->
+						<td>
+							8,B
+						<td>
+							9,C
+					<tr>
+						<th colspan=2>Value
+						<td>B
+					<tr>
+						<th colspan=3>Accepts
+					<tr>
+						<td>&RightArrow;
+						<td>&RightArrow;
+						<td>&RightArrow;
+					<tr>
+						<td>&LeftArrow;
+						<td>&RightArrow;
+						<td>&#10008;
+					<tr>
+						<td>
+							&#10008;
+						<td>
+							&#10004; <!-- check mark -->
+						<td>
+							&#10004;
+				</table>
+			</div>
+		</div>
+		<div class="servers">
+			<table>
+				<tr>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+				<tr>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+				<tr>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+					<td>
+						<table class="bordered">
+							<tr>
+								<th colspan=2>Promised<td>8
+							<tr>
+								<th colspan=2 rowspan=2>Accepted<td>6
+							<tr>
+								<td>A
+						</table>
+			</table>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+const NUM_SERVER_ROWS = 3;
+const NUM_SERVER_COLS = 3;
+const NUM_ATTEMPTS = 10;
+const SYMBOLS = [
+	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+	"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+];
+	</script>
+</body>
