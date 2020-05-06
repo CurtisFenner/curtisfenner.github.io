@@ -1,175 +1,66 @@
-/* <"sticky footer"> */
-
-html, body {
-	height: 100%;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap');
+html {
+	font-family: Inter, sans-serif;
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
 }
-
-#body {
-	min-height: 100%;
-}
-
-/* </"sticky footer"> */
-
-.multicolumn {
-	column-count: 3;
-	padding-right: 5em;
-}
-
-.multicolumn li {
-	list-style-type: bullet;
-	list-style-position: inside;
-}
-
-/* */
 
 body {
-	background: white;
 	margin: 0;
+	margin-left: 1rem;
+	margin-right: 1rem;
 	padding: 0;
-	color: #444;
-	font-family: "Verdana";
-	font-size: 16px;
-	position: relative;
-	z-index: 0;
-	overflow-x: hidden;
+	background: rgb(14, 200, 215);
+	background: linear-gradient(25deg, rgb(61, 87, 208, 1) 0%, rgb(14, 200, 215) 100%);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	color: black;
 }
 
-header::before {
-	content: " ";
-	position: absolute;
-	right: 100%;
-	width: 9600px;
-	height: 100%;
-	background: #4772C1;
-	top: 5px;
-	z-index: 1;
+p {
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
-header::after {
-	content: " ";
-	position: absolute;
-	left: 100%;
-	width: 9600px;
-	height: 100%;
-	background: #4772C1;
-	top: 5px;
-	z-index: 1;
-}
-
-section, footer, nav, header {
-	max-width: 7.5in;
-	margin: 0 auto;
-	position: relative;
-	padding: 2em;
-}
-
-section, footer {
-	background: rgba(255, 255, 255, 0.875);
-}
-
-header {
-	background: #4772C1;
-	margin-top: -10px;
-}
-
-/* <code> */
-
-code, pre {
-	background: #234;
-	color: #EEE;
-}
-
-pre {
-	overflow-x: auto;
-	position: relative;
-	padding: 0.5em;
-}
-
-code {
-	padding: 0.25em;
-	display: inline-block;
-}
-
-pre.draft::after {
-	display: inline-block;
-	position: absolute;
-	top: 0;
-	right: 0;
-	background: #BB3;
-	color: #444;
-	content: "DRAFT";
-	border: 1px solid #992;
-	padding: 0.125em;
-	margin: 0.25em;
-}
-
-/* </code> */
-
-/* <box shadows on sides> */
-
-section::before, footer::before {
-	position: absolute;
-	content: " ";
-	height: 100%;
-	width: 64px;
-	left: -64px;
-	top: 0;
-}
-
-section::after, footer::after {
-	position: absolute;
-	content: " ";
-	height: 100%;
-	width: 64px;
-	right: -64px;
-	top: 0;
-}
-
-/* </box shadows on sides> */
-
-/* <header> */
-
-nav {
-	padding: 1em;
-	padding-bottom: 0;
-	margin: 0;
-	text-align: center;
-}
-
-nav :link, nav :visited {
-	color: white;
-}
-
-nav h1 {
+h1, h2, h3 {
 	margin: 0;
 	padding: 0;
 }
 
-nav h1::before, nav h1::after {
-	display: none;
+h1 {
+	font-size: 2rem;
+	margin-bottom: 1.25rem;
 }
 
-nav li, nav ul {
-	padding: 0;
-	margin: 0;
+h2 {
+	font-size: 1.5rem;
+	margin-bottom: 1.25rem;
 }
 
-nav :link {
-	font-weight: normal;
+section section {
+	border-left: 0.5px solid rgba(0, 0, 0, 0.25);
+	border-top: 0.5px solid rgba(0, 0, 0, 0.25);
 }
 
-nav ul {
-	padding-left: 2em;
+header, section, footer {
+	background: #FEFEFE;
+	border-radius: 5px;
+	background-clip: padding-box;
+	border-right: 3px solid rgba(0, 0, 0, 0.25);
+	border-bottom: 3px solid rgba(0, 0, 0, 0.25);
+	padding: 1.5rem;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 8.5in;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 
-nav li {
-	height: 2em;
-	line-height: 2em;
-	display: inline-block;
-	padding-right: 2em;
+:link, :visited {
+	color: #15F;
+	text-decoration: underline;
 }
-
-/* </header> */
 
 .clear {
 	clear: both;
@@ -178,123 +69,40 @@ nav li {
 	height: 0;
 }
 
-/* <heading styles> */
+/******************************************************************************/
 
-header::before {
-	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.125);
-}
-
-header::after {
-	box-shadow: inset 32px 0 32px -32px rgba(0, 0, 0, 0.125);
-}
-
-section::before, footer::before {
-	box-shadow: inset -32px 0 32px -32px rgba(0, 0, 0, 0.125);
-}
-
-section::after, footer::after {
-	box-shadow: inset 32px 0 32px -32px rgba(0, 0, 0, 0.125);
-}
-
-h1, h2, h3 {
-	margin: 0;
-}
-
-h1 {
-	position: relative;
-	margin-left: -32px;
-	margin-right: -32px;
-	padding-left: 32px;
-	padding-bottom: 0;
-}
-
-h1::after {
-	height: 0;
-	position: absolute;
-	display: block;
-	left: 0;
-	right: 0;
-	top: 0.99em;
-	content: "";
-	border-bottom: 2px solid #444;
-}
-
-h2, h3 {
-	padding-top: 1em;
-}
-
-header h1 {
-	margin: 0;
-	padding: 0;
-	border: none;
-}
-
-h1 {
-	font-size: 2em;
-}
-
-h2 {
-	font-size: 1.25em;
-}
-
-h3 {
-	font-size: 1em;
-}
-
-/* </heading styles> */
-
-hr {
-	height: 0;
-	border: none;
-	border-top: 1px dotted #BBB;
-	margin-left: -32px;
-	margin-right: -32px;
-	margin-top: 1em;
-	margin-bottom: 1em;
-}
-
-footer {
-	border-top: 1px dotted #BBB;
-	margin-top: -1px;
-	padding-bottom: 32px;
-}
-
-p {
-	margin: 0;
-	margin-top: 8px;
-	padding: 0;
-	text-align: justify;
-	line-height: 1.5em;
-}
-
-ul, li {
-	margin: 0;
-	margin-top: 8px;
-	margin-left: 1em;
-	padding: 0;
-}
-
-table {
-	border: 1px solid #444;
-	padding: 0.25em;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 1em;
-	margin-bottom: 1em;
-}
-
-td {
-	padding: 0.25em;
-}
-
-:link, :visited {
-	color: #4879DB;
-	font-weight: bold;
+header h1 :link, header h1 :visited {
+	color: black;
 	text-decoration: none;
 }
 
-:link:hover {
-	text-decoration: underline;
+h1.inline {
+	display: inline-block;
+	margin-right: 1.25rem;
+	margin-bottom: 0;
+}
+
+ul.inline {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+
+ul.inline li {
+	display: inline-block;
+	margin-top: 1em;
+	margin-right: 1em;
+	margin-left: 0;
+}
+
+nav li :link, nav li :visited {
+	color: white;
+	background: #15F;
+	border-radius: 5px;
+	text-decoration: none;
+	padding: 0.25em 0.4em;
+	font-weight: bold;
+	vertical-align: 0.25em;
 }
 
 /******************************************************************************/
@@ -333,7 +141,7 @@ ol.tree>li {
 /******************************************************************************/
 
 #codeblocks {
-	top: 8em;
+	top: 8rem;
 	left: 0;
 	overflow-x: hidden;
 	position: absolute;
@@ -352,28 +160,11 @@ ol.tree>li {
 	color: transparent;
 	overflow: hidden;
 	height: 15px;
+	background: rgba(255, 255, 255, 0.5);
+	border-radius: 2px;
+	margin-right: 1px;
 }
 
-.number {
-	background: #DDE1C8;
-}
-
-.name {
-	background: #C8D5EA;
-}
-
-.bracket {
-	background: #EAC8D5;
-}
-
-.operator {
-	background: #C8E6D5;
-}
-
-.value {
-	background: #D5BBC4;
-}
-
-.keyword {
-	background: #D9C8BB;
+#codeblocks span.space {
+	visibility: hidden;
 }

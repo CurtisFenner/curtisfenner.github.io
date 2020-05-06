@@ -3,11 +3,12 @@
 var CodeLines = {};
 CodeLines.KEYPRESS = 20; // ms delay per character typed
 CodeLines.CHAR = 10; // px width of character
+CodeLines.MARGIN = 1; // px width of space between spans
 CodeLines.stack = ["block", Break()];
 
 // Randomness helpers
 function Many(lo, hi, n) {
-	return function() {
+	return function () {
 		var x = [];
 		var r = Math.random() * (hi - lo) + lo;
 		if (CodeLines.stack.length > 10) {
@@ -21,7 +22,7 @@ function Many(lo, hi, n) {
 }
 
 function Maybe(p, n) {
-	return function() {
+	return function () {
 		if (Math.random() < p) {
 			return [n];
 		} else {
@@ -31,7 +32,7 @@ function Maybe(p, n) {
 }
 
 function Weight(map) {
-	return function() {
+	return function () {
 		var s = 0;
 		for (var n in map) {
 			s += map[n];
@@ -116,26 +117,26 @@ var grammar = {
 	"==": bar("==", "operator"),
 	"*": bar("*", "operator"),
 	// brackets & indices
-	"," : bar(",", "bracket"),
-	"." : bar(".", "bracket"),
-	":" : bar(":", "bracket"),
-	"(" : bar("(", "bracket"),
-	")" : bar(")", "bracket"),
-	"[" : bar("[", "bracket"),
-	"]" : bar("]", "bracket"),
-	"{" : bar("{", "bracket"),
-	"}" : bar("}", "bracket"),
+	",": bar(",", "bracket"),
+	".": bar(".", "bracket"),
+	":": bar(":", "bracket"),
+	"(": bar("(", "bracket"),
+	")": bar(")", "bracket"),
+	"[": bar("[", "bracket"),
+	"]": bar("]", "bracket"),
+	"{": bar("{", "bracket"),
+	"}": bar("}", "bracket"),
 	////////////////////////////////////////////////////////////////////////////
-	name: function() {
+	name: function () {
 		var n = "a";
-		for (var i = 0; i*i < Math.random() * 64; i++) {
+		for (var i = 0; i * i < Math.random() * 64; i++) {
 			n += "a";
 		}
 		return bar(n, "name");
 	},
-	number: function() {
+	number: function () {
 		var n = "9";
-		for (var i = 0; i*i < Math.random() * 64; i++) {
+		for (var i = 0; i * i < Math.random() * 64; i++) {
 			n += i;
 		}
 		return bar(n, "number");
@@ -167,7 +168,7 @@ var grammar = {
 	repeatblock: ["repeat", "block", "until", "exp"],
 	ifblock: [
 		"if", "exp", "then", "block",
-		Maybe(0.5, Many(0, 3, ["elseif", "exp", "then", "block"] )),
+		Maybe(0.5, Many(0, 3, ["elseif", "exp", "then", "block"])),
 		Maybe(0.5, ["else", "block"]),
 		"end",
 	],
@@ -192,7 +193,7 @@ var grammar = {
 	varlist: [
 		"var", Many(0, 2, [",", "var"]),
 	],
-	var: Weight({"name": 5, "varcomplex1": 1, "varcomplex2": 1}),
+	var: Weight({ "name": 5, "varcomplex1": 1, "varcomplex2": 1 }),
 	varcomplex1: ["prefixexp", "$[$", "exp", "$]$"],
 	varcomplex2: ["prefixexp", "$.$", "name"],
 	//
@@ -228,7 +229,7 @@ var grammar = {
 	//
 	args: ["$($", "explist", "$)$"], // no table / string calls
 	anonymousfunction: ["function", "funcbody"],
-	funcbody: ["$($", Weight({"parlist":3,"...":1}), "$)", "block", "end"],
+	funcbody: ["$($", Weight({ "parlist": 3, "...": 1 }), "$)", "block", "end"],
 	parlist: ["namelist", Maybe(0.2, ["$,", "..."])],
 	tableconstructor: ["{$", Maybe(0.75, "fieldlist"), "$}"],
 	fieldlist: ["field", Many(0, 4, ["$,", "field"])],
@@ -239,12 +240,12 @@ var grammar = {
 	}),
 	namefield: ["name", "=", "exp"],
 	keyfield: ["[", "exp", "]", "=", "exp"],
-	binop: ["exp", Weight({"+":5,"==":4,"and":1}), "exp"],
+	binop: ["exp", Weight({ "+": 5, "==": 4, "and": 1 }), "exp"],
 	unop: [
 		Weight({
-		"-$": 1,
-		"not": 1,
-		"#$": 1
+			"-$": 1,
+			"not": 1,
+			"#$": 1
 		}), "exp"
 	],
 };
@@ -257,7 +258,7 @@ CodeLines.lastLine = null;
 CodeLines.suppressSpace = false;
 CodeLines.indent = 0;
 // Outputs an object into the simulation to be seen by the user.
-CodeLines.OUT = function(x) {
+CodeLines.OUT = function (x) {
 	if (x === '$') {
 		CodeLines.suppressSpace = true;
 		return;
@@ -269,18 +270,18 @@ CodeLines.OUT = function(x) {
 		CodeLines.lines.push(CodeLines.lastLine);
 		codeblocks.appendChild(CodeLines.lastLine);
 		CodeLines.suppressSpace = true;
-		return {delay: (Math.random()*4 + 1) * CodeLines.KEYPRESS, fun: function(){}};
+		return { delay: (Math.random() * 4 + 1) * CodeLines.KEYPRESS, fun: function () { } };
 	} else if (x.type === 'open') {
 		CodeLines.indent++;
-		return {delay: CodeLines.KEYPRESS, fun: function(){}};
+		return { delay: CodeLines.KEYPRESS, fun: function () { } };
 	} else if (x.type === 'close') {
 		CodeLines.indent--;
-		return {delay: CodeLines.KEYPRESS, fun: function(){}};
+		return { delay: CodeLines.KEYPRESS, fun: function () { } };
 	} else if (x.text) {
 		if (!CodeLines.suppressSpace) {
 			var space = document.createElement('span');
 			space.className = 'space';
-			space.style.width = CodeLines.CHAR + 'px';
+			space.style.width = (CodeLines.CHAR - CodeLines.MARGIN) + 'px';
 			CodeLines.lastLine.appendChild(space);
 		}
 		CodeLines.suppressSpace = false;
@@ -292,8 +293,8 @@ CodeLines.OUT = function(x) {
 		var a;
 		a = {
 			delay: CodeLines.KEYPRESS,
-			fun: function() {
-				span.style.width = c * CodeLines.CHAR + 'px';
+			fun: function () {
+				span.style.width = (c * CodeLines.CHAR - CodeLines.MARGIN) + 'px';
 				c++;
 				a.delay = (Math.random() + 0.5) * CodeLines.KEYPRESS;
 				if (c <= x.width) {
@@ -307,7 +308,7 @@ CodeLines.OUT = function(x) {
 
 // Execute one thing on the stack. Returns an Animation if something needs to
 // be shown.
-CodeLines.stepBlocks = function() {
+CodeLines.stepBlocks = function () {
 	var top = CodeLines.stack.pop();
 	if (top === undefined) {
 		CodeLines.stack = ["block", Break(), Break(), Break(), Break(), Break()];
@@ -328,8 +329,8 @@ CodeLines.stepBlocks = function() {
 			CodeLines.stack.push(['$', top.substr(1)]);
 			return;
 		}
-		if (top[top.length-1] === '$') {
-			CodeLines.stack.push([top.substr(0, top.length-1), '$']);
+		if (top[top.length - 1] === '$') {
+			CodeLines.stack.push([top.substr(0, top.length - 1), '$']);
 			return;
 		}
 		if (grammar[top]) {
@@ -338,7 +339,7 @@ CodeLines.stepBlocks = function() {
 			return CodeLines.OUT(top);
 		}
 	} else if (typeof top === 'function') {
-		CodeLines.stack.push( top() );
+		CodeLines.stack.push(top());
 	} else {
 		return CodeLines.OUT(top);
 	}
@@ -348,17 +349,17 @@ CodeLines.animation = null;
 CodeLines.blockTypingUntil = 0;
 
 // Update the simulating coding
-CodeLines.animateBlocks = function() {
+CodeLines.animateBlocks = function () {
 	while (!CodeLines.animation) {
 		CodeLines.animation = CodeLines.stepBlocks();
 	}
-	setTimeout(function() {
+	setTimeout(function () {
 		// Pause until the (old) blocker
 		// XXX: untangle this
 		// This prevents typing while deleting lines is happening
 		// (which is necessary to look smooth, not for correctness)
 		let blocked = Math.max(0, CodeLines.blockTypingUntil - Date.now());
-		setTimeout(function() {
+		setTimeout(function () {
 			CodeLines.animation = CodeLines.animation.fun();
 			CodeLines.animateBlocks();
 		}, blocked);
@@ -366,10 +367,10 @@ CodeLines.animateBlocks = function() {
 }
 
 // "Scroll down" to avoid ever filling the whole page with code
-CodeLines.clearLines = function() {
-	var kill = Math.random() * CodeLines.lines.length * 1/2;
+CodeLines.clearLines = function () {
+	var kill = Math.random() * CodeLines.lines.length * 1 / 2;
 	for (var i = 0; i < kill; i++) {
-		setTimeout(function() {
+		setTimeout(function () {
 			if (CodeLines.lines.length > 0) {
 				codeblocks.removeChild(CodeLines.lines[0]);
 				CodeLines.lines = CodeLines.lines.slice(1);
