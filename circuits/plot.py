@@ -1,6 +1,10 @@
 from numpy import linalg, array
 import math
 
+"""
+R_C (ohm), R_B (ohm) | V_C, V_B, V_E | I_C (mA), I_E (mA)
+Battery at 6.26 V at beginning; at 6.21 V at end
+"""
 table = [
     [1000000, 330, 0.017, 0.839, 0.006, 16.2],
     [1000000, 470, 0.0145, 0.822, 0.006, 11.4],
