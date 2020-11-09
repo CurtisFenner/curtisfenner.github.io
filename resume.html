@@ -1,29 +1,36 @@
 <!doctype html>
-<html>
+<html lang="en-us">
 <head>
+	<meta charset="utf-8">
 	<title>Curtis Fenner Resume</title>
 	<style>
 html {
 	background: #EEE;
 }
+
 body {
+	--side-margin: 0.5in;
+
 	position: relative;
 	background: white;
 	font-family: Verdana;
-	width: 7.5in;
-	padding: 0.5in;
+	width: 8in;
+	padding: var(--side-margin);
 	margin-top: 0;
 	margin-bottom: 0;
 	margin-left: auto;
 	margin-right: auto;
 	font-size: 13px;
+
+	counter-reset: page-number 1;
 }
 
 address {
-	text-align: center;
-	line-height: 1.25em;
+	text-align: left;
+	line-height: 1.5em;
 	margin: auto;
 	width: 3in;
+	font-style: normal;
 }
 
 :link, :visited {
@@ -35,11 +42,16 @@ li {
 	padding-left: 2em;
 	position: relative;
 }
+
 li:before {
 	content: "\00BB";
 	margin: 0;
 	position: absolute;
-	left: 0;
+	left: 0.5em;
+}
+
+li li:before {
+	content: "\203A";
 }
 
 ul, ol, p {
@@ -48,16 +60,12 @@ ul, ol, p {
 	padding: 0;
 }
 
+ul, ol {
+	margin-right: 0.5in;
+}
+
 li > ul, li > ol {
 	margin-top: 0.125em;
-}
-
-.twocolumn {
-	column-count: 2;
-}
-
-.fourcolumn {
-	column-count: 5;
 }
 
 h1, h2, h3 {
@@ -65,31 +73,43 @@ h1, h2, h3 {
 }
 
 h1 {
-	text-align: center;
+	text-align: left;
 	margin: 0;
 	padding: 0;
+	font-size: 2rem;
 }
 
 section > h2 {
+	background: #CCC;
+	color: black;
+
 	text-align: left;
-	border-bottom: 1px black solid;
-	margin-left: -4em;
-	margin-right: -2.5em;
-	padding-left: 2.5em;
-	font-size: 1.25em;
+	/* border-bottom: 1px black solid; */
+	margin-left: calc(var(--side-margin) * -1);
+	margin-right: calc(var(--side-margin) * -1);
+	padding-left: 0.5in;
+	font-size: 1.2rem;
 	font-variant: small-caps;
 	font-weight: normal;
 }
 
+@media print {
+	section > h2 {
+		background: #CCC;
+		-webkit-print-color-adjust: exact;
+	}
+}
+
 h3 {
 	/* Events/places/projects */
-	border-bottom: 1px dotted black;
+	/* border-bottom: 1px dotted black; */
 	font-size: 1.125em;
 	margin-top: 1em;
 }
 
 section {
-	padding-left: 2em;
+	padding: 0;
+	margin: 0;
 }
 
 .setting {
@@ -109,120 +129,204 @@ table.aligned td {
 	display: inline-block;
 }
 
+.flex-multicol {
+	display: flex;
+	flex-direction: row;
+}
+
+.flex-center {
+	align-items: center;
+}
+
+.flex-col {
+	flex-direction: column;
+	flex: 1;
+}
+
+.print-page-break {
+	page-break-after: always;
+}
+
 	</style>
 </head>
 <body>
-	<div style="position: absolute; right: 1em; bottom: 1em; font-size:70%">
-		Updated 25 August 2019
+	<div style="position: fixed; display: inline-block; right: 0.375in; bottom: 0.375in; font-size:70%">
+		Updated 8 November 2020.
 	</div>
-	<h1>Curtis W. Fenner</h1>
+	<div class="flex-multicol flex-center">
+		<h1 class="flex-col" style="flex: 2">Curtis Fenner</h1>
 
-	<address>
-		<table class="inline aligned">
-			<tr><th>Resume:
-				<td><a href="http://www.curtisfenner.com/resume">curtisfenner.com/resume</a>
-			<tr><th>GitHub:
-				<td><a href="https://github.com/CurtisFenner">github.com/CurtisFenner</a>
-			<tr><th>Email:
-				<td><a href="mailto:cwfenner@umich.edu">cwfenner@umich.edu</a>
-		</table>
-	</address>
+		<address class="flex-col">
+				<a href="https://curtisfenner.com/resume">curtisfenner.com/resume</a><br>
+				<a href="https://github.com/CurtisFenner">github.com/CurtisFenner</a><br>
+				<a href="mailto:curtiswilliamfenner@gmail.com">curtiswilliamfenner@gmail.com</a>
+		</address>
+	</div>
 
 	<section class=education>
 		<h2>Education</h2>
 		<h3>University of Michigan College of Engineering</h3>
-		<div class=setting>Ann Arbor, Michigan. 2014 &ndash; 2018</div>
+		<div class=setting>Ann Arbor, MI. 2014 &ndash; 2018</div>
 		<ul>
-			<li>Computer Science B.S.E. with minor in Mathematics.
-				4.0 GPA &mdash; Dean's List
-			<li><strong>Selected Coursework</strong>
-				<ul>
-					<li>Distributed Systems (Winter 2017)
-					<li>Graduate Programming Languages (Fall 2017)
-				</ul>
+			<li>4.0 GPA. Computer Science B.S.E. with minor in Mathematics.
+			<li><strong>Selected Coursework</strong>: 
+				Distributed Systems (W2017),
+				Grad. Programming Languages (F2017)
 			</li>
-			<li>Instructional Aide for Distributed Systems (Fall 2017)
-			<li>2017 ACM ICPC World Finalist
+			<li>Teaching assistant for Distributed Systems (F2017)
+			<li>World Finalist in 2017 
+				ACM International Collegiate Programming Contest (ICPC)
 		</ul>
 	</section>
 
 	<section class=experience>
 		<h2>Experience</h2>
-		<h3>Square &mdash; Software Engineer</h3>
-		<div class=setting>Atlanta, Georgia. 2018&ndash;present</div>
+		<h3>Square &mdash; Software Engineer, Orders API Team</h3>
+		<div class=setting>Atlanta, GA. Aug. 2018&ndash;present</div>
 		<ul>
-			<li>Writing Java code for a service in Square's public API to accept
-				and manage orders that appear in Square POS and dashboard.
+			<li>Backend engineer on the Orders API team, which operates both a public REST
+				API, as well as internal systems that serve Square Point-of-Sale mobile apps
+			<li>Responsible for 
+				designing, reviewing, and implementing features that integrate
+				with many other microservices including for payments, catalog,
+				customers, and fulfillments
+			<li>Work emphasizes designs that are maintainable,
+				scalable, strongly consistent, and highly available
+			<li><b>Technologies</b>:
+				<ul>
+					<li>Java &ndash; for API server implementation
+					<li>Protocol Buffers &ndash; for RPCs,
+						modeling the API schema, and database serialization
+					<li>TypeScript &amp; JavaScript &ndash;
+						for building internal web interfaces
+					<li>MySQL &ndash; for durable, distributed storage enabling
+						a strongly consistent API experience
+				</ul>
+			<li>Redesigned complex request validation logic to significantly 
+				improve test coverage and code quality
+			<li>Created library functions to support old API versions with minimal ongoing
+				maintanenace burden
+			<li>Drafted new documentation &amp; a "mini-lecture" presentation to
+				document complex cart-calculation logic
 		</ul>
 
-		<h3>Qualtrics &mdash; Software Engineering Intern</h3>
-		<div class=setting>Seattle, Washington. Summer 2017</div>
+		<h3>Qualtrics &mdash; Software Engineer Intern, Data Platform Team</h3>
+		<div class=setting>Seattle, WA. Summer 2017</div>
 		<ul>
-			<li>Wrote Scala code and used Elasticsearch as member of
-				data platform team
-			<li>Redesigned a data aggregation
-				feature after discovering failure conditions
-				in existing implementation
-			<li>Investigated the use of Elasticsearch for log
+			<li>Wrote code in a data-aggregation service as a member of the data platform team, and
+				set up Elasticsearch + Logstash + Kibana for internal log analysis
+			<li><b>Technologies</b>:
+				<ul>
+					<li>Scala &ndash; for backend implementation
+					<li>Elasticsearch &ndash; for aggregating metrics to produce custom reports, and
+						for log analysis
+				</ul>
+			<li>Redesigned a data aggregation feature to get correct weighting across different
+				displays
+			<li>Prototype the use of Elasticsearch for log
 				management and indexing additional response information
 		</ul>
 
-		<h3>Qumulo &mdash; Software Engineer Intern</h3>
-		<div class=setting>Seattle, Washington. Summer 2016</div>
+		<h3>Qumulo &mdash; Software Engineer Intern, Filesystem Performance Team</h3>
+		<div class=setting>Seattle, WA. Summer 2016</div>
 		<ul>
-			<li>Wrote C and Python code for distributed filesystem as member of
-				performance team
+			<li>Wrote code and tests as a member of the performance Scrum team for a distributed 
+				filesystem server
+			<li><b>Technologies</b>:
+				<ul>
+					<li>C &ndash; for filesystem implementation
+					<li>Python &ndash; for integration-test automation and code
+						generation
+				</ul>
 			<li>Developed sharding of deleted file space reclamation to
-				double reclaimation rate
+				double free-space reclaimation rate
 			<li>Eliminated lock contention in a multithreaded cache to
 				reduce file operation latency
-			<li>Implemented allocation changes to allow
+			<li>Implemented disk block allocation changes to ensure
 				significantly faster metadata operations
 		</ul>
 
-		<h3>Square &mdash; Software Engineer Intern</h3>
-		<div class=setting>San Francisco, California. Summer 2015</div>
+		<h3>Square &mdash; Software Engineer Intern, Public API Team</h3>
+		<div class=setting>San Francisco, CA. Summer 2015</div>
 		<ul>
-			<li>Wrote Go and JavaScript as member of public API team
-				<li>Optimized and refactored public API server to halve latency
-					<li>Wrote backend code in Go for the second version of Square's
-						public API
+			<li>Wrote Go and JavaScript (Node.JS) as member of public API team
+			<li><b>Technologies</b>:
+				<ul>
+					<li>Node.JS &ndash; for implementation of microservice
+						serving public API
+					<li>Go &ndash; for implementation of a new microservice to
+						eventually replace the Node.JS server
+				</ul>
+			<li>Optimized and refactored public API server to halve average query time
+			<li>Ported a significant amount of the Node.JS implementation to Go in
+				anticipation of Square's V2 APIs
+		</ul>
+	</section>
+
+	<div class="print-page-break"></div>
+
+	<section>
+		<h2>Skills</h2>
+		<ul>
+			<li><b>Programming Languages</b>:
+				<ul style="columns: 3">
+					<li>Java
+					<li>Python
+					<li>Scala
+					<li>C
+					<li>C++
+					<li>JavaScript &amp; TypeScript
+					<li>HTML &amp; CSS
+					<li>Lua
+					<li>Go
+				</ul>
+			<li><b>Technologies</b>:
+				<ul style="columns: 3">
+					<li>MySQL
+					<li>Elasticsearch
+					<li>Git
+					<li>React
+					<li>Protocol Buffers
+				</ul>
 		</ul>
 	</section>
 
 	<section>
-		<h2>Projects &amp; Skills</h2>
-
-		<h3>Computer Programming</h3>
-		<p>Have programmed for 10+ years with a variety of technologies
-		<ul class=fourcolumn>
-			<li>Scala
-			<li>Go
-			<li>C
-			<li>C++
-			<li>Lua
-			<li>Java
-			<li>HTML + CSS
-			<li>JavaScript
-			<li>Python
-		</ul>
+		<h2>Projects</h2>
 
 		<h3>WeBWorK Proof Checker</h3>
 		<ul>
-			<li>Designed and built an interface that verifies simple natural
-			deduction proofs for
-			students learning logic<br>
-			The checker manipulates symbolic representations of mathematical
-			statements and verifies the steps taken in a formal, two-column
-			proof.
-			<li><a href="http://curtisfenner.com/prove">http://curtisfenner.com/prove</a>
+			<li>Designed and built a homework interface for writing and checking
+				simple natural-deduction based proofs for students learning logic.
+			<li>Built a prototype implementation in JavaScript
+			<li>Translated the prototype into a Perl library that can be instantiated as a WeBWorK
+				problem type
+			<li>Work included designing and creating
+				<ul>
+					<li>a logical formula parser
+					<li>a tree-based symbolic pattern matcher
+					<li>built-in logical deduction rules
+					<li>a wrapping library to enable professors with limited programming experience
+						to set up problems
+					<li>a simple table-based user interface that could be rendered in WeBWorK
+				</ul>
+			<li><a href="https://curtisfenner.com/prove">https://curtisfenner.com/prove</a>
 		</ul>
 
 		<h3>Smol Programming Language &amp; Compiler</h3>
 		<ul>
-			<li>Designing and implementing a toy programming language and
-				compiler that includes statically checked types and functional
-				correctness assertions.
+			<li>Designed and implemented a toy programming language and
+				compiler that uses a rudimentary SMT solver to check assertions at compile time
+			<li>Work included
+				<ul>
+					<li>a PEG parser library
+					<li>a type-checker that supports constrained type parameters
+					<li>a code-generator that produces C99 code
+					<li>a rudimentary CDCL based SMT solver, which can "verify" whether
+						simple mathematical statements are true or false
+						(Smol supported uninterpreted functions with quantifiers)
+				</ul>
+			<li><a href="https://github.com/CurtisFenner/smol-builder">https://github.com/CurtisFenner/smol-builder</a>
 		</ul>
 
 	</section>
