@@ -22,16 +22,30 @@
 	<section>
 		<h1>Proof Checker</h1>
 		<p>I worked with Dr. Martin Strauss, Elizabeth Viera, and Dr. Gavin La
-			Rose to build a simple web interface that could be used to
-			automatically check simple proofs as a teaching tool.
-		<p>A prototype was first built in JavaScript. It has a
-			<a href="https://github.com/CurtisFenner/Proof-Drilling">GitHub
-			repository available here</a>.
-		<p>A partial implementation for WeBWorK (an open-source online math
-			homework platform)
-			<a href="https://github.com/CurtisFenner/ProofCheckerWeBWorK">has a
-			GitHub repository here</a>. The development WeBWorK course is
-			<a href="https://itcdevel.math.lsa.umich.edu/webwork2/mathlogic/cw/1/">here</a>.
+			Rose to build a library to integrate tabular-proof problems into the
+			WeBWorK open-source online math homework platform used by University
+			of Michigan.
+		<ul>
+			<li>View the <a href="https://github.com/CurtisFenner/Proof-rilling">JavaScript prototype repository</a>
+			<li>View the <a href="https://github.com/CurtisFenner/ProofCheckerWeBWorK">WeBWorK library</a>
+			<li>(If you are involved in development, visit the development course
+				<a href="https://itcdevel.math.lsa.umich.edu/webwork2/mathlogic/cw/1/">here</a>)
+		</ul>
+	</section>
+	
+	<section>
+		<h2>What does it look like?</h2>
+		<figure class=inline>
+			<img src="https://raw.githubusercontent.com/CurtisFenner/ProofCheckerWeBWorK/master/help-files/eliminated-syllogism.png">
+		</figure>
+		<p>
+			A two-column proof is entered as a number of input fields.
+		<p>
+			The first column is a sequence of logical statements.
+		<p>
+			The subsequent columns are the <em>justifications</em> of those statements, including
+			"citing" previously justfied statements within the proof. Read on for more detail about
+			the structure of these justifications.
 	</section>
 
 	<section>
