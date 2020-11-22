@@ -6,6 +6,7 @@
 	<style>
 html {
 	background: #EEE;
+	font-size: 12px;
 }
 
 body {
@@ -15,19 +16,22 @@ body {
 	background: white;
 	font-family: Verdana;
 	width: 8in;
+
 	padding: var(--side-margin);
+	padding-top: 0.25in;
+
 	margin-top: 0;
 	margin-bottom: 0;
 	margin-left: auto;
 	margin-right: auto;
-	font-size: 13px;
 
 	counter-reset: page-number 1;
 }
 
 address {
 	text-align: left;
-	line-height: 1.5em;
+	font-size: 80%;
+	line-height: 1.25rem;
 	margin: auto;
 	width: 3in;
 	font-style: normal;
@@ -88,7 +92,7 @@ section > h2 {
 	margin-left: calc(var(--side-margin) * -1);
 	margin-right: calc(var(--side-margin) * -1);
 	padding-left: 0.5in;
-	font-size: 1.2rem;
+	font-size: 1.5rem;
 	font-variant: small-caps;
 	font-weight: normal;
 }
@@ -102,19 +106,38 @@ section > h2 {
 
 h3 {
 	/* Events/places/projects */
-	/* border-bottom: 1px dotted black; */
 	font-size: 1.125em;
 	margin-top: 1em;
+	display: flex;
+	flex-grow: 0;
+	justify-content:space-between;
+	align-items: baseline;
+
+	background: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%226%22%20height%3D%2212%22%3E%0A%09%3Ccircle%20cx%3D%224%22%20cy%3D%229%22%20r%3D%221%22%20stroke%3D%22transparent%22%20fill%3D%22%23CCC%22%20%2F%3E%0A%3C%2Fsvg%3E%0A);
+}
+
+h3 .text {
+	display: inline;
+	flex-grow: 0;
+	background: white;
+	padding-right: 0.5em;
+}
+
+
+.setting {
+	background: white;
+	display: inline;
+	text-align: right;
+	font-weight: normal;
+	font-size: 12px;
+	flex-grow: 0;
+	padding-left: 0.5em;
 }
 
 section {
+	position: relative;
 	padding: 0;
 	margin: 0;
-}
-
-.setting {
-	text-align: right;
-	margin-top: -1.34em;
 }
 
 table.aligned th {
@@ -147,42 +170,46 @@ table.aligned td {
 	page-break-after: always;
 }
 
+ul.compact {
+	display: flex;
+	margin-right: 0rem;
+	justify-content: space-between;
+}
+
+ul.compact li {
+	flex-grow: 0;
+	display: inline-block;
+	list-style: none;
+	padding-left: 1.5em;
+	position: relative;
+}
+
+ul.compact li:before {
+	position: absolute;
+	left: 0.5em;
+}
 	</style>
 </head>
 <body>
 	<div style="position: fixed; display: inline-block; right: 0.375in; bottom: 0.375in; font-size:70%">
-		Updated 8 November 2020.
+		Updated 22 November 2020.
 	</div>
 	<div class="flex-multicol flex-center">
 		<h1 class="flex-col" style="flex: 2">Curtis Fenner</h1>
 
-		<address class="flex-col">
+		<address class="flex-col" style="margin-bottom: -0.5rem">
 				<a href="https://curtisfenner.com/resume">curtisfenner.com/resume</a><br>
 				<a href="https://github.com/CurtisFenner">github.com/CurtisFenner</a><br>
 				<a href="mailto:curtiswilliamfenner@gmail.com">curtiswilliamfenner@gmail.com</a>
 		</address>
 	</div>
 
-	<section class=education>
-		<h2>Education</h2>
-		<h3>University of Michigan College of Engineering</h3>
-		<div class=setting>Ann Arbor, MI. 2014 &ndash; 2018</div>
-		<ul>
-			<li>4.0 GPA. Computer Science B.S.E. with minor in Mathematics.
-			<li><strong>Selected Coursework</strong>: 
-				Distributed Systems (W2017),
-				Grad. Programming Languages (F2017)
-			</li>
-			<li>Teaching assistant for Distributed Systems (F2017)
-			<li>World Finalist in 2017 
-				ACM International Collegiate Programming Contest (ICPC)
-		</ul>
-	</section>
-
 	<section class=experience>
 		<h2>Experience</h2>
-		<h3>Square &mdash; Software Engineer, Orders API Team</h3>
-		<div class=setting>Atlanta, GA. Aug. 2018&ndash;present</div>
+		<h3>
+			<span class=text>Square &mdash; Software Engineer, Orders API Team</span>
+			<div class=setting>Atlanta, GA. Aug. 2018&ndash;present</div>
+		</h3>
 		<ul>
 			<li>Backend engineer on the Orders API team, which operates both a public REST
 				API, as well as internal systems that serve Square Point-of-Sale mobile apps
@@ -194,12 +221,12 @@ table.aligned td {
 				scalable, strongly consistent, and highly available
 			<li><b>Technologies</b>:
 				<ul>
-					<li>Java &ndash; for API server implementation
-					<li>Protocol Buffers &ndash; for RPCs,
+					<li><b>Java</b> &ndash; for API server implementation
+					<li><b>Protocol Buffers</b> &ndash; for RPCs,
 						modeling the API schema, and database serialization
-					<li>TypeScript &amp; JavaScript &ndash;
+					<li><b>TypeScript &amp; JavaScript</b> &ndash;
 						for building internal web interfaces
-					<li>MySQL &ndash; for durable, distributed storage enabling
+					<li><b>MySQL</b> &ndash; for durable, distributed storage enabling
 						a strongly consistent API experience
 				</ul>
 			<li>Redesigned complex request validation logic to significantly 
@@ -210,32 +237,30 @@ table.aligned td {
 				document complex cart-calculation logic
 		</ul>
 
-		<h3>Qualtrics &mdash; Software Engineer Intern, Data Platform Team</h3>
-		<div class=setting>Seattle, WA. Summer 2017</div>
+		<h3>
+			<span class=text>Qualtrics &mdash; Software Engineer Intern, Data Platform Team</span>
+			<div class=setting>Seattle, WA. Summer 2017</div>
+		</h3>
 		<ul>
-			<li>Wrote code in a data-aggregation service as a member of the data platform team, and
-				set up Elasticsearch + Logstash + Kibana for internal log analysis
 			<li><b>Technologies</b>:
 				<ul>
-					<li>Scala &ndash; for backend implementation
-					<li>Elasticsearch &ndash; for aggregating metrics to produce custom reports, and
+					<li><b>Scala</b> &ndash; for backend implementation
+					<li><b>Elasticsearch</b> &ndash; for aggregating metrics to produce custom reports, and
 						for log analysis
 				</ul>
 			<li>Redesigned a data aggregation feature to get correct weighting across different
 				displays
-			<li>Prototype the use of Elasticsearch for log
-				management and indexing additional response information
 		</ul>
 
-		<h3>Qumulo &mdash; Software Engineer Intern, Filesystem Performance Team</h3>
-		<div class=setting>Seattle, WA. Summer 2016</div>
+		<h3>
+			<span class=text>Qumulo &mdash; Software Engineer Intern, Filesystem Performance Team</span>
+			<div class=setting>Seattle, WA. Summer 2016</div>
+		</h3>
 		<ul>
-			<li>Wrote code and tests as a member of the performance Scrum team for a distributed 
-				filesystem server
 			<li><b>Technologies</b>:
 				<ul>
-					<li>C &ndash; for filesystem implementation
-					<li>Python &ndash; for integration-test automation and code
+					<li><b>C</b> &ndash; for filesystem server implementation
+					<li><b>Python</b> &ndash; for integration-test automation and code
 						generation
 				</ul>
 			<li>Developed sharding of deleted file space reclamation to
@@ -246,15 +271,17 @@ table.aligned td {
 				significantly faster metadata operations
 		</ul>
 
-		<h3>Square &mdash; Software Engineer Intern, Public API Team</h3>
-		<div class=setting>San Francisco, CA. Summer 2015</div>
+		<h3>
+			<span class=text>Square &mdash; Software Engineer Intern, Public API Team</span>
+			<div class=setting>San Francisco, CA. Summer 2015</div>
+		</h3>
 		<ul>
 			<li>Wrote Go and JavaScript (Node.JS) as member of public API team
 			<li><b>Technologies</b>:
 				<ul>
-					<li>Node.JS &ndash; for implementation of microservice
+					<li><b>Node.JS</b> &ndash; for implementation of microservice
 						serving public API
-					<li>Go &ndash; for implementation of a new microservice to
+					<li><b>Go</b> &ndash; for implementation of a new microservice to
 						eventually replace the Node.JS server
 				</ul>
 			<li>Optimized and refactored public API server to halve average query time
@@ -263,47 +290,37 @@ table.aligned td {
 		</ul>
 	</section>
 
-	<div class="print-page-break"></div>
-
-	<section>
-		<h2>Skills</h2>
+	<section class=education>
+		<h2>Education</h2>
+		<h3>
+			<span class=text>University of Michigan: Computer Science B.S.E, 4.0 GPA</span>
+			<div class=setting>Ann Arbor, MI. 2014 &ndash; 2018</div>
+		</h3>
 		<ul>
-			<li><b>Programming Languages</b>:
-				<ul style="columns: 3">
-					<li>Java
-					<li>Python
-					<li>Scala
-					<li>C
-					<li>C++
-					<li>JavaScript &amp; TypeScript
-					<li>HTML &amp; CSS
-					<li>Lua
-					<li>Go
-				</ul>
-			<li><b>Technologies</b>:
-				<ul style="columns: 3">
-					<li>MySQL
-					<li>Elasticsearch
-					<li>Git
-					<li>React
-					<li>Protocol Buffers
-				</ul>
+			<li><strong>Selected Coursework</strong>: 
+				Distributed Systems (W2017),
+				Grad. Programming Languages (F2017)
+			</li>
+			<li>Teaching assistant for Distributed Systems (F2017)
+			<li>World Finalist in 2017 
+				ACM International Collegiate Programming Contest (ICPC)
 		</ul>
 	</section>
 
-	<section>
-		<h2>Projects</h2>
+	<!-- <div class="print-page-break"></div> -->
 
-		<h3>WeBWorK Proof Checker (University of Michigan)</h3>
+	<section>
+		<h2>Selected Projects</h2>
+
+		<h3>
+			<span class=text>WeBWorK Proof Checker (University of Michigan)</span>
+			<div class=setting><a href="https://curtisfenner.com/prove">https://curtisfenner.com/prove</a></div>
+		</h3>
 		<ul>
-			<li>Project under guidance of Dr. Martin Strauss, with cooperation from Elizabeth Viera
-			<li>Designed and built a homework interface for writing and checking
-				simple natural-deduction based proofs for students learning logic.
-			<li>Built a prototype implementation in JavaScript
-			<li>Translated the prototype into a Perl library that can be instantiated as a WeBWorK
-				problem type
-			<li>Work included designing and creating
-				<ul>
+			<li>Project under guidance of Dr. Martin Strauss, in collaboration with Elizabeth Viera
+			<li>Designed and built a web-homework interface for writing and checking
+				simple natural-deduction based proofs
+				<ul style="columns: 2; margin-right: 0rem;">
 					<li>a logical formula parser
 					<li>a tree-based symbolic pattern matcher
 					<li>built-in logical deduction rules
@@ -311,24 +328,21 @@ table.aligned td {
 						to set up problems
 					<li>a simple table-based user interface that could be rendered in WeBWorK
 				</ul>
-			<li><a href="https://curtisfenner.com/prove">https://curtisfenner.com/prove</a>
 		</ul>
 
-		<h3>Smol Programming Language &amp; Compiler</h3>
+		<h3>
+			<span class=text>Smol Programming Language &amp; Compiler</span>
+			<div class=setting><a href="https://github.com/CurtisFenner/smol-builder">https://github.com/CurtisFenner/smol-builder</a></div>
+		</h3>
 		<ul>
 			<li>Project largely completed for U. of M. EECS 590 with Dr. Wesley Weimer
-			<li>Designed and implemented a toy programming language and
-				compiler that uses a rudimentary SMT solver to check assertions at compile time
-			<li>Work included
-				<ul>
+			<li>Designed and implemented a toy programming language, compiler, and assertion verifier, including
+				<ul style="columns: 2; margin-right: 0rem;">
 					<li>a PEG parser library
-					<li>a type-checker that supports constrained type parameters
+					<li>a type-checker (including generic functions/types)
 					<li>a code-generator that produces C99 code
-					<li>a rudimentary CDCL based SMT solver, which can "verify" whether
-						simple mathematical statements are true or false
-						(Smol supported uninterpreted functions with quantifiers)
+					<li>a rudimentary CDCL based SMT solver
 				</ul>
-			<li><a href="https://github.com/CurtisFenner/smol-builder">https://github.com/CurtisFenner/smol-builder</a>
 		</ul>
 
 	</section>
