@@ -6,7 +6,16 @@
 	<style>
 html {
 	background: #EEE;
-	font-size: 12px;
+	font-size: 13px;
+	text-size-adjust: none;
+}
+
+@media print {
+	section > h2 {
+		background: #CCC;
+		color: black;
+		print-color-adjust: exact;
+	}
 }
 
 body {
@@ -15,7 +24,7 @@ body {
 	position: relative;
 	background: white;
 	font-family: Verdana;
-	width: 8in;
+	width: 197.3mm;
 
 	padding: var(--side-margin);
 	padding-top: 0.25in;
@@ -83,9 +92,14 @@ h1 {
 	font-size: 2rem;
 }
 
+h1 small {
+	font-size: 1.25rem;
+	font-variant: small-caps;
+}
+
 section > h2 {
-	background: #CCC;
-	color: black;
+	background: #DDD;
+	color: #555;
 
 	text-align: left;
 	/* border-bottom: 1px black solid; */
@@ -97,17 +111,10 @@ section > h2 {
 	font-weight: normal;
 }
 
-@media print {
-	section > h2 {
-		background: #CCC;
-		-webkit-print-color-adjust: exact;
-	}
-}
-
 h3 {
 	/* Events/places/projects */
-	font-size: 1.125em;
-	margin-top: 1em;
+	font-size: 1.125rem;
+	margin-top: 0.8em;
 	display: flex;
 	flex-grow: 0;
 	justify-content:space-between;
@@ -129,7 +136,7 @@ h3 .text {
 	display: inline;
 	text-align: right;
 	font-weight: normal;
-	font-size: 12px;
+	font-size: 1rem;
 	flex-grow: 0;
 	padding-left: 0.5em;
 }
@@ -192,10 +199,10 @@ ul.compact li:before {
 </head>
 <body>
 	<div style="position: fixed; display: inline-block; right: 0.375in; bottom: 0.375in; font-size:70%">
-		Updated 18 December 2020.
+		Updated June 2022.
 	</div>
 	<div class="flex-multicol flex-center">
-		<h1 class="flex-col" style="flex: 2">Curtis Fenner</h1>
+		<h1 class="flex-col" style="flex: 2">Curtis Fenner<br><small>Tokyo, Japan</small></h1>
 
 		<address class="flex-col" style="margin-bottom: -0.5rem">
 				<a href="https://curtisfenner.com/resume">curtisfenner.com/resume</a><br>
@@ -206,8 +213,29 @@ ul.compact li:before {
 
 	<section class=experience>
 		<h2>Experience</h2>
+
 		<h3>
-			<span class=text>Square &mdash; Software Engineer, Orders API Team</span>
+			<span class=text>PayPay &mdash; Software Engineer, Online</span>
+			<div class=setting>Remote, Jun. '21&ndash;Apr. '22</div>
+			<div class=setting>Tokyo, Japan. Apr. 2022&ndash;current</div>
+		</h3>
+		<ul>
+			<li>Backend engineer on the Online team, which provides internal
+				&amp; external APIs for accepting online payments
+			<li>Implemented new gateway services to enable more merchants to
+				accept PayPay
+			<li>Designed APIs and documentation for merchants integrating with
+				new PayPay features
+			<li><b>Technologies</b>:
+				<ul>
+					<li><b>Spring Boot</b>, <b>Java</b>, &amp; <b>Kotlin</b>
+						&ndash; for backend implementation
+					<li><b>AWS</b> &ndash; for cloud hosting
+				</ul>
+		</ul>
+
+		<h3>
+			<span class=text>Square &mdash; Software Engineer, Orders API</span>
 			<div class=setting>Atlanta, GA. Aug. 2018&ndash;Dec. 2020</div>
 		</h3>
 		<ul>
@@ -229,16 +257,15 @@ ul.compact li:before {
 					<li><b>MySQL</b> &ndash; for durable, distributed storage enabling
 						a strongly consistent API experience
 				</ul>
-			<li>Redesigned complex request validation logic to significantly 
-				improve test coverage and code quality
-			<li>Created library functions to support old API versions with minimal ongoing
-				maintanenace burden
-			<li>Drafted new documentation &amp; a "mini-lecture" presentation to
-				document complex cart-calculation logic
+			<li>Refactored complex validation logic to greatly
+				improve test coverage and reduce maintenance burden
+			<li>Created reusable library functions to support older API versions
+				with minimal effort
+			<li>Wrote and presented thorough documentation for complex internal calculation logic
 		</ul>
 
 		<h3>
-			<span class=text>Qualtrics &mdash; Software Engineer Intern, Data Platform Team</span>
+			<span class=text>Qualtrics &mdash; Software Engineer Intern, Data Platform</span>
 			<div class=setting>Seattle, WA. Summer 2017</div>
 		</h3>
 		<ul>
@@ -253,7 +280,7 @@ ul.compact li:before {
 		</ul>
 
 		<h3>
-			<span class=text>Qumulo &mdash; Software Engineer Intern, Filesystem Performance Team</span>
+			<span class=text>Qumulo &mdash; Software Engineer Intern, Filesystem Performance</span>
 			<div class=setting>Seattle, WA. Summer 2016</div>
 		</h3>
 		<ul>
@@ -263,8 +290,7 @@ ul.compact li:before {
 					<li><b>Python</b> &ndash; for integration-test automation and code
 						generation
 				</ul>
-			<li>Developed sharding of deleted file space reclamation to
-				double free-space reclaimation rate
+			<li>Doubled free-space reclamation rate by implementing sharding for large file deletion
 			<li>Eliminated lock contention in a multithreaded cache to
 				reduce file operation latency
 			<li>Implemented disk block allocation changes to ensure
@@ -272,7 +298,7 @@ ul.compact li:before {
 		</ul>
 
 		<h3>
-			<span class=text>Square &mdash; Software Engineer Intern, Public API Team</span>
+			<span class=text>Square &mdash; Software Engineer Intern, Public API</span>
 			<div class=setting>San Francisco, CA. Summer 2015</div>
 		</h3>
 		<ul>
@@ -284,9 +310,7 @@ ul.compact li:before {
 					<li><b>Go</b> &ndash; for implementation of a new microservice to
 						eventually replace the Node.JS server
 				</ul>
-			<li>Optimized and refactored public API server to halve average query time
-			<li>Ported a significant amount of the Node.JS implementation to Go in
-				anticipation of Square's V2 APIs
+			<li>Optimized and refactored public API server to halve average response time
 		</ul>
 	</section>
 
@@ -313,35 +337,16 @@ ul.compact li:before {
 		<h2>Selected Projects</h2>
 
 		<h3>
-			<span class=text>WeBWorK Proof Checker (University of Michigan)</span>
-			<div class=setting><a href="https://curtisfenner.com/prove">https://curtisfenner.com/prove</a></div>
+			<span class=text>Shiru Programming Language &amp; Compiler</span>
+			<div class=setting><a href="https://github.com/CurtisFenner/shiru-ts">https://github.com/CurtisFenner/shiru-ts</a></div>
 		</h3>
 		<ul>
-			<li>Project under guidance of Dr. Martin Strauss, in collaboration with Elizabeth Viera
-			<li>Designed and built a web-homework interface for writing and checking
-				simple natural-deduction based proofs
-				<ul style="columns: 2; margin-right: 0rem;">
-					<li>a logical formula parser
-					<li>a tree-based symbolic pattern matcher
-					<li>built-in logical deduction rules
-					<li>a wrapping library to enable professors with limited programming experience
-						to set up problems
-					<li>a simple table-based user interface that could be rendered in WeBWorK
-				</ul>
-		</ul>
-
-		<h3>
-			<span class=text>Smol Programming Language &amp; Compiler</span>
-			<div class=setting><a href="https://github.com/CurtisFenner/smol-builder">https://github.com/CurtisFenner/smol-builder</a></div>
-		</h3>
-		<ul>
-			<li>Project largely completed for U. of M. EECS 590 for Dr. Wesley Weimer
 			<li>Designed and implemented a toy programming language, compiler, and assertion verifier, including
 				<ul style="columns: 2; margin-right: 0rem;">
 					<li>a PEG parser library
 					<li>a type-checker (including generic functions/types)
-					<li>a code-generator that produces C99 code
-					<li>a rudimentary CDCL based SMT solver
+					<li>a simple interpreter
+					<li>a rudimentary CDCL-based SMT solver
 				</ul>
 		</ul>
 
