@@ -375,7 +375,7 @@ CodeLines.clearLines = function () {
 				codeblocks.removeChild(CodeLines.lines[0]);
 				CodeLines.lines = CodeLines.lines.slice(1);
 			}
-		}, i * 200 + Math.random() * 400);
+		}, i * 200);
 	}
 	setTimeout(CodeLines.clearLines, Math.random() * 10000);
 

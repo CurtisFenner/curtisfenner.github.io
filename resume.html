@@ -43,7 +43,7 @@ address {
 	text-align: left;
 	font-size: 80%;
 	line-height: 1.25rem;
-	margin: auto;
+	margin: 0;
 	width: 3in;
 	font-style: normal;
 }
@@ -55,6 +55,7 @@ address {
 li {
 	list-style: none;
 	padding-left: 2em;
+	margin-right: -2em;
 	position: relative;
 }
 
@@ -201,10 +202,10 @@ ul.compact li:before {
 </head>
 <body>
 	<div style="position: fixed; display: inline-block; right: 0.375in; bottom: 0.375in; font-size:70%">
-		Updated June 2022.
+		Updated September 2022.
 	</div>
 	<div class="flex-multicol flex-center">
-		<h1 class="flex-col" style="flex: 2">Curtis Fenner<br><small>Tokyo, Japan</small></h1>
+		<h1 class="flex-col" style="flex: 2">Curtis Fenner<small style="display:block;">Tokyo, Japan</small></h1>
 
 		<address class="flex-col" style="margin-bottom: -0.5rem">
 				<a href="https://curtisfenner.com/resume">curtisfenner.com/resume</a><br>
@@ -222,18 +223,20 @@ ul.compact li:before {
 			<div class=setting>Tokyo, Japan. Apr. 2022&ndash;current</div>
 		</h3>
 		<ul>
-			<li>Backend engineer on the Online team, which provides internal
-				&amp; external APIs for accepting online payments
-			<li>Implemented new gateway services to enable more merchants to
-				accept PayPay
-			<li>Designed APIs and documentation for merchants integrating with
-				new PayPay features
+			<li>Backend engineer on the Online team, which external APIs for
+				accepting PayPay payments online
+			<li>Designed, documented, and implemented new APIs used by merchants
+				to accept PayPay payments
+			<li>Designed and lead a new microservice, using requirements from
+				Product Managers and other teams
 			<li><b>Technologies</b>:
 				<ul>
 					<li><b>Spring Boot</b>, <b>Java</b>, &amp; <b>Kotlin</b>
 						&ndash; for backend implementation
-					<li><b>AWS</b> &ndash; for cloud hosting
+						<li><b>AWS</b> &ndash; for cloud hosting
 				</ul>
+			<li>Refactored codebase to improve test coverage, uncover bugs, and
+				improve maintainability
 		</ul>
 
 		<h3>
@@ -243,10 +246,9 @@ ul.compact li:before {
 		<ul>
 			<li>Backend engineer on the Orders API team, which operates both a public REST
 				API, as well as internal systems that serve Square Point-of-Sale mobile apps
-			<li>Responsible for 
-				designing, reviewing, and implementing features that integrate
-				with many other microservices including for payments, catalog,
-				customers, and fulfillments
+			<li>Designed features that integrate
+				with many microservices such as payments, catalog,
+				and customers
 			<li>Work emphasizes designs that are maintainable,
 				scalable, strongly consistent, and highly available
 			<li><b>Technologies</b>:
@@ -261,8 +263,8 @@ ul.compact li:before {
 				</ul>
 			<li>Refactored complex validation logic to greatly
 				improve test coverage and reduce maintenance burden
-			<li>Created reusable library functions to support older API versions
-				with minimal effort
+			<li>Created reusable library functions to support multiple API
+				versions with minimal effort
 			<li>Wrote and presented thorough documentation for complex internal calculation logic
 		</ul>
 
@@ -295,8 +297,6 @@ ul.compact li:before {
 			<li>Doubled free-space reclamation rate by implementing sharding for large file deletion
 			<li>Eliminated lock contention in a multithreaded cache to
 				reduce file operation latency
-			<li>Implemented disk block allocation changes to ensure
-				significantly faster metadata operations
 		</ul>
 
 		<h3>
@@ -304,7 +304,6 @@ ul.compact li:before {
 			<div class=setting>San Francisco, CA. Summer 2015</div>
 		</h3>
 		<ul>
-			<li>Wrote Go and JavaScript (Node.JS) as member of public API team
 			<li><b>Technologies</b>:
 				<ul>
 					<li><b>Node.JS</b> &ndash; for implementation of microservice
@@ -327,7 +326,7 @@ ul.compact li:before {
 				Distributed Systems (W2017),
 				Grad. Programming Languages (F2017)
 			</li>
-			<li>Teaching assistant for Distributed Systems (F2017)
+			<li>Teaching assistant for Distributed Systems using Golang (F2017)
 			<li>World Finalist in 2017 
 				ACM International Collegiate Programming Contest (ICPC)
 		</ul>
@@ -344,12 +343,7 @@ ul.compact li:before {
 		</h3>
 		<ul>
 			<li>Designed and implemented a toy programming language, compiler, and assertion verifier, including
-				<ul style="columns: 2; margin-right: 0rem;">
-					<li>a PEG parser library
-					<li>a type-checker (including generic functions/types)
-					<li>a simple interpreter
-					<li>a rudimentary CDCL-based SMT solver
-				</ul>
+				a PEG parser, a type-checker, a simple SMT solver, and a JavaScript code generator.
 		</ul>
 
 	</section>
