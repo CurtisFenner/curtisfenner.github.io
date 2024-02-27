@@ -131,7 +131,7 @@ class MonsteraCurve {
 		const vein = this.veinPath(p0, 10);
 
 		const low = radius * (2.5 + Math.random() * 1) / Math.cos(this.angle(p0));
-		const high = 1.2 - 0.3 * Math.random();
+		const high = 1.25 - 0.3 * Math.random();
 
 		const section = vein.vein.filter(v => {
 			return low <= v.t && v.t <= high;
@@ -144,10 +144,10 @@ class MonsteraCurve {
 		};
 	}
 
-	veinStarts(count, offset = 0.1 + Math.random()) {
+	veinStarts(count, offset = 0.09 + 0.08 * Math.random()) {
 		const veins = [];
 		for (let i = offset; i < count * 0.5;) {
-			const v = this.leafCut(i / count, 0.5 / count * (0.75 + 0.5 * Math.random()));
+			const v = this.leafCut(i / count, 0.5 / count * (0.75 + 0.5 * Math.random() ** 2));
 
 			veins.push({
 				i,
@@ -451,7 +451,7 @@ function randomNormal() {
 const basicSize = 70 + 70 * Math.random();
 const size = {
 	x: basicSize,
-	y: basicSize - 10 + 40 * Math.random(),
+	y: basicSize - 15 + 60 * Math.random(),
 };
 const dimensions = 250;
 
@@ -462,8 +462,9 @@ clipPath += `M0,0 L${dimensions},0 L${dimensions},${dimensions} L0,${dimensions}
 const slotCount = size.y * 0.08 + 3 * Math.random() ** 1.5;
 const rightCuts = mon.veinStarts(slotCount);
 const offset = { x: dimensions / 2, y: dimensions / 3 };
+const flip = Math.random() < 0.5 ? 0 : 1;
 for (let i = 0; i < rightCuts.length; i++) {
-	const sign = i % 2 === 0 ? +1 : -1;
+	const sign = i % 2 === flip ? +1 : -1;
 	clipPath += toSVGPath(rightCuts[i].leafCut, { x: size.x * sign, y: size.y }, offset);
 }
 
@@ -471,23 +472,24 @@ const plainExteriorHalf = mon.approximateExteriorHalf();
 
 const bumper = (v, absolute) => {
 	if (absolute) {
-		return V2scale(Math.abs(v.x) * 0.05, randomNormal());
+		return V2multiply({ x: Math.abs(v.x) * 0.05, y: Math.abs(v.x) * 0.12 }, randomNormal());
 	} else {
 		return V2scale(size.x * 0.0000125, randomNormal());
 	}
 };
 
-const exterior = [
+const exterior = bumpyCurve([
 	...plainExteriorHalf,
 	...scaleCurve(reverseCurve(plainExteriorHalf), { x: -1, y: 1 }),
-];
+], bumper);
 
 const outerPath = toSVGPath(exterior, size, offset);
 
 const outer = document.createElement("div");
+outer.className = "leaf";
 
 const inner = document.createElement("div");
-inner.style.background = "green";
+inner.className = "inner";
 inner.style.width = dimensions + "px";
 inner.style.height = dimensions + "px";
 inner.style.clipPath = "path(evenodd, " + JSON.stringify(clipPath) + ")";
@@ -498,4 +500,4 @@ outer.style.width = dimensions + "px";
 outer.style.height = dimensions + "px";
 outer.style.clipPath = "path(" + JSON.stringify(outerPath) + ")";
 
-document.body.appendChild(outer);
+document.getElementById("thefuzz").appendChild(outer);

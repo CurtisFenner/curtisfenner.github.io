@@ -1,0 +1,73 @@
+<!doctype html>
+<style>
+body {
+	background: linear-gradient(25deg, rgb(61, 87, 208, 1) 0%, rgb(14, 200, 215) 100%);
+}
+
+.leaf .inner {
+	background-color: gray;
+}
+
+@keyframes wave15 {
+	  0% { transform: rotate(0deg); }
+	 30% { transform: rotate(-15deg); }
+	 50% { transform: rotate(0deg); }
+	 70% { transform: rotate(15deg); }
+	100% { transform: rotate(0deg); }
+}
+@keyframes wave10 {
+	  0% { transform: rotate(0deg); }
+	 25% { transform: rotate(-10deg); }
+	 50% { transform: rotate(0deg); }
+	 75% { transform: rotate(10deg); }
+	100% { transform: rotate(0deg); }
+}
+@keyframes wave5 {
+	  0% { transform: rotate(0deg); }
+	 25% { transform: rotate(-5deg); }
+	 50% { transform: rotate(0deg); }
+	 75% { transform: rotate(5deg); }
+	100% { transform: rotate(0deg); }
+}
+
+.leaf {
+	transform-origin: 50% 38%;
+	animation: 74.41s infinite wave15, 27.60s infinite wave10, 10.08s infinite wave5;
+}
+
+.fuzzy {
+	filter: url(#fuzz-green);
+}
+
+</style>
+
+<svg width="600" height="600" viewbox="0 0 600 600"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	style="opacity: 0; position: absolute;">
+	<defs>
+		<filter id="fuzz-green" x="0" y="0" width="100%" height="100%">
+			<feTurbulence baseFrequency="0.7777" numOctaves="3" type="fractalNoise" result="noise"/>
+			<feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blurred" />
+			<feComposite in="noise" in2="blurred" operator="arithmetic" k1="0" k2="0.45" k3="0.55" k4="0" />
+			<feComponentTransfer result="fuzzy">
+				<feFuncR type="linear" slope="0" intercept="1"></feFuncR>
+				<feFuncG type="linear" slope="0" intercept="1"></feFuncG>
+				<feFuncB type="linear" slope="0" intercept="1"></feFuncB>
+				<feFuncA type="linear" slope="5" intercept="-2"></feFuncA>
+			</feComponentTransfer>
+
+			<feFlood style="flood-color: #02955e" result="color" />
+			<feComposite in2="fuzzy" in="color" operator="atop" />
+		</filter>
+	</defs>
+</svg>
+
+<div id="thefuzz" class="fuzzy">
+</div>
+
+<div id=present>
+
+</div>
+
+<script src="monstera.js"></script>
