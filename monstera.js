@@ -139,17 +139,18 @@ class MonsteraCurve {
 
 		return {
 			vein: vein.vein,
-			curve: makeSlug(section, radius, radius * 2.2, -0.75),
+			curve: makeSlug(section, radius, radius * (1.75 + 1 * Math.random()), -0.75),
 			oneStep: vein.oneStep,
 		};
 	}
 
-	veinStarts(count, offset = Math.random()) {
+	veinStarts(count, offset = 0.1 + Math.random()) {
 		const veins = [];
-		for (let i = 0.1 + offset; i < count * 0.5;) {
-			const v = this.leafCut(i / count, 0.5 / count);
+		for (let i = offset; i < count * 0.5;) {
+			const v = this.leafCut(i / count, 0.5 / count * (0.75 + 0.5 * Math.random()));
 
 			veins.push({
+				i,
 				veinPath: v.vein,
 				leafCut: v.curve,
 			});
@@ -331,25 +332,25 @@ function toSVGPath(curve, scale, offset = { x: 0, y: 0 }) {
 	let previous = curve[curve.length - 1];
 	words.push(
 		"M",
-		scale * previous.position.x + offset.x,
+		scale.x * previous.position.x + offset.x,
 		",",
-		scale * previous.position.y + offset.y,
+		scale.y * previous.position.y + offset.y,
 	);
 	for (let i = 0; i < curve.length; i++) {
 		const now = curve[i];
 		words.push(
 			"C",
-			scale * previous.after.x + offset.x,
+			scale.x * previous.after.x + offset.x,
 			",",
-			scale * previous.after.y + offset.y,
+			scale.y * previous.after.y + offset.y,
 			" ",
-			scale * now.before.x + offset.x,
+			scale.x * now.before.x + offset.x,
 			",",
-			scale * now.before.y + offset.y,
+			scale.y * now.before.y + offset.y,
 			" ",
-			scale * now.position.x + offset.x,
+			scale.x * now.position.x + offset.x,
 			",",
-			scale * now.position.y + offset.y,
+			scale.y * now.position.y + offset.y,
 		);
 		previous = now;
 	}
@@ -363,22 +364,125 @@ function toSVGPath(curve, scale, offset = { x: 0, y: 0 }) {
 	}).join("");
 }
 
+/**
+ * @param {V2} a
+ * @param {V2} b
+ */
+function V2dot(a, b) {
+	return a.x * b.x + a.y * b.y;
+}
+
+/**
+ * @param {number} c
+ * @param {V2} v
+ */
+function V2scale(c, v) {
+	return {
+		x: c * v.x,
+		y: c * v.y,
+	};
+}
+
+/**
+ * @param {{position: V2, after: V2, before: V2}[]} curve
+ * @param {(v: V2, absolute: boolean) => V2} bumps
+ * @return {{position: V2, after: V2, before: V2}[]}
+ */
+function bumpyCurve(curve, bumps) {
+	return curve.map(point => {
+		const spin = bumps(point.position, false);
+		const bumpedBefore = V2addScaled(point.before, 1, spin);
+		const bumpedAfter = V2addScaled(point.after, 1, spin);
+		const newAxis = V2unit(V2addScaled(V2subtract(bumpedAfter, point.position), 1, V2subtract(point.position, bumpedBefore)));
+
+		const newPosition = V2addScaled(point.position, 1, bumps(point.position, true));
+
+		return {
+			position: newPosition,
+			before: V2addScaled(newPosition, V2dot(newAxis, V2subtract(bumpedBefore, point.position)), newAxis),
+			after: V2addScaled(newPosition, V2dot(newAxis, V2subtract(bumpedAfter, point.position)), newAxis),
+		};
+	});
+}
+
+/**
+ * @param {{position: V2, after: V2, before: V2}[]} curve
+ * @return {{position: V2, after: V2, before: V2}[]}
+ */
+function reverseCurve(curve) {
+	return curve.slice(0).reverse().map(point => {
+		return { ...point, before: point.after, after: point.before };
+	});
+}
+
+function V2multiply(a, b) {
+	return {
+		x: a.x * b.x,
+		y: a.y * b.y,
+	};
+}
+
+/**
+ * @param {{position: V2, after: V2, before: V2}[]} curve
+ * @param {V2} scale
+ * @return {{position: V2, after: V2, before: V2}[]}
+ */
+function scaleCurve(curve, scale) {
+	return curve.map(point => {
+		return {
+			position: V2multiply(scale, point.position),
+			before: V2multiply(scale, point.before),
+			after: V2multiply(scale, point.after),
+		};
+	});
+}
+
 const mon = new MonsteraCurve();
 
-const size = 100;
+function randomNormal() {
+	const a = Math.random();
+	const b = Math.random();
+	return {
+		x: Math.sqrt(-2 * Math.log(a)) * Math.cos(2 * Math.PI * b),
+		y: Math.sqrt(-2 * Math.log(a)) * Math.sin(2 * Math.PI * b),
+	};
+}
+
+const basicSize = 70 + 70 * Math.random();
+const size = {
+	x: basicSize,
+	y: basicSize - 10 + 40 * Math.random(),
+};
 const dimensions = 250;
 
 let clipPath = "";
 
 clipPath += `M0,0 L${dimensions},0 L${dimensions},${dimensions} L0,${dimensions} Z`;
 
-const cuts = mon.veinStarts(13.5 + Math.random());
-const offset = { x: 0, y: dimensions / 3 };
-for (let i = 0; i < cuts.length; i += 2) {
-	clipPath += toSVGPath(cuts[i].leafCut, size, offset);
+const slotCount = size.y * 0.08 + 3 * Math.random() ** 1.5;
+const rightCuts = mon.veinStarts(slotCount);
+const offset = { x: dimensions / 2, y: dimensions / 3 };
+for (let i = 0; i < rightCuts.length; i++) {
+	const sign = i % 2 === 0 ? +1 : -1;
+	clipPath += toSVGPath(rightCuts[i].leafCut, { x: size.x * sign, y: size.y }, offset);
 }
-const outerPath = toSVGPath(mon.approximateExteriorHalf(), size, offset);
 
+const plainExteriorHalf = mon.approximateExteriorHalf();
+
+const bumper = (v, absolute) => {
+	if (absolute) {
+		return V2scale(Math.abs(v.x) * 0.05, randomNormal());
+	} else {
+		return V2scale(size.x * 0.0000125, randomNormal());
+	}
+};
+
+const exterior = [
+	...plainExteriorHalf,
+	...scaleCurve(reverseCurve(plainExteriorHalf), { x: -1, y: 1 }),
+];
+
+const outerPath = toSVGPath(exterior, size, offset);
 
 const outer = document.createElement("div");
 
