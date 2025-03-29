@@ -1,0 +1,56 @@
+---
+import { getCollection } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts.js";
+import { postUrl } from "../utils";
+
+const posts = (await getCollection("blog")).sort((a, b) =>
+	b.data.published.localeCompare(a.data.published),
+);
+
+const projects = posts.filter((x) => x.data.project);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+				<h1>About Curtis</h1>
+				<p>
+					I'm Curtis Fenner. I graduated from the University of
+					Michigan in 2018, and work as a software engineer.
+				</p>
+				<p>
+					I've been living in Tokyo since 2022.
+					<p>I enjoy working with code and math!</p>
+				</p>
+			</section>
+			<section>
+				<h1>Projects</h1>
+
+				{
+					projects.map((project) => {
+						return (
+							<>
+								<h2>
+									<a href={postUrl(project)}>
+										{project.data.title}
+									</a>
+								</h2>
+								<p>{project.data.description}</p>
+							</>
+						);
+					})
+				}
+			</section>
+			<Footer />
+		</main>
+	</body>
+</html>

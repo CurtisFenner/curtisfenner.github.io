@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { postIsDraft } from "../utils.js";
+
+type Props = CollectionEntry<"blog">["data"];
+
+const { title, description, published } = Astro.props;
+const isDraft = postIsDraft({data: Astro.props});
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				<section>
+					<div class="title">
+						<h1 class={isDraft ? "draft" : ""}>{title}</h1>
+						<div class="date">{published}</div>
+						<hr />
+					</div>
+					<slot />
+				</section>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
