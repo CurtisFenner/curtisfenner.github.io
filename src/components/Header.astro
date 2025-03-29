@@ -1,7 +1,12 @@
 ---
-import HeaderLink from './HeaderLink.astro';
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE } from "../consts";
+import HeaderLink from "./HeaderLink.astro";
 ---
+
+<div class="bg">
+	<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
+	</div>
+</div>
 
 <header>
 	<nav>
@@ -9,7 +14,8 @@ import { SITE_TITLE } from '../consts';
 		<div class="internal-links">
 			<HeaderLink href="/">About</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="http://github.com/curtisfenner">GitHub</HeaderLink>
+			<HeaderLink href="http://github.com/curtisfenner">GitHub</HeaderLink
+			>
 			<HeaderLink href="/resume">Resume</HeaderLink>
 		</div>
 	</nav>
