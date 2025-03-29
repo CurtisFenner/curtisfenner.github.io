@@ -1,0 +1,50 @@
+---
+import { getCollection } from "astro:content";
+import BaseHead from "../../components/BaseHead.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts.js";
+import { postIsDraft, postUrl } from "../../utils.js";
+
+const posts = (await getCollection("blog")).sort((a, b) =>
+	b.data.published.localeCompare(a.data.published),
+);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+			<h1>Posts</h1>
+				{
+					posts.map((post) => {
+						const isDraft = postIsDraft(post);
+						if (isDraft && !import.meta.env.DEV) {
+							return <></>;
+						}
+
+						return (
+							<>
+								<a
+									class={isDraft ? "draft" : ""}
+									style="display: block"
+									href={postUrl(post)}
+								>
+									<h4 class="title">{post.data.title}</h4>
+									<p class="date">{post.data.published}</p>
+								</a>
+								<hr />
+							</>
+						);
+					})
+				}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
