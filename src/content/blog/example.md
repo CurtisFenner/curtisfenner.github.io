@@ -1,7 +1,7 @@
 ---
 title: "Example test page"
 description: "Example page"
-published: "Today draft"
+published: "0000-00-00 draft"
 ---
 
 This is an example lorem ipsum page.
