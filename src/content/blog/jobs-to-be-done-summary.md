@@ -108,9 +108,34 @@ Separating the **job** (what the customer needs done) from the **solution**
 
 ----
 
-In Jobs-to-be-Done, **Innovation** is therefore building new **solutions** with
+In Jobs-to-be-Done, **innovation** is therefore building new **solutions** with
 better **outcomes** that **customers** want to **hire** to perform the
 **jobs they need done**.
+
+# “Ideas First" vs "Needs First"
+
+Jobs to be Done contrasts two basic approaches to innovation:
+
+* "Ideas first": brainstorm **solutions** then test them with different
+  customers to see how well they fit customer needs
+  * > "If you want to succeed, double your failure rate."
+    >
+    > - IBM founder Thomas Watson
+  * This approach is **inherently flawed** yet **extremely popular** in the
+    business world
+  * Articulating the Value Proposition of your solution to customers is hard to
+    when *you have not analyzed the most important outcomes of their jobs*, so
+    even if you have built a good solution, when you show it to customers they
+    may not see why it is worth hiring for their jobs!
+* **"Needs first"**: study your customers to learn **what jobs they need done**,
+  and then find **which of these needs are unmet or under-served**.
+  * > **"People don't want to buy a quarter-inch drill.
+    > They want a quarter-inch hole!"**
+    >
+    > - Harvard Business Professor Levitt
+  * "Jobs to be Done" has lots of recommendations on how to do this _well_,
+    because even most companies which _try_ to follow a "needs first" approach
+    execute it poorly
 
 ## Articulating customer needs as "Jobs"
 
@@ -119,19 +144,44 @@ important to carefully catalog and organize them, to avoid clumping too many
 needs together. It's also important to keep in mind that no single solution can
 address every single one of a customer's needs.
 
-### Don't confuse jobs and solutions.
+Even for a single job and a single solution, some customers (or segments of
+customers) may consider the solution to solve the job well, and some not. It's
+therefore important to segment customers **by their needs and desired outcomes**
+rather than by demographics, economics, etc.
 
-For example, when I'm starting work, I often get a take-out latte. This
-fulfills two of my needs:
+### Talking to Customers: Solutions vs Jobs
 
-* I want caffeine in the morning so that I can stay focused and productive
-* I like having something to sip or nibble on when I'm settling into my desk to
-  help me relax and get into the right headspace
+Do not directly ask customers what their needs are. **They will not tell you**.
 
-But, a hot coffee isn't the only solution that meets these needs!
-* An espresso float
-* A granola bar and a vending machine green-tea
-* A cola slushy
+Ask them,
+
+* why are you using (current solution)?
+* what are you ultimately trying to get done?
+
+Do not take customer's answers at face value. It is easy for to confuse a
+_solution_ for the _actual job that it is performing_.
+
+For example, imagine asking why an office purchased an electric kettle for their
+break room. If you ask directly, the answer will likely be some variation of "to
+boil water". But _getting boiled water_ is almost surely _not_ the job that they
+need done:
+
+|                           | Boil Water | Enjoy Tea |
+|---------------------------| ---------- | --------- |
+| Kettle                    | Yes        | Yes       |
+| Coffee Maker              | Yes        | Yes       |
+| Bunsen burner             | Yes        | NO!       |
+| Microwave                 | Yes        | Kinda?    |
+| Hot drink vending machine | NO!        | Yes       |
+
+For a _real_ job of "enjoying tea", a bunsen-burner (highly capable of boiling
+water) cannot compete; on the other hand, a hot-drink vending machine (incapable
+of boiling water) _may_ be able to compete!
+
+This job-based analysis makes this kind of analysis easy, but also sound so
+obvious that it sounds like it doesn't need explaining. But a lot of businesses
+act in ways that causes them to miss these "obvious" opportunities for
+innovation and competition.
 
 ### Jobs don't change much over time. Solutions, however, do!
 
@@ -145,128 +195,26 @@ Any particular job could be solved by radically different means. You are
 competing with companies who have products and services that sound nothing like
 yours!
 
-# Talking to Customers
+## Think about the important outcome
 
-Do not ask customers what their needs are. **They will not tell you**.
+The immediate impact of a solution may not be the most important outcome.
 
-Ask them,
+For example, consider a corn farmer buying herbicide. Are they buying the
+herbicide to kill weeds? Yes, but _that is not the important outcome_:
 
-* why are you using (current solution)?
-* what are you ultimately trying to get done?
-
-Do not take customer's answers at face value.
-
-> Q: "Why did you buy that kettle?"
+> Less weeds means _more healthy corn_, which is the important outcome.
 >
-> Customer: "To boil water".
+> But there are _many_ ways to increase corn yield. For example, recently it has
+been found that installing solar panels above crops can actually increase their
+yields!
 >
-> * But "Boiling water" is likely not actually the job the customer needed done!
-> * The real job may be **to enjoy tea**.
->     * Solutions like a _hot-beverage vending machine_ do this job,
->       but _they don't do the job of boiling water_.
+> This outcome-centric approach makes it clear that a *solar panel company*
+> can actually be in direct competition with a *weed-be-gone spray company*!
 
-Think about the important outcome.
-
-> Q: Why is a farmer buying herbicide?
->
-> A: To kill weeds? No!
->
-> A: To improve crop yields (which would otherwise be reduced by weeds)
+This kind of business strategy is very hard to notice without following through
+to what your customers are ultimately trying to get done!
 
 --------------------------------------------------------------------------------
-
-## “Ideas First" vs "Needs First"
-
-The authors summarize two main approaches to innovating that are followed at
-most companies.
-
-* "Ideas first":
-    * Companies **brainstorm** product or service ideas, then test them with
-      customers to see how well they fit customer needs
-    * This approach is **inherently flawed**, yet **extremely popular**.
-        * > If you want to succeed, double your failure rate.
-          >
-          > - IBM founder Thomas Watson
-    * **Customers cannot articulate the solutions that they want.**
-        * > "Why are we even asking customers what solutions they want?"
-        * It's OUR job as designers and engineers to solve problems!
-* "Needs first":
-    * Companies study their customers to learn **what their needs are**,
-    * then find out **which of their customers' needs are unmet**.
-    * Most companies which _try_ to follow a "needs first" approach execute the
-      approach poorly.
-
-Jobs-to-be-Done advocates a particular way to successfully implement the
-"Needs first" approach for innovation.
-
-## Jobs to be Done
-
-The "Jobs to be Done" framework is all about building a way to
-**talk about customer needs** so that we can efficiently find and meet them
-
-> **"People don't want to buy a quarter-inch drill.
-> They want a quarter-inch hole!"**
->
-> - Levitt
-
-The authors experience has suggested
-
-* customers are loyal to **the jobs that they need done**, **not** to their
-  (current) solutions to those jobs
-* customers are willing to change solutions (**only**) if the new solution
-  **solves the job 20% better**
-
-### The Language of Jobs to be Done
-
-A **job** is a task that a customer needs to perform.
-
-An **outcome** is a measure that a customer (usually, implicitly) uses to
-determine if the job was done well.
-
-### Articulating Needs as "Jobs"
-
-Customers have **dozens to hundreds of separate needs**. It is therefore
-important to **carefully articulate each important need** and avoid clumping too
-many together.
-
-No single solution can address every one of a customer's needs.
-
-Even for a single job and a single solution, some customers (or segments of
-customers) may consider the solution to solve the job well, and some not.
-
-* It's therefore important to segment customers **by their needs** rather than
-  by demographics, economics, etc.
-
-#### Don't confuse jobs and solutions.
-
-Jobs should be stable over time. "Enjoy listening to music" is a job;
-solutions (vinyl records, CDs, MP3 players, streaming) change over time.
-
-Jobs are generally indifferent to the way that they're solved. A single job
-could be solved either on paper or on a computer; in person or virtually; etc.
-
-#### Don't forget about "emotional" and "social" outcomes
-
-How people want to feel (or avoid feeling!) when doing tasks is also important.
-
-#### Avoid conflating outcomes and jobs
-
-#### Avoid conflating situations and jobs
-
-A _situation_ such as "being bored" isn't a job.
-
-"Overcoming boredom" is closer, but is too general to be analyzed. Pick a more
-specific job, such as "enjoy a beverage during a commute".
-
-#### A suggested format
-
-> (verb) (object) + (context)
-
-For example, "Listen to music while on the go."
-
-The "context" should clarify what kind of customer has the job, and therefore
-what outcomes and sub-needs may be important. A commuter vs a student vs a WFH
-employee may have very different priorities when trying to solve the above job.
 
 ### Figure out what your customer's outcome metrics are
 
@@ -290,6 +238,17 @@ convince a customer to switch to your solution!_
 
 # Strategy
 
+The Jobs-to-be-Done authors posit that customers are more loyal to **jobs** than
+they are **solutions**. They estimate that **if the most important outcomes are
+20% better with a new solution, customers will be willing to hire that new
+solution**.
+
+It's therefore _critical_ that before building a new solution, you must
+determine the most important outcomes, and ensure that they are **20% better
+than the competition**.
+
+## Under- and Over-served Needs
+
 In business, one of the fundamental goals is to _make money_. Similarly, a
 fundamental outcome customers have is _how cheap the solution was_.
 
@@ -299,11 +258,10 @@ more efficiently, ...), but _better_ is often at odds with _cheaper_.
 This suggests four main "quadrants" of business opportunity that should be
 tackled differently:
 
-|                                       |  _More expensive_ than<br />other solutions     | | _Cheaper_ than<br />other solutions    |
-|---------------------------------------|-------------------------------------------------|-|----------------------------------------|
-| **_Worse_ than<br />other solutions** | Capture customers with _completely unmet needs_ | | Capture customers who are _overserved_ |
-|                                       |                                                 | |                                        |
-| **_Better_ than<br />other solutions**| Capture customers with _under-met needs_        | | ***The ideal!***                       |
+|                                       |  _More expensive_ than<br />other solutions     | _Cheaper_ than<br />other solutions    |
+|---------------------------------------|-------------------------------------------------|----------------------------------------|
+| **_Worse_ than<br />other solutions** | Capture customers with _completely unmet needs_ | Capture customers who are _overserved_ |
+| **_Better_ than<br />other solutions**| Capture customers with _under-met needs_        | ***The ideal!***                       |
 
 An **overserved** customer has solutions to needs that they don't value (for
 example, lots of shiny features that they don't actually care about)
@@ -331,12 +289,9 @@ you already have on sale!_ But if you don't market the product around meeting
 that need (or improving the most important outcome), customers won't know they
 can have that need met!
 
-# Outcome Driven Innovation: Executing Jobs-to-be-Done
+## Purchaser vs Customer
 
-**Outcome Driven Innovation** (ODI) is the name of the process to follow that
-executes on the theory presented by "Jobs to be Done".
-
-ODI defines the **customer** as the person who **executes the job**.
+Jobs-to-be-Done defines the **customer** as the person who **executes the job**.
 
 They are **not** the person who **purchases the solution**. They are the person
 who **sees the outcome of the job**, and so they **are the best person to ask
@@ -345,4 +300,3 @@ about what outcomes are important**.
 The **purchase decision maker** is more interested in **financial outcomes**
 (such as how much the solution costs), and generally less interested in
 functional outcomes (how well the job was done).
-
