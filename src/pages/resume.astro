@@ -180,24 +180,10 @@ table.aligned td {
 	page-break-after: always;
 }
 
-ul.compact {
-	display: flex;
-	margin-right: 0rem;
-	justify-content: space-between;
+li.tech-icon:before {
+	content: "🔧\FE0E";
 }
 
-ul.compact li {
-	flex-grow: 0;
-	display: inline-block;
-	list-style: none;
-	padding-left: 1.5em;
-	position: relative;
-}
-
-ul.compact li:before {
-	position: absolute;
-	left: 0.5em;
-}
 	</style>
 </head>
 <body>
@@ -214,7 +200,7 @@ ul.compact li:before {
 		</address>
 	</div>
 
-	<section class=experience>
+	<section>
 		<h2>Experience</h2>
 		<h3>
 			<span class=text>Givery &mdash; Software Engineer, Track Test &amp; Common</span>
@@ -222,11 +208,11 @@ ul.compact li:before {
 		</h3>
 		<ul>
 			<li>Backend engineer on the Track Test product and on common systems
-			<li>Team dev. lead (2025&ndash;) for Track Test team, planned, estimated,
-				and refined development plans for long-term development projects
+			<li>Track Test Team dev. lead (2025&ndash;)
+				estimated, and refined plans for long-term projects
 			<li>Redesigned slow SQL queries to eliminate load and change
 				slow-loading pages to instantly loading ones
-			<li><b>Technologies</b>:
+			<li class="tech-icon">
 				<ul>
 					<li><b>Scala 2</b>,
 						<b>Scala 3</b>
@@ -252,14 +238,12 @@ ul.compact li:before {
 				to accept PayPay payments
 			<li>Designed and lead a new microservice, using requirements from
 				Product Managers and other teams
-			<li><b>Technologies</b>:
+			<li class="tech-icon">
 				<ul>
 					<li><b>Spring Boot</b>, <b>Java</b>, &amp; <b>Kotlin</b>
 						&ndash; for backend implementation
 						<li><b>AWS</b> &ndash; for cloud hosting
 				</ul>
-			<li>Refactored codebase to improve test coverage, uncover bugs, and
-				improve maintainability
 		</ul>
 
 		<h3>
@@ -267,14 +251,10 @@ ul.compact li:before {
 			<div class=setting>Atlanta, GA. Aug. 2018&ndash;Dec. 2020</div>
 		</h3>
 		<ul>
-			<li>Backend engineer on the Orders API team, which operates both a public REST
-				API, as well as internal systems that serve Square Point-of-Sale mobile apps
-			<li>Designed features that integrate
-				with many microservices such as payments, catalog,
-				and customers
-			<li>Work emphasizes designs that are maintainable,
-				scalable, strongly consistent, and highly available
-			<li><b>Technologies</b>:
+			<li>Backend engineer on the Orders API team, which operates both a
+				public REST API and internal POS API, emphasizing
+				maintainability, scalability, and strong consistency
+			<li class="tech-icon">
 				<ul>
 					<li><b>Java</b> &ndash; for API server implementation
 					<li><b>Protocol Buffers</b> &ndash; for RPCs,
@@ -291,12 +271,16 @@ ul.compact li:before {
 			<li>Wrote and presented thorough documentation for complex internal calculation logic
 		</ul>
 
+	</section>
+	<section>
+		<h2>Internships</h2>
+
 		<h3>
 			<span class=text>Qualtrics &mdash; Software Engineer Intern, Data Platform</span>
 			<div class=setting>Seattle, WA. Summer 2017</div>
 		</h3>
 		<ul>
-			<li><b>Technologies</b>:
+			<li class="tech-icon">
 				<ul>
 					<li><b>Scala</b> &ndash; for backend implementation
 					<li><b>Elasticsearch</b> &ndash; for aggregating metrics to produce custom reports, and
@@ -311,13 +295,12 @@ ul.compact li:before {
 			<div class=setting>Seattle, WA. Summer 2016</div>
 		</h3>
 		<ul>
-			<li><b>Technologies</b>:
+			<li class="tech-icon">
 				<ul>
 					<li><b>C</b> &ndash; for filesystem server implementation
 					<li><b>Python</b> &ndash; for integration-test automation and code
 						generation
 				</ul>
-			<li>Doubled free-space reclamation rate by implementing sharding for large file deletion
 			<li>Eliminated lock contention in a multithreaded cache to
 				reduce file operation latency
 		</ul>
@@ -327,7 +310,7 @@ ul.compact li:before {
 			<div class=setting>San Francisco, CA. Summer 2015</div>
 		</h3>
 		<ul>
-			<li><b>Technologies</b>:
+			<li class="tech-icon">
 				<ul>
 					<li><b>Node.JS</b> &ndash; for implementation of microservice
 						serving public API
@@ -338,7 +321,7 @@ ul.compact li:before {
 		</ul>
 	</section>
 
-	<section class=education>
+	<section>
 		<h2>Education &amp; Language</h2>
 		<h3>
 			<span class=text>University of Michigan: Computer Science B.S.E, 4.0 GPA</span>
