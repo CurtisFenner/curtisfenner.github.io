@@ -1,0 +1,13 @@
+.swatch {
+	border-radius: 50%;
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	box-shadow: 0 0 1px 1px black, 0 0 2px 2px var(--background-color);
+
+	background-color: rgb(
+		calc(100% * pow(var(--lr) / var(--lm), 1/2.2))
+		calc(100% * pow(var(--lg) / var(--lm), 1/2.2))
+		calc(100% * pow(var(--lb) / var(--lm), 1/2.2))
+	);
+}

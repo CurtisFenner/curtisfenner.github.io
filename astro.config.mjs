@@ -12,7 +12,11 @@ export default defineConfig({
 
 	markdown: {
 		remarkPlugins: [remarkMath],
-		rehypePlugins: [rehypeKatex],
+		rehypePlugins: [() => rehypeKatex({
+			trust: (context) => {
+				return context.command === "\\htmlClass";
+			},
+		})],
 	},
 	devToolbar: {
 		enabled: false

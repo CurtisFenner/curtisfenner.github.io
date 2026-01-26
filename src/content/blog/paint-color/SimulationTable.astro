@@ -1,0 +1,196 @@
+---
+function generateExponential(p: number): number {
+	return Math.log(1 - Math.random()) / -p;
+}
+
+const bounces = 10;
+
+/**
+ * A description of a mix-distribution case.
+ *
+ * `positive` is the number of i.i.d. exponential distributions added in this
+ * case; `negative` is the number subtracted.
+ */
+type ProbRow = { positive: number; negative: number; probability: number };
+
+function simplifyTable(rows: ProbRow[]): ProbRow[] {
+	const flattened = rows.flatMap((row) => {
+		if (row.positive >= 1 && row.negative >= 1) {
+			return simplifyTable([
+				{
+					positive: row.positive,
+					negative: row.negative - 1,
+					probability: row.probability / 2,
+				},
+				{
+					positive: row.positive - 1,
+					negative: row.negative,
+					probability: row.probability / 2,
+				},
+			]);
+		}
+		return [row];
+	});
+
+	const positiveProbabilities = new Map<number, number>();
+	const negativeProbabilities = new Map<number, number>();
+	for (const row of flattened) {
+		if (row.positive > 0) {
+			positiveProbabilities.set(
+				row.positive,
+				(positiveProbabilities.get(row.positive) ?? 0) +
+					row.probability,
+			);
+		} else {
+			negativeProbabilities.set(
+				row.negative,
+				(negativeProbabilities.get(row.negative) ?? 0) +
+					row.probability,
+			);
+		}
+	}
+	return [
+		...[...negativeProbabilities]
+			.map(([negative, probability]) => ({
+				negative,
+				positive: 0,
+				probability,
+			}))
+			.sort((a, b) => a.negative - b.negative),
+		...[...positiveProbabilities]
+			.map(([positive, probability]) => ({
+				positive,
+				negative: 0,
+				probability,
+			}))
+			.sort((a, b) => a.positive - b.positive),
+	];
+}
+
+function totalProbability(cases: { probability: number }[]): number {
+	let sum = 0;
+	for (const c of cases) {
+		sum += c.probability;
+	}
+	return sum;
+}
+
+function signDivide(rows: ProbRow[]) {
+	const negativeCases = rows.filter(
+		(x) => x.negative > 0 && x.positive === 0,
+	);
+	const positiveCases = rows.filter(
+		(x) => x.positive > 0 && x.negative === 0,
+	);
+	if (negativeCases.length + positiveCases.length !== rows.length) {
+		throw new Error("must simplifyTable first!");
+	}
+
+	let denominator = 1;
+	for (const p of positiveCases) {
+		while (denominator < 2 ** 30) {
+			if ((p.probability * denominator) % 1 === 0) {
+				break;
+			}
+			denominator *= 2;
+		}
+	}
+
+	return {
+		negativeCases,
+		positiveCases: positiveCases.map((row) => ({
+			...row,
+			fraction: `${row.probability * denominator}/${denominator}`,
+		})),
+	};
+}
+
+const realTable: number[] = [];
+{
+	let conditionalFactor = 1;
+
+	let previous: ProbRow[] = [
+		{
+			positive: 0,
+			negative: 0,
+			probability: 1,
+		},
+	];
+
+	for (let pair = 0; pair < bounces; pair++) {
+		console.log(`# ${pair} #`.padEnd(120, "#"));
+		// console.log("previous:", previous);
+		const withSum = simplifyTable(
+			previous.map((row) => ({
+				positive: row.positive + 1,
+				negative: row.negative + 1,
+				probability: row.probability,
+			})),
+		);
+
+		const split = signDivide(withSum);
+		// console.log("split after sum:", split);
+		const normalization = totalProbability(withSum);
+		const negativeFraction =
+			totalProbability(split.negativeCases) / normalization;
+
+		console.log(
+			"total:",
+			split.positiveCases
+				.map((w) => w.fraction.split("/"))
+				.reduce(([on, od], [n, d]) => [
+					String(parseInt(on, 10) + parseInt(n)),
+					od,
+				]),
+		);
+		realTable.push(conditionalFactor * negativeFraction);
+		// Limit to only positive cases!
+		conditionalFactor *= 1 - negativeFraction;
+		previous = split.positiveCases;
+	}
+}
+
+function fractionize(n: number) {
+	let den = 1;
+	for (let i = 0; i < 30; i++) {
+		if (n % 1 === 0) {
+			break;
+		}
+		n *= 2;
+		den *= 2;
+	}
+	return `${n}/${den}`;
+}
+
+// The table (sans conditioning) is apparently [coefficient of x^n][1 / sqrt(1 - x)]
+
+// https://oeis.org/A002596:
+// WITH conditioning, the output table is apparently the coefficients of
+// series sqrt(1-x)
+
+// https://oeis.org/A098597 for the first coefficient...
+---
+
+<table>
+	<thead>
+		<tr>
+			<th>Collisions</th>
+			<th colspan=2>Chance of Exit after</th>
+		</tr>
+		<tbody>
+			{
+				Array.from(Array(bounces).keys()).map((i) => {
+					const percentage = (n: number) =>
+						`${(100 * n).toFixed(3)}%`;
+					return (
+						<tr>
+							<th>{2 * i + 1}</th>
+							<td> {percentage(realTable[i])}</td>
+							<td> = {fractionize(realTable[i])} </td>
+						</tr>
+					);
+				})
+			}
+		</tbody>
+	</thead>
+</table>

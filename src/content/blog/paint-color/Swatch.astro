@@ -1,0 +1,8 @@
+---
+const { r, g, b } = Astro.props;
+---
+
+<span
+	class="swatch"
+	style={`--lr:${r.toFixed(1)}; --lg:${g.toFixed(1)}; --lb:${b.toFixed(1)};`}
+	}></span>

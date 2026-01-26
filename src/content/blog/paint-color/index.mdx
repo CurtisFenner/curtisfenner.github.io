@@ -1,0 +1,264 @@
+---
+title: "The Color of Paint"
+description: >-
+    An investigation into how color works
+topSlug: "paint-color"
+published: "2026-02-01 draft"
+
+---
+import SimulationTable from "./SimulationTable.astro"
+import Swatch from "./Swatch.astro"
+import "./style.css"
+
+I first came across the problem of predicting how paints mix from the
+[Mixbox "Natural Color mixing" (2021)](https://scrtwpns.com/mixbox/) paper.
+
+The paper builds a semi-proprietary algorithm for simulating the mixing of
+pigments based on the
+[Kubelka-Munk theory](https://en.wikipedia.org/wiki/Kubelka%E2%80%93Munk_theory).
+
+Kubelka-Munk posits a simple semi-physical model for how light interacts with
+paint. It supposes that paint is somewhat transparent, and that photons
+enter the paint medium, and scatter or absorb randomly as they collide with
+particles in the paint.
+
+Specifically, for each paint, there are 2 parameters
+for each wavelength $\lambda$ of light:
+* $A_\lambda$ The rate of _absorption_ events, measured in expected-number
+  of absorptions per travel-distance within the paint
+* $S_\lambda$ The rate of _scattering_ events, measured in expected-number
+ of _scatters_ per travel-distance within the paint
+
+These are parameters of a
+[Poisson-point process](https://en.wikipedia.org/wiki/Poisson_point_process)
+describing "collisions" within particles in the paint.
+
+> The original Kubelka-Munk formulation considers particles moving only in one
+> dimension, and each "scattering" being a simple 180 degree reversal.
+>
+> This (coincidentally?) coincides with a slightly more sophisticated 3D model,
+> where scattering results in a uniformly random direction of travel in
+> 3-dimensions. This is due to
+> [Archimedes' Hat-Box Theorem](https://mathworld.wolfram.com/ArchimedesHat-BoxTheorem.html),
+> which implies that the x-coordinate of a uniform point on the unit-sphere is
+> uniform in $[-1, +1]$. Only adjustments to the constants are needed.
+
+
+# A (half) derivation of the Kubelka-Munk reflection model
+
+When light enters a layer of paint, it will possibly bounce one or more times
+within the material, before either
+
+* being **absorbed**: at least one collision which was an _absorption_ occurs
+* **transmitting** (passing through): the light collided an even number of
+  times (usually 0), none of which resulted in absorptions,
+  and exits the opposite side that it entered on.
+  * This analysis is for a very thick layer of paint which completely obscures
+    any surface below, so the rate of transmission will be 0
+ 0 collisions, or an even number of scatters and no absorptions
+* **remitting** (aka reflecting): the light collided an odd number of times
+  (usually 1), none of which resulted in absorptions, and exits the same side
+  that it entered.
+
+We want to know the proportion of light which experiences each of these three
+outcomes.
+
+The moments that a photon travelig through the paint is "scattered"
+(turned around 180 degrees) can be
+modeled as a Poisson-point-process, meaning the distance traveled between these
+scatter events can be drawn independently from an Exponential distribution:
+
+$$
+T_1, T_2, T_3, ... \overset{iid} \sim \mathrm{Exp}(C)
+$$
+
+Suppose a photon enters a thick layer of paint starting at $x=0$ and moving in
+the $+x$ direction. The first scatter will occur after traveling $T_1$ distance
+forward; the second scatter will occur after traveling $T_2$ distance from the
+position of the first scatter backwards.
+
+Therefore, after each pair-of-scatters, the position accumulates a difference of
+$T_{2k-1} - T_{2k}$. This difference has the _Laplace distribution_, which
+conveniently can be rewritten to this identically-distributed mixed
+distribution:
+
+$$
+\htmlClass{dim}{
+\left(
+T_{2k-1} - T_{2k}
+
+\overset{distr.}=
+\right) \qquad
+}
+
+L_{2k} = \begin{cases}
+\phantom{-}T_{2k-1} & \text{with prob. } \frac 1 2 \\
+ -T_{2k} & \text{with prob. } \frac 1 2
+\end{cases}
+$$
+
+#### Tabulation
+
+After the first pair of bounces, the photon's position is distributed as $L_2$:
+
+$$
+x_2 \sim \begin{cases}
+\phantom{-}\mathrm{Exp}(C) & \text{with prob. } \frac 1 2 \\
+ -\mathrm{Exp}(C) & \text{with prob. } \frac 1 2
+\end{cases}
+$$
+
+Therefore, $\Pr[x_2 \leq 0] = \frac 1 2$, and $x_2 | _ {x_2 > 0} \sim \mathrm{Exp}(C)$.
+
+For the next pair of bounces, conditioning on $x_2 > 0$,
+
+$$
+\begin{array}{rcl}
+x_4 \sim x_2 + L_4
+&\equiv& \begin{cases}
+	\mathrm{Exp}(C) + \mathrm{Exp}(C) & \text{with prob. } \frac 1 2 \\
+	\mathrm{Exp}(C) - \mathrm{Exp}(C) & \text{with prob. } \frac 1 2
+\end{cases}
+\\
+\\
+&\equiv& \begin{cases}
+\mathrm{Exp}(C) + \mathrm{Exp}(C) & \text{with prob. } \frac 1 2 \\
+ \mathrm{Exp}(C) & \text{with prob. } \frac 1 4 \\
+ -\mathrm{Exp}(C) & \text{with prob. } \frac 1 4
+\end{cases}
+\end{array}
+$$
+
+Therefore, $\Pr[x_4 \leq 0 \,|\, x_2 > 0] = \frac 1 4$.
+
+$$
+x_4 |_{x_2, x_4 > 0} \sim \begin{cases}
+	\mathrm{Exp}(C) + \mathrm{Exp}(C) & \text{with prob. } \frac 2 3 \\
+	\mathrm{Exp}(C) & \text{with prob. } \frac 1 3
+\end{cases}
+$$
+
+For the next pair, conditioning on $x_2, x_4 > 0$,
+
+$$
+\begin{array}{rcl}
+x_6 \sim x_4 + L_6
+&\equiv& \begin{cases}
+	\mathrm{Exp}(C) + \mathrm{Exp}(C) + \mathrm{Exp}(C) - \mathrm{Exp}(C) & \text{with prob. } \frac 2 3 \\
+	\mathrm{Exp}(C) + \mathrm{Exp}(C) - \mathrm{Exp}(C) & \text{with prob. } \frac 1 3
+\end{cases}
+\end{array}
+$$
+
+This approach suggests a laborious combinatorial approach to computing the
+table:
+
+<SimulationTable />
+
+After finding these coefficients, I
+[searched them in OEIS](https://oeis.org/search?q=5%2C7%2C21%2C33%2C429%2C715%2C2431#:~:text=Absolute%20values%20give%20numerators%20in%20expansion%20of)
+to discover that they are in fact the coefficients in a Taylor series.
+
+
+<div style="display:none">
+
+$$
+\begin{array}{rcl}
+r_{1\cdot 2}
+	&=& r_1 + t_1^2 r_2 * (1 + (r_1r_2) + (r_1r_2)^2 + (r_1r_2)^3 + ...) \\[2pt]
+	&=& r_1 + \dfrac {t_1^2 r_2} {1 - r_1r_2} \\[14pt]
+a_{1\cdot 2}
+	&=& a_1 + t_1 * (a_2 + r_2 a_1) * (1 + (r_1r_2) + (r_1r_2)^2 + (r_1r_2)^3 + ...) \\[2pt]
+	&=& a_1 + \dfrac{ a_2t_1 + r_2 a_1 t_1  }{1 - r_1r_2} \\[14pt]
+t_{1\cdot 2}
+	&=& t_1 t_2 * (1 + (r_1r_2) + (r_1r_2)^2 + (r_1r_2)^3 + ...) \\[2pt]
+	&=& \dfrac {t_1 t_2} {1 - r_1r_2}
+\end{array}
+$$
+
+With a double check of $r_{1\cdot 2} + a_{1\cdot 2} + t_{1\cdot 2}$ to confirm
+that all cases are accounted for and non-overlapping:
+
+$$
+\begin{array}{cll}
+& r_{1\cdot 2} + a_{1\cdot 2} + t_{1\cdot 2} \\[2pt]
+=& r_1 + a_1 + t_1 \dfrac { t_1 r_2 + r_2 a_1 + a_2 + t_2 } { 1 - r_1r_2 } \\[6pt]
+=& r_1 + a_1 + t_1 \dfrac { r_2(a_1 + t_1) + (1-r_2) } { 1 - r_1r_2 } & \quad \text{(because } r_2+a_2+t_2=1\text{)} \\[6pt]
+=& r_1 + a_1 + t_1 \dfrac { r_2(1 - r_1) + (1-r_2) } { 1 - r_1r_2 } & \quad \text{(because } r_1+a_1+t_1=1\text{)} \\[6pt]
+=& r_1 + a_1 + t_1 \dfrac { 1 - r_1r_2 } { 1 - r_1r_2 } & \quad \text{(because } r_1+a_1+t_1=1\text{)} \\[6pt]
+=& r_1 + a_1 + t_1 = 1
+\end{array}
+$$
+
+</div>
+
+### Generating Functions
+
+The fact that they are coefficients of a Taylor series may seem unnecessarily
+convoluted, but that fact can actually be elegantly exploited through the
+technique of _generating functions_.
+
+Specifically, the series definition says that
+
+$$
+\sqrt{1 - x} = 1 - B_1 x^1 - B_3 x^2 - B_5 x^3 - B_7 x^4 - B_9 x^5 + ... \\
+\text{where } B_k = \Pr[\text{\#(collisions before remission)}]
+$$
+
+Some algebraic manipulation can line up the power of $x$ in each term with the
+number of collisions:
+
+$$
+\begin{array}{rcl}
+
+\sqrt{1 - x} &=& 1 - \sum_{k=1}^\infty B_{2k-1} x^k & \text{(writing as a series)}\\[10pt]
+\sqrt{1 - x^2} &=& 1 - \sum_{k=1}^\infty B_{2k-1} x^{2k} & \text{(square $x$ to double power)}\\[10pt]
+1 - \sqrt{1 - x^2} &=& \sum_{k=1}^\infty B_{2k-1} x^{2k} & \text{(subtract and adjust sign)}\\[10pt]
+\dfrac{1 - \sqrt{1 - x^2}} x &=& \sum_{k=1}^\infty B_{2k-1} x^{2k-1} & \text{(subtract 1 from power)}\\[10pt]
+\end{array}
+$$
+
+which is finally the series desired to know the total amount of light remitted,
+if each bounce results in a multiplicative (by factor $x$) loss.
+
+Substituting $x = \frac S {S+K}$ results in the familiar form of the
+Kubelka-Munk equation for an infinitely-thick layer of paint:
+
+$$
+=  1 + \dfrac{K}{S} - {\sqrt{\dfrac{K^2}{S^2} + 2 \dfrac K S}}
+$$
+
+----
+
+# Empirical Measurements
+
+I made some small samples using acrylic paint.
+
+I then extract the **linear** sensor values from a "raw" .DNG image taken
+with my Pixel 6a camera:
+
+<div style="--lm: 130">
+| Paint                  | Camera R | Camera G | Camera B | Preview (sRGB) |
+|------------------------|----------|----------|----------|----------------|
+| (Paper)                | 100      | 100      | 100      | <span class="swatch" style="--lr:100;--lg:100;--lb:100;"></span>
+| <Swatch r={117} g={116} b={112} /> PW-6 | 117      | 116      | 112      | <Swatch r={117} g={116} b={112} />
+| <Swatch r={117} g={116} b={112} />+<Swatch r={117} g={116} b={112} />+<span class="swatch" style="--lr:5;--lg:7;--lb:18;"></span>  |  21      |  42      |  70      | <span class="swatch" style="--lr:21;--lg:42;--lb:70;"></span>
+| <Swatch r={117} g={116} b={112} />+<span class="swatch" style="--lr:5;--lg:7;--lb:18;"></span>+<span class="swatch" style="--lr:5;--lg:7;--lb:18;"></span>  |   7      |  14      |  32      | <span class="swatch" style="--lr:7;--lg:14;--lb:32;"></span>
+| PB 15:4 <span class="swatch" style="--lr:5;--lg:7;--lb:18;"></span>               |   5      |   7      |  18      | <span class="swatch" style="--lr:5;--lg:7;--lb:18;"></span>
+</div>
+
+<div style="--lm: 130">
+| Paint                  | Camera R | Camera G | Camera B | Preview (sRGB) |
+|------------------------|----------|----------|----------|----------------|
+| (Paper)                | 100      | 100      | 100      | <span class="swatch" style="--lr:100;--lg:100;--lb:100;"></span>
+| <Swatch r={90} g={39} b={19} /> PO-73 | 90 | 39 | 19 | <Swatch r={90} g={39} b={19} />
+
+| <Swatch r={7} g={12} b={26} /> PB 15:4 | 7 | 12 | 26 | <Swatch r={7} g={12} b={26} />
+</div>
+
+
+* Blue (PB15:4) - Orange (PO-73) gradient
+	* Blue: (7, 12, 26)
+	* 2 Blue, 1 orange: (7, 8, 10)
+	* 1 Blue, 2 orange: (10, 10, 10)
+	* Orange: (90, 39, 19)
