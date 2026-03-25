@@ -1,0 +1,237 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+	body {
+		padding: 0.25in;
+		margin: auto;
+	}
+
+	* {
+		font-family: sans-serif;
+	}
+
+	input,
+	button,
+	select,
+	textarea {
+		font-size: 1em;
+	}
+
+	.code {
+		font-family: monospace;
+	}
+</style>
+<title>Unicode String Inspector</title>
+
+Enter a string:<br />
+<input id="input" value="🍋‍🟩" type="text" maxlength="32" disabled />
+<button id="copyButton" disabled>Copy</button>
+<hr />
+
+<table>
+	<thead>
+		<tr>
+			<th>Character
+			<th>Rep
+			<th>Code Point
+			<th>UTF-8
+	<tbody id="tbody">
+</table>
+
+<script>
+	const EXAMPLE = "🍋‍🟩"
+
+	const SPECIAL_CODE_POINTS = new Map([
+		["ZWJ", 8205],
+		["ZWNJ", parseInt("200c", 16)],
+		["VS1", parseInt("fe00", 16)],
+		["VS2", parseInt("fe01", 16)],
+		["VS3", parseInt("fe02", 16)],
+		["VS4", parseInt("fe03", 16)],
+		["VS5", parseInt("fe04", 16)],
+		["VS6", parseInt("fe05", 16)],
+		["VS7", parseInt("fe06", 16)],
+		["VS8", parseInt("fe07", 16)],
+		["VS9", parseInt("fe08", 16)],
+		["VS10", parseInt("fe09", 16)],
+		["VS11", parseInt("fe0a", 16)],
+		["VS12", parseInt("fe0b", 16)],
+		["VS13", parseInt("fe0c", 16)],
+		["VS14", parseInt("fe0d", 16)],
+		["VS15", parseInt("fe0e", 16)],
+		["VS16", parseInt("fe0f", 16)],
+	]);
+
+	let rows = [];
+
+	function initializeRow() {
+		const tr = document.createElement("tr");
+		const inputCharacter = document.createElement("input");
+
+		const inputRep = document.createElement("select");
+		inputRep.value = "hex";
+		for (const rep of ["hex", "decimal"]) {
+			const option = document.createElement("option");
+			option.value = rep;
+			option.textContent = rep;
+			inputRep.appendChild(option);
+		}
+		for (const [name, codePoint] of SPECIAL_CODE_POINTS) {
+			const option = document.createElement("option");
+			option.value = codePoint;
+			option.textContent = name;
+			inputRep.appendChild(option);
+		}
+
+		const inputCodePoint = document.createElement("input");
+		inputCodePoint.maxLength = 8;
+		inputCodePoint.classList.add("code");
+
+		const outputUtf8 = document.createElement("input");
+		outputUtf8.disabled = true;
+		outputUtf8.classList.add("code");
+
+		for (const column of [inputCharacter, inputRep, inputCodePoint, outputUtf8]) {
+			const td = document.createElement("td");
+			td.appendChild(column);
+			tr.appendChild(td);
+		}
+
+		inputCharacter.oninput = (e) => {
+			const c = [...(e.data || inputCharacter.value)][0];
+			if (c !== inputCharacter.value) {
+				inputCharacter.value = c || "";
+			}
+
+			const combined = rows.map(x => x.inputCharacter.value).join("");
+			if (input.value !== combined) {
+				input.value = combined;
+				if (!input.classList.contains("frozen")) {
+					input.dispatchEvent(new InputEvent("input"));
+				}
+			}
+
+			if (!c) {
+				inputCodePoint.value = "";
+				outputUtf8.value = "";
+				return;
+			}
+			const codePoint = c.codePointAt(0);
+			if (!inputCodePoint.classList.contains("frozen")) {
+				inputCodePoint.value = inputRep.value === "decimal"
+					? "#" + codePoint.toFixed(0)
+					: "\\u" + codePoint.toString(16).padStart(4, "0");
+			}
+			outputUtf8.value = [...new TextEncoder().encode(c)].map(x => x.toString(16).padStart(2, "0")).join(" ");
+			const special = [...SPECIAL_CODE_POINTS].find(x => x[1] === codePoint);
+			if (special) {
+				inputRep.value = codePoint;
+			} else {
+				inputRep.value = inputRep.value === "decimal" ? "decimal" : "hex";
+			}
+		};
+
+		inputRep.oninput = () => {
+			const integer = parseInt(inputRep.value);
+			if (integer) {
+				return inputCharacter.dispatchEvent(new InputEvent("input", {
+					data: String.fromCodePoint(integer),
+				}));
+			} else if (!inputCharacter.value) {
+				return;
+			}
+			inputCharacter.dispatchEvent(new Event("input"));
+		};
+
+		inputCodePoint.oninput = () => {
+			if (inputCodePoint.value.trim().startsWith("#")) {
+				inputRep.value = "decimal";
+			} else {
+				inputRep.value = "hex";
+			}
+
+			inputCodePoint.classList.add("frozen");
+			let integer = NaN;
+			if (inputRep.value === "decimal") {
+				integer = parseInt(inputCodePoint.value.normalize("NFKD").replace(/[^0-9]*/g, ""), 10);
+			} else {
+				integer = parseInt(inputCodePoint.value.normalize("NFKD").toLowerCase().replace(/[^0-9a-f]*/g, ""), 16);
+			}
+			if (isFinite(integer)) {
+				inputCharacter.dispatchEvent(new InputEvent("input", {
+					data: String.fromCodePoint(integer),
+				}));
+				inputCodePoint.classList.remove("frozen");
+			}
+		};
+
+		return {
+			tr,
+			inputCharacter,
+			inputRep,
+			inputCodePoint,
+			outputUtf8,
+		};
+	}
+
+	/**
+	 * @param s {string}
+	 */
+	function expandState(s) {
+		let rowIndex = 0;
+		for (const c of s) {
+			let row = rows[rowIndex];
+			if (!row) {
+				row = initializeRow();
+				tbody.appendChild(row.tr);
+				rows[rowIndex] = row;
+			}
+
+			const codePoint = c.codePointAt(0);
+			const special = [...SPECIAL_CODE_POINTS].find(x => x[1] === codePoint);
+
+			if (row.inputCharacter.value !== c) {
+				row.inputCharacter.value = c;
+				row.inputCharacter.dispatchEvent(new Event("input", { bubbles: false }));
+			}
+
+			rowIndex += 1;
+		}
+		while (rows.length > rowIndex + 1) {
+			const row = rows.pop();
+			tbody.removeChild(row.tr);
+		}
+
+		if (!rows[rowIndex]) {
+			rows[rowIndex] = initializeRow();
+			tbody.appendChild(rows[rowIndex].tr);
+		}
+	}
+
+
+	input.value = new URL(window.location).searchParams.get("t") || EXAMPLE;
+
+	copyButton.disabled = false;
+	copyButton.onclick = async () => {
+		await navigator.clipboard.writeText(input.value);
+	};
+	input.oninput = () => {
+		expandState(input.value);
+
+		const newURL = new URL(window.location);
+		newURL.searchParams.set("t", input.value);
+		history.replaceState(null, "", newURL);
+	};
+	input.disabled = false;
+	input.dispatchEvent(new InputEvent("input"));
+</script>
+
+<br />
+<hr />
+<br />
+Examples:
+<ul>
+	<li><a href="?t=🍋‍🟩"><tt>🍋‍🟩</tt> lime is a green lemon</a>
+	<li><a href="?t=🏃🔥🏃%E2%80%8D➡%EF%B8%8F"><tt>🏃🔥🏃‍➡️</tt> people running away (emoji glyph direction)</a>
+	<li><a href="?t=💪😁💪%E2%80%8D➡%EF%B8%8F"><tt>💪😁💪‍➡️</tt> two arms?
+</ul>
