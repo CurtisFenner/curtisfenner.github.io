@@ -60,14 +60,25 @@ li {
 }
 
 li:before {
+	/** double chevron */
 	content: "\00BB";
 	margin: 0;
 	position: absolute;
 	left: 0.5em;
+	width: 0.5em;
+	display: flex;
+	justify-content: center;
 }
 
 li li:before {
+	/* single chevron */
 	content: "\203A";
+}
+
+li.tech-icon:before {
+	/** \FE0E is VS15 ("do not display as emoji" variant selector) */
+	content: "⚙️\FE0E";
+	/* content: "🔧\FE0E"; */
 }
 
 ul, ol, p {
@@ -133,7 +144,6 @@ h3 .text {
 	padding-right: 0.5em;
 }
 
-
 .setting {
 	background: white;
 	display: inline;
@@ -178,10 +188,6 @@ table.aligned td {
 
 .print-page-break {
 	page-break-after: always;
-}
-
-li.tech-icon:before {
-	content: "🔧\FE0E";
 }
 
 	</style>
