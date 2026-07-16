@@ -13,6 +13,9 @@ html {
 }
 
 @media print {
+	html {
+		background: transparent;
+	}
 	section > h2 {
 		background: #CCC;
 		color: black;
@@ -68,6 +71,7 @@ li:before {
 	width: 0.5em;
 	display: flex;
 	justify-content: center;
+	filter: brightness(0%);
 }
 
 li li:before {
@@ -77,8 +81,7 @@ li li:before {
 
 li.tech-icon:before {
 	/** \FE0E is VS15 ("do not display as emoji" variant selector) */
-	content: "⚙️\FE0E";
-	/* content: "🔧\FE0E"; */
+	content: "⚙️";
 }
 
 ul, ol, p {
@@ -112,7 +115,7 @@ h1 small {
 }
 
 section > h2 {
-	background: #DDD;
+	background: #EEE;
 	color: #555;
 
 	text-align: left;
@@ -120,7 +123,7 @@ section > h2 {
 	margin-left: calc(var(--side-margin) * -1);
 	margin-right: calc(var(--side-margin) * -1);
 	padding-left: 0.5in;
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 	font-variant: small-caps;
 	font-weight: normal;
 }
@@ -135,6 +138,7 @@ h3 {
 	align-items: baseline;
 
 	background: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%226%22%20height%3D%2212%22%3E%0A%09%3Ccircle%20cx%3D%224%22%20cy%3D%229%22%20r%3D%221%22%20stroke%3D%22transparent%22%20fill%3D%22%23CCC%22%20%2F%3E%0A%3C%2Fsvg%3E%0A);
+	background-repeat: repeat-x;
 }
 
 h3 .text {
@@ -194,7 +198,7 @@ table.aligned td {
 </head>
 <body>
 	<div style="position: fixed; display: inline-block; right: 0.375in; bottom: 0.375in; font-size:70%">
-		Updated January 2026.
+		Updated July 2026.
 	</div>
 	<div class="flex-multicol flex-center">
 		<h1 class="flex-col" style="flex: 2">Curtis Fenner<small style="display:block;">Tokyo, Japan</small></h1>
@@ -206,20 +210,36 @@ table.aligned td {
 		</address>
 	</div>
 
+	<p>
+		I am a highly experienced and deeply curious software engineer,
+		specialized in careful knowledge of programming language and database
+		semantics and performance.
+	<p>
+		I have extensive professional experience designing, building, and
+		maintaining backend systems in statically-typed languages, as well as
+		experience developing frontend applications with functional frameworks
+		like React.
 	<section>
 		<h2>Experience</h2>
 		<h3>
 			<span class=text>Givery &mdash; Software Engineer, Track Test &amp; Common</span>
-			<div class=setting>Tokyo, Japan. Jan. 2023&ndash;current</div>
+			<div class=setting>Tokyo, Japan. Jan 2023 &ndash; current</div>
 		</h3>
 		<ul>
 			<li>Backend engineer on the Track Test product and on common systems
-			<li>Track Test Team dev. lead (2025&ndash;)
-				estimated, and refined plans for long-term projects
+			<li>Track Test Team dev. lead (2025&ndash;):
+				estimated, designed, and refined plans for long-term projects
+			<li>Led architecture design, technology choice and modernization,
+				and implementation of new product
 			<li>Redesigned slow SQL queries to eliminate load and change
 				slow-loading pages to instantly loading ones
 			<li class="tech-icon">
-				<ul>
+				<b>Scala</b> (<b>Play</b>, <b>cats</b>), <b>TypeScript (NestJS + Kysely)</b> with <b>Postgresql</b> (backends).
+			<li class="tech-icon">
+				<b>TypeScript</b> (<b>React</b>) (frontend)
+			<li class="tech-icon">
+				<b>AWS</b> (<b>ECS</b>, <b>Lambda</b>, <b>Rekognition</b>, <b>S3</b>)
+				<!-- <ul>
 					<li><b>Scala 2</b>,
 						<b>Scala 3</b>
 						&amp; <b>Play Framework</b> &ndash;
@@ -230,12 +250,12 @@ table.aligned td {
 						for cloud infrastructure (ECS, S3, Rekognition, etc.)
 					<li><b>Postgresql (SQL DB)</b> in <b>AWS Aurora</b> &ndash;
 						for databases
-				</ul>
+				</ul> -->
 		</ul>
 		<h3>
 			<span class=text>PayPay &mdash; Software Engineer, Online</span>
-			<div class=setting>Remote, Jun. '21&ndash;Apr. '22</div>
-			<div class=setting>Tokyo, Japan. Apr. 2022&ndash; Jan 2023</div>
+			<div class=setting>Remote, Jun '21 &ndash; Apr '22</div>
+			<div class=setting>Tokyo, Japan. Apr 2022 &ndash; Jan 2023</div>
 		</h3>
 		<ul>
 			<li>Backend engineer on the Online team, which external APIs for
@@ -245,23 +265,24 @@ table.aligned td {
 			<li>Designed and lead a new microservice, using requirements from
 				Product Managers and other teams
 			<li class="tech-icon">
-				<ul>
+				<b>Kotlin</b> &amp; <b>Java</b> (<b>Spring Boot</b>) with <b>MySQL</b> (backend)
+			<li class="tech-icon">
+				<b>AWS</b> (<b>EC2</b>, <b>KMS</b>)
+				<!-- <ul>
 					<li><b>Spring Boot</b>, <b>Java</b>, &amp; <b>Kotlin</b>
 						&ndash; for backend implementation
 						<li><b>AWS</b> &ndash; for cloud hosting
-				</ul>
+				</ul> -->
 		</ul>
 
 		<h3>
 			<span class=text>Square &mdash; Software Engineer, Orders API</span>
-			<div class=setting>Atlanta, GA. Aug. 2018&ndash;Dec. 2020</div>
+			<div class=setting>Atlanta, GA. Aug 2018 &ndash; Dec 2020</div>
 		</h3>
 		<ul>
 			<li>Backend engineer on the Orders API team, which operates both a
-				public REST API and internal POS API, emphasizing
-				maintainability, scalability, and strong consistency
-			<li class="tech-icon">
-				<ul>
+				public REST API and internal POS API
+				<!-- <ul>
 					<li><b>Java</b> &ndash; for API server implementation
 					<li><b>Protocol Buffers</b> &ndash; for RPCs,
 						modeling the API schema, and database serialization
@@ -269,12 +290,15 @@ table.aligned td {
 						for building internal web interfaces
 					<li><b>MySQL</b> &ndash; for durable, distributed storage enabling
 						a strongly consistent API experience
-				</ul>
-			<li>Refactored complex validation logic to greatly
-				improve test coverage and reduce maintenance burden
-			<li>Created reusable library functions to support multiple API
-				versions with minimal effort
-			<li>Wrote and presented thorough documentation for complex internal calculation logic
+				</ul> -->
+			<li>Refactored, tested, thoroughly documented,
+				and simplified complex
+				validation, transaction calculation, and
+				public API versioning logic
+			<li class="tech-icon">
+				<b>Java</b>, <b>MySQL</b>, and <b>Protobuf</b> (strongly consistent API server).
+			<li class="tech-icon">
+				<b>TypeScript (React)</b> (internal web UI)
 		</ul>
 
 	</section>
@@ -287,13 +311,13 @@ table.aligned td {
 		</h3>
 		<ul>
 			<li class="tech-icon">
-				<ul>
+				<b>Scala</b> and <b>Elasticsearch</b> for customer report generation
+				<!-- <ul>
 					<li><b>Scala</b> &ndash; for backend implementation
 					<li><b>Elasticsearch</b> &ndash; for aggregating metrics to produce custom reports, and
 						for log analysis
-				</ul>
-			<li>Redesigned a data aggregation feature to get correct weighting across different
-				displays
+				</ul> -->
+			<li>Redesigned and reimplemented statistical weighting feature to correct formulas
 		</ul>
 
 		<h3>
@@ -302,11 +326,12 @@ table.aligned td {
 		</h3>
 		<ul>
 			<li class="tech-icon">
-				<ul>
+				<b>C</b> (filesystem server) and <b>Python</b> (test automation and code generation)
+				<!-- <ul>
 					<li><b>C</b> &ndash; for filesystem server implementation
 					<li><b>Python</b> &ndash; for integration-test automation and code
 						generation
-				</ul>
+				</ul> -->
 			<li>Eliminated lock contention in a multithreaded cache to
 				reduce file operation latency
 		</ul>
@@ -317,12 +342,13 @@ table.aligned td {
 		</h3>
 		<ul>
 			<li class="tech-icon">
-				<ul>
-					<li><b>Node.JS</b> &ndash; for implementation of microservice
+				<b>Node.JS</b> and <b>Go</b> (microservice backends)
+				<!-- <ul>
+					<li><b>Node.JS</b> &amp; &ndash; for implementation of microservice
 						serving public API
 					<li><b>Go</b> &ndash; for implementation of a new microservice to
 						eventually replace the Node.JS server
-				</ul>
+				</ul> -->
 			<li>Optimized and refactored public API server to halve average response time
 		</ul>
 	</section>
@@ -355,8 +381,16 @@ table.aligned td {
 		<h2>Selected Projects</h2>
 
 		<h3>
+			<span class=text>Tokyo Rail-Transit Isochrone</span>
+			<div class=setting><a href="https://github.com/CurtisFenner/tokyo-transit-iso">github.com/CurtisFenner/tokyo-transit-iso</a></div>
+		</h3>
+		<ul>
+			<li>Implemented routing algorithm and region geometry rendering algorithm on real transit schedule data
+		</ul>
+
+		<h3>
 			<span class=text>Shiru Programming Language &amp; Compiler</span>
-			<div class=setting><a href="https://github.com/CurtisFenner/shiru-ts">https://github.com/CurtisFenner/shiru-ts</a></div>
+			<div class=setting><a href="https://github.com/CurtisFenner/shiru-ts">github.com/CurtisFenner/shiru-ts</a></div>
 		</h3>
 		<ul>
 			<li>Designed and implemented a toy programming language, compiler, and assertion verifier, including
