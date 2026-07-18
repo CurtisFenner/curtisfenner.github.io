@@ -111,7 +111,6 @@ h1 {
 
 h1 small {
 	font-size: 1.25rem;
-	font-variant: small-caps;
 }
 
 section > h2 {
@@ -123,9 +122,15 @@ section > h2 {
 	margin-left: calc(var(--side-margin) * -1);
 	margin-right: calc(var(--side-margin) * -1);
 	padding-left: 0.5in;
-	font-size: 1.25rem;
-	font-variant: small-caps;
+	font-size: 1.125rem;
 	font-weight: normal;
+
+	margin-bottom: 0.1em;
+	line-height: 1.5em;
+}
+
+h2 + h3 {
+	margin-top: 0.5em;
 }
 
 h3 {
@@ -194,6 +199,10 @@ table.aligned td {
 	page-break-after: always;
 }
 
+.unbold {
+	font-weight: normal;
+}
+
 	</style>
 </head>
 <body>
@@ -201,9 +210,9 @@ table.aligned td {
 		Updated July 2026.
 	</div>
 	<div class="flex-multicol flex-center">
-		<h1 class="flex-col" style="flex: 2">Curtis Fenner<small style="display:block;">Tokyo, Japan</small></h1>
+		<h1 class="flex-col" style="flex: 2">Curtis Fenner&emsp;<small>Tokyo, Japan</small></h1>
 
-		<address class="flex-col" style="margin-bottom: -0.5rem">
+		<address class="flex-col" style="margin-top: -0.5rem">
 				<a href="https://curtisfenner.com/resume">curtisfenner.com/resume</a><br>
 				<a href="https://github.com/CurtisFenner">github.com/CurtisFenner</a><br>
 				<a href="mailto:curtiswilliamfenner@gmail.com">curtiswilliamfenner@gmail.com</a>
@@ -211,7 +220,7 @@ table.aligned td {
 	</div>
 
 	<p>
-		I am a highly experienced and deeply curious software engineer,
+		I am a deeply curious software engineer,
 		specialized in careful knowledge of programming language and database
 		semantics and performance.
 	<p>
@@ -222,19 +231,26 @@ table.aligned td {
 	<section>
 		<h2>Experience</h2>
 		<h3>
-			<span class=text>Givery &mdash; Software Engineer, Track Test &amp; Common</span>
-			<div class=setting>Tokyo, Japan. Jan 2023 &ndash; current</div>
+			<span class=text>Givery <span class=unbold>Engineer, "Track Test" &amp; "Common Systems" teams</span></span>
+			<div class=setting>Tokyo, JP. Jan 2023 &ndash; current</div>
 		</h3>
 		<ul>
-			<li>Backend engineer on the Track Test product and on common systems
 			<li>Track Test Team dev. lead (2025&ndash;):
 				estimated, designed, and refined plans for long-term projects
 			<li>Led architecture design, technology choice and modernization,
 				and implementation of new product
+				<ul>
+					<li>Introduced new Zod-based wrappers to improve type-safety
+						&amp; eliminate validation boilerplate
+					<li>Designed and implemented precise permission engine to
+						make permissions &amp; role checks standardized, flexible, and obviously correct
+				</ul>
 			<li>Redesigned slow SQL queries to eliminate load and change
 				slow-loading pages to instantly loading ones
+			<li>Refactored and documented internal scoring and submission logic
+				to improve auditability, squash bugs, and increase extensibility
 			<li class="tech-icon">
-				<b>Scala</b> (<b>Play</b>, <b>cats</b>), <b>TypeScript (NestJS + Kysely)</b> with <b>Postgresql</b> (backends).
+				<b>Scala</b> (<b>Play</b>), <b>TypeScript (NestJS + Kysely)</b> with <b>Postgresql</b> (backends)
 			<li class="tech-icon">
 				<b>TypeScript</b> (<b>React</b>) (frontend)
 			<li class="tech-icon">
@@ -253,9 +269,9 @@ table.aligned td {
 				</ul> -->
 		</ul>
 		<h3>
-			<span class=text>PayPay &mdash; Software Engineer, Online</span>
+			<span class=text>PayPay <span class=unbold>Backend Engineer, "Online" team</span></span>
 			<div class=setting>Remote, Jun '21 &ndash; Apr '22</div>
-			<div class=setting>Tokyo, Japan. Apr 2022 &ndash; Jan 2023</div>
+			<div class=setting>Tokyo, JP. Apr 2022 &ndash; Jan 2023</div>
 		</h3>
 		<ul>
 			<li>Backend engineer on the Online team, which external APIs for
@@ -276,7 +292,7 @@ table.aligned td {
 		</ul>
 
 		<h3>
-			<span class=text>Square &mdash; Software Engineer, Orders API</span>
+			<span class=text>Square <span class=unbold>Software Engineer, "Orders API" team</span></span>
 			<div class=setting>Atlanta, GA. Aug 2018 &ndash; Dec 2020</div>
 		</h3>
 		<ul>
@@ -296,65 +312,15 @@ table.aligned td {
 				validation, transaction calculation, and
 				public API versioning logic
 			<li class="tech-icon">
-				<b>Java</b>, <b>MySQL</b>, and <b>Protobuf</b> (strongly consistent API server).
+				<b>Java</b>, <b>MySQL</b>, and <b>Protobuf</b> (strongly consistent API server)
 			<li class="tech-icon">
 				<b>TypeScript (React)</b> (internal web UI)
 		</ul>
 
 	</section>
-	<section>
-		<h2>Internships</h2>
-
-		<h3>
-			<span class=text>Qualtrics &mdash; Software Engineer Intern, Data Platform</span>
-			<div class=setting>Seattle, WA. Summer 2017</div>
-		</h3>
-		<ul>
-			<li class="tech-icon">
-				<b>Scala</b> and <b>Elasticsearch</b> for customer report generation
-				<!-- <ul>
-					<li><b>Scala</b> &ndash; for backend implementation
-					<li><b>Elasticsearch</b> &ndash; for aggregating metrics to produce custom reports, and
-						for log analysis
-				</ul> -->
-			<li>Redesigned and reimplemented statistical weighting feature to correct formulas
-		</ul>
-
-		<h3>
-			<span class=text>Qumulo &mdash; Software Engineer Intern, Filesystem Performance</span>
-			<div class=setting>Seattle, WA. Summer 2016</div>
-		</h3>
-		<ul>
-			<li class="tech-icon">
-				<b>C</b> (filesystem server) and <b>Python</b> (test automation and code generation)
-				<!-- <ul>
-					<li><b>C</b> &ndash; for filesystem server implementation
-					<li><b>Python</b> &ndash; for integration-test automation and code
-						generation
-				</ul> -->
-			<li>Eliminated lock contention in a multithreaded cache to
-				reduce file operation latency
-		</ul>
-
-		<h3>
-			<span class=text>Square &mdash; Software Engineer Intern, Public API</span>
-			<div class=setting>San Francisco, CA. Summer 2015</div>
-		</h3>
-		<ul>
-			<li class="tech-icon">
-				<b>Node.JS</b> and <b>Go</b> (microservice backends)
-				<!-- <ul>
-					<li><b>Node.JS</b> &amp; &ndash; for implementation of microservice
-						serving public API
-					<li><b>Go</b> &ndash; for implementation of a new microservice to
-						eventually replace the Node.JS server
-				</ul> -->
-			<li>Optimized and refactored public API server to halve average response time
-		</ul>
-	</section>
 
 	<section>
-		<h2>Education &amp; Language</h2>
+		<h2>Education</h2>
 		<h3>
 			<span class=text>University of Michigan: Computer Science B.S.E, 4.0 GPA</span>
 			<div class=setting>Ann Arbor, MI. 2014 &ndash; 2018</div>
@@ -369,6 +335,57 @@ table.aligned td {
 				ACM International Collegiate Programming Contest (ICPC)
 			<li>Japanese Language I + II
 		</ul>
+
+		<p>I had 3 software engineering internships shipping real production code before graduating from university:
+		<ul>
+			<li>
+				<b>Qualtrics</b>
+				<div class=setting>Seattle, WA. Summer 2017</div>
+				<ul>
+					<li class="tech-icon">
+						<b>Scala</b> and <b>Elasticsearch</b> (customer report generation)
+						<!-- <ul>
+							<li><b>Scala</b> &ndash; for backend implementation
+							<li><b>Elasticsearch</b> &ndash; for aggregating metrics to produce custom reports, and
+								for log analysis
+						</ul> -->
+					<li>Redesigned statistical weighting formulas to fix error independently discovered
+				</ul>
+			</li>
+
+			<li>
+				<b>Qumulo</b>
+				<div class=setting>Seattle, WA. Summer 2016</div>
+				<ul>
+					<li class="tech-icon">
+						<b>C</b> (filesystem server) and <b>Python</b> (test automation and code generation)
+						<!-- <ul>
+							<li><b>C</b> &ndash; for filesystem server implementation
+							<li><b>Python</b> &ndash; for integration-test automation and code
+								generation
+						</ul> -->
+					<li>Eliminated lock contention in a multithreaded cache to
+						reduce file operation latency
+				</ul>
+			</li>
+
+			<li>
+				<b>Square</b>
+				<div class=setting>San Francisco, CA. Summer 2015</div>
+				<ul>
+					<li class="tech-icon">
+						<b>Node.JS</b> and <b>Go</b> (microservice backends)
+						<!-- <ul>
+							<li><b>Node.JS</b> &amp; &ndash; for implementation of microservice
+								serving public API
+							<li><b>Go</b> &ndash; for implementation of a new microservice to
+								eventually replace the Node.JS server
+						</ul> -->
+					<li>Optimized and refactored public API server to halve average response time
+				</ul>
+			</li>
+		</ul>
+
 		<h3>
 			<span class=text>Japanese Language Proficiency Test N3 (JLPT/日本語能力試験)</span>
 			<div class=setting>Tokyo &ndash; July 2024</div>
@@ -386,6 +403,8 @@ table.aligned td {
 		</h3>
 		<ul>
 			<li>Implemented routing algorithm and region geometry rendering algorithm on real transit schedule data
+			<li class="tech-icon">
+				<b>TypeScript</b>, <b>MapLibre GL JS</b>
 		</ul>
 
 		<h3>
@@ -395,7 +414,8 @@ table.aligned td {
 		<ul>
 			<li>Designed and implemented a toy programming language, compiler, and assertion verifier, including
 				a PEG parser, a type-checker, a simple SMT solver, and a JavaScript code generator.
+			<li class="tech-icon">
+				<b>TypeScript</b>
 		</ul>
-
 	</section>
 </body>
