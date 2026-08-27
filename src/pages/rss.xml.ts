@@ -11,9 +11,14 @@ export async function GET(context: any) {
 		site: context.site,
 		items: posts
 			.filter(post => !postIsDraft(post))
-			.map((post) => ({
-				...post.data,
-				link: postUrl(post),
-			})),
+			.map((post) => {
+				console.log("post:", post.data);
+				return {
+					...post.data,
+					link: postUrl(post),
+					pubDate: post.data.published.match(/^\d+-\d+-\d+$/) ? new Date(post.data.published) : undefined,
+				};
+			})
+			.sort((a, b) => -a.published.localeCompare(b.published)),
 	});
 }
