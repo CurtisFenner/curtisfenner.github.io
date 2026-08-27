@@ -12,7 +12,6 @@ export async function GET(context: any) {
 		items: posts
 			.filter(post => !postIsDraft(post))
 			.map((post) => {
-				console.log("post:", post.data);
 				return {
 					...post.data,
 					link: postUrl(post),

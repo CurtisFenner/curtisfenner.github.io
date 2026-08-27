@@ -1,8 +1,4 @@
 ---
-function generateExponential(p: number): number {
-	return Math.log(1 - Math.random()) / -p;
-}
-
 const bounces = 10;
 
 /**
@@ -118,8 +114,6 @@ const realTable: number[] = [];
 	];
 
 	for (let pair = 0; pair < bounces; pair++) {
-		console.log(`# ${pair} #`.padEnd(120, "#"));
-		// console.log("previous:", previous);
 		const withSum = simplifyTable(
 			previous.map((row) => ({
 				positive: row.positive + 1,
@@ -129,20 +123,10 @@ const realTable: number[] = [];
 		);
 
 		const split = signDivide(withSum);
-		// console.log("split after sum:", split);
 		const normalization = totalProbability(withSum);
 		const negativeFraction =
 			totalProbability(split.negativeCases) / normalization;
 
-		console.log(
-			"total:",
-			split.positiveCases
-				.map((w) => w.fraction.split("/"))
-				.reduce(([on, od], [n, d]) => [
-					String(parseInt(on, 10) + parseInt(n)),
-					od,
-				]),
-		);
 		realTable.push(conditionalFactor * negativeFraction);
 		// Limit to only positive cases!
 		conditionalFactor *= 1 - negativeFraction;
@@ -180,8 +164,12 @@ function fractionize(n: number) {
 		<tbody>
 			{
 				Array.from(Array(bounces).keys()).map((i) => {
-					const percentage = (n: number) =>
-						`${(100 * n).toFixed(3)}%`;
+					const percentage = (n: number) => {
+						const longest = `${(99).toFixed(3)}%`;
+						const basic = `${(100 * n).toFixed(3)}%`;
+						const figureSpace = "\u{2007}";
+						return basic.padStart(longest.length, figureSpace);
+					}
 					return (
 						<tr>
 							<th>{2 * i + 1}</th>

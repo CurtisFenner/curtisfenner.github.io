@@ -55,7 +55,6 @@ within the material, before either
   and exits the opposite side that it entered on.
   * This analysis is for a very thick layer of paint which completely obscures
     any surface below, so the rate of transmission will be 0
- 0 collisions, or an even number of scatters and no absorptions
 * **remitting** (aka reflecting): the light collided an odd number of times
   (usually 1), none of which resulted in absorptions, and exits the same side
   that it entered.
@@ -63,7 +62,7 @@ within the material, before either
 We want to know the proportion of light which experiences each of these three
 outcomes.
 
-The moments that a photon travelig through the paint is "scattered"
+The moments that a photon traveling through the paint is "scattered"
 (turned around 180 degrees) can be
 modeled as a Poisson-point-process, meaning the distance traveled between these
 scatter events can be drawn independently from an Exponential distribution:

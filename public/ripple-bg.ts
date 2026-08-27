@@ -229,13 +229,11 @@ function multiplyDivs(
 }
 
 const div = document.getElementById("koi-bg") as HTMLDivElement;
-console.log({ div });
 
 const grad = rippleGradient({
 	r0px: 100,
 	r1px: 150,
 });
-console.log(grad);
 
 // const mySvg = createRippleGradientSVG({
 // 	boxpx: 200,
@@ -299,5 +297,4 @@ div.appendChild(limeSVG);
 	box.style.border = "5px solid blue";
 	box.style.background = grad.inverseRadius.css;
 	div.appendChild(box);
-	console.log(grad);
 }
