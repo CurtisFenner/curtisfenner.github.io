@@ -1,0 +1,117 @@
+---
+title: "Colorimetry"
+description: "A meandering through the quantification of color"
+published: "2026-09-10-draft"
+---
+import { LMSResponseFunctions } from "./LMSResponseFunctions"
+import {Spectrum } from "./Spectrum";
+
+Colorimetry is the scientific and quantitative study of color.
+
+# Spectral Colors
+
+Light is made up of **photons**. Each photon has a **wavelength**. Humans eyes
+can detect photons that have a wavelength between about 380nm and
+700nm[^nasa_range].
+
+[^nasa_range]: https://science.nasa.gov/ems/09_visiblelight/
+
+Humans do this using 3 types of "cone" light receptors in our eyes. Each cone is
+receptive to only certain wavelengths:
+* "long" cones (for "long" wavelengths: red)
+* "medium" cones (green),
+* "short" cones (blue)
+
+Precise measurements have been made that quantitatively describe how sensitive
+each cone is to each frequency of light.
+
+For example, [http://www.cvrl.org/cones.htm](http://www.cvrl.org/cones.htm):
+
+<LMSResponseFunctions />
+
+These are called the "response functions" for each of the cones.
+
+# White Balance
+
+These let us
+compare activations of a single type of cone for different wavelengths, but
+they don't directly tell us how the different types of cones relate to each
+other to make colors.
+
+To do that, we first have to define a **white point**: the mix of L, M, and S
+responses that we will consider "colorless". In real life, we do that
+with context: in a room with "warm" incandescent lighting, we still consider
+plain copy paper to be "white" (colorless) despite the yellowish light bouncing
+off of it. Our eyes will adjust what we consider to be "colorless" based on how
+the environment we are in is lit.
+
+Therefore, we typically associate _white points_ with _different types of
+illumination_.
+
+## Color Temperature
+
+When things get really hot, they start to glow. You can see this in a campfire,
+where the coals at the bottom of the fire glow a deep, dim red when they are
+cooling off. When they get hotter, they will start to glow orange, and then
+yellow, and then white. This has actually been known by smiths and ceramicists
+for millennia; they could judge whether the kiln or forge was the right
+temperature from observing the color of the coals.
+
+It turns out there is a scientific explanation for this phenomenon, called
+black-body radiation. Curiously, it predicts that more or less _any_ material
+will glow _the same color_ when heated to the same temperature. Coal, plastic,
+glass, wood -- when heated to 3000 K (2700 C or 5000 F), all will glow the same
+shade of orange.
+
+For this reason, we can identify points on the spectrum with a _temperature_,
+which is typically done in Kelvin (K). This "temperature" refers literally to
+the temperature that you would have to heat a brick to in order to glow that
+color.
+
+A typical incandescent lightbulb's filament glows at about 2500 K (both in terms
+of literal temperature, and in terms of color temperature!)
+
+The surface of the sun is roughly 6000 K; thus, in space, the color temperature
+of sunlight is about 6000 K. On earth, sunlight is filtered through the
+atmosphere, which can dramatically change its color. The
+"correlated color temperature" of sunlight thus varies between about 5000K to
+7000K, with 6500K being typical for overcast noon daylight.
+
+## Standard Illuminants
+
+The typical "default" white point is called the
+[**D65 white point**](https://doi.org/10.25039/CIE.DS.hjfjmt59).
+It corresponds roughly to the color of typical mid-day sun.
+The "D" refers to "Daylight"; the "65" refers to
+having a **color temperature** of about 6500 K.
+
+<Spectrum />
+
+# Gamma
+
+Most computer displays nowadays use "24-bit color". This assigns 8-bits to each
+of the red, green, and blue channels, giving 256 different possible brightnesses
+for each red/green/blue phosphor.
+
+The brightnesses of these levels are not equally spaced, because small
+increases in light from a dark gray are much more noticeable than the same
+increase in brightness added to a light gray.
+
+Mapping the 256 different levels to an actual amount of light to emit is called
+[gamma correction](https://en.wikipedia.org/wiki/Gamma_correction).
+
+sRGB is one of the older and purported most common standard for mapping RGB
+levels to actual luminosities. sRGB uses this mapping (TODO: cite official source):
+
+$$
+\begin{array}{ccl}
+Y &=& \begin{cases}
+x/12.92 & x \leq 0.04045 \\
+\left( \dfrac { x + 0.055 } { 1.055 }
+\right) ^ {2.4} & x > 0.04045
+\end{cases}
+\\ \\
+&\approx&
+x ^ {2.2}
+\end{array}
+$$
