@@ -4,7 +4,7 @@ description: "A meandering through the quantification of color"
 published: "2026-09-10-draft"
 ---
 import { LMSResponseFunctions } from "./LMSResponseFunctions"
-import {Spectrum } from "./Spectrum";
+import { Spectrum } from "./Spectrum";
 
 Colorimetry is the scientific and quantitative study of color.
 
@@ -115,3 +115,32 @@ x/12.92 & x \leq 0.04045 \\
 x ^ {2.2}
 \end{array}
 $$
+
+# CIE XYZ
+
+In 1931, the CIE XYZ color space was published. XYZ gives quantitative
+predictions about how humans perceive different light spectra.
+
+## Color Matching Functions
+
+In the 1930s, it was not straightforward to generate arbitrary wavelengths of
+light in a laboratory. To ensure their results were reproducible, they chose
+"primary" red/green/blue colors that were easy to reproduce in a lab:
+
+* red: roughly 700nm
+	* An exact "red" frequency could not be generated, but because color
+	  perception doesn't change much in the very-red region, it doesn't make
+	  much of a difference.
+* green: 546.1 nm
+	* Mercury vapor lamp
+* blue: 435.8 nm
+	* Also a mercury vapor lamp
+
+The experimenters have volunteers play a color matching "game" where they
+adjusted the brightness of red, green, and blue lamps to match different
+colors. This resulted in a graph of "color matching functions" that looked like
+this:
+
+import { ColorMatchingFromLMS } from "./ColorMatchingFromLMS"
+
+<ColorMatchingFromLMS />
