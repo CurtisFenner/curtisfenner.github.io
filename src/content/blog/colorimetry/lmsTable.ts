@@ -1,5 +1,6 @@
 import d65Tsv from "../../../../public/blog/colorimetry/CIE_std_illum_D65.tsv?raw";
 import lmsTsv from "../../../../public/blog/colorimetry/lms-response.tsv?raw";
+import xyz10Csv from "../../../../public/blog/colorimetry/ciexyz64.tsv?raw";
 
 const lmsCells = lmsTsv.split("\n")
 	.filter(line => line.trim() !== "")
@@ -7,12 +8,12 @@ const lmsCells = lmsTsv.split("\n")
 
 export const lmsTable = lmsCells.slice(1)
 	.map(([wavelengthNm, energyL, energyM, energyS]) => {
-		return {
+		return Object.freeze({
 			wavelengthNm: parseFloat(wavelengthNm),
 			energyL: parseFloat(energyL || "0"),
 			energyM: parseFloat(energyM || "0"),
 			energyS: parseFloat(energyS || "0"),
-		};
+		});
 	});
 
 const d65Cells = d65Tsv.split("\n")
@@ -21,11 +22,36 @@ const d65Cells = d65Tsv.split("\n")
 
 export const d65Table = d65Cells.slice(1)
 	.map(([wavelengthNm, energy]) => {
-		return {
+		return Object.freeze({
 			wavelengthNm: parseFloat(wavelengthNm),
 			energy: parseFloat(energy),
-		};
+		});
 	});
+
+const xyz10Cells = xyz10Csv.split("\n")
+	.filter(line => line.trim() !== "")
+	.map(line => line.split("\t"));
+
+export const xyz10Table = xyz10Cells.slice(1)
+	.map(([wavelengthNm, x10, y10, z10]) => {
+		return Object.freeze({
+			wavelengthNm: parseFloat(wavelengthNm),
+			x: parseFloat(x10),
+			y: parseFloat(y10),
+			z: parseFloat(z10),
+		});
+	});
+
+export function fromChromaticity(p: { x: number, y: number, Y?: number }) {
+	const Y = p.y ?? 1;
+	return Object.freeze({
+		x: p.x,
+		y: p.y,
+		X: p.x * Y / p.y,
+		Y,
+		Z: (1 - p.x - p.y) * Y / p.y,
+	});
+}
 
 /**
  * A linear interpolation of the `lmsTable` data.

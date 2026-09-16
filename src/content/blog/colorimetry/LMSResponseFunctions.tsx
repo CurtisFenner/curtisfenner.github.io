@@ -1,4 +1,4 @@
-import { D65_WHITEPOINT, d65Energy, integrateLmsResponse, lmsResponse } from "./lmsTable.ts";
+import { lmsResponse } from "./lmsTable.ts";
 
 export type Props = {
 };

@@ -16,11 +16,11 @@ can detect photons that have a wavelength between about 380nm and
 
 [^nasa_range]: https://science.nasa.gov/ems/09_visiblelight/
 
-Humans do this using 3 types of "cone" light receptors in our eyes. Each cone is
-receptive to only certain wavelengths:
-* "long" cones (for "long" wavelengths: red)
-* "medium" cones (green),
-* "short" cones (blue)
+Humans do this using 3 types of light receptors in our eyes, called **cones**.
+Each cone is receptive to only certain wavelengths:
+* "long" cones are sensitive to longer wavelengths of light (reds and yellows)
+* "medium" cones are sensitive to medium wavelengths (yellows and greens)
+* "short" cones are sensitive to short wavelengths (blues and teals)
 
 Precise measurements have been made that quantitatively describe how sensitive
 each cone is to each frequency of light.
@@ -87,7 +87,61 @@ having a **color temperature** of about 6500 K.
 
 <Spectrum />
 
-# Gamma
+# sRGB
+
+**sRGB** is an old (1999) and commonly supported color space, originally
+developed to standardize color on CRT monitors. Even today, it is the most
+common way to interpret "RGB" color specifications; however, because of its
+origin in fairly old technology, it is somewhat limited in which colors it can
+accurately reproduce.
+
+## sRGB (ITU Rec. 709) Color Primaries
+
+sRGB was defined in the era of cathode-ray-tube monitors. These monitors work by
+energizing red, green, and blue _phosphors_, each of which is a mix of special
+chemicals which glow with a specific spectrums of light.
+
+The recommended target colors for these phosphors was defined in
+[ITU-R Recommendation 709](https://en.wikipedia.org/wiki/Rec._709), commonly
+just called **Rec. 709**.
+
+Rather than define the full spectrum of phosphors, Rec. 709 just defines their
+**chromaticities** using CIE 1931 2-degree xyY.
+
+<table>
+	<tr>
+		<th colspan="6">sRGB &amp; Rec. 709 Color Primaries (CIE 1931)[^rec709]</th>
+	</tr>
+	<tr>
+		<th></th>
+		<th title="CIE 1931. x = X/(X+Y+Z); y = Y/(X+Y+Z). x, y from &sect;1. Y from spec &sect;4.2">(x, y; Y)</th>
+		<th title="CIE 1931. X = x * Y/y; Z = (1-x-y) * Y/y">(X, Y, Z)</th>
+	</tr>
+	<tr>
+		<th>White (uses D65)</th>
+		<td>(0.3127, 0.3290, 1)</td>
+		<td>(0.950, 1.0000, 1.088)</td>
+	</tr>
+	<tr>
+		<th>Red</th>
+		<td>(0.640, 0.330; 0.2126)</td>
+		<td>(0.412, 0.2126, 0.019)</td>
+	</tr>
+	<tr>
+		<th>Green</th>
+		<td>(0.300, 0.600; 0.7152)</td>
+		<td>(0.358, 0.7152, 0.119)</td>
+	</tr>
+	<tr>
+		<th>Blue</th>
+		<td>(0.150, 0.060; 0.0722)</td>
+		<td>(0.181, 0.0722, 0.951)</td>
+	</tr>
+</table>
+
+[^rec709]: https://www.itu.int/rec/R-REC-BT.709-5-200204-S/en
+
+## Gamma
 
 Most computer displays nowadays use "24-bit color". This assigns 8-bits to each
 of the red, green, and blue channels, giving 256 different possible brightnesses
@@ -97,18 +151,18 @@ The brightnesses of these levels are not equally spaced, because small
 increases in light from a dark gray are much more noticeable than the same
 increase in brightness added to a light gray.
 
-Mapping the 256 different levels to an actual amount of light to emit is called
+The process of associating each of the 256 possible levels with a specific
+amount of light to emit is called
 [gamma correction](https://en.wikipedia.org/wiki/Gamma_correction).
 
-sRGB is one of the older and purported most common standard for mapping RGB
-levels to actual luminosities. sRGB uses this mapping (TODO: cite official source):
+sRGB uses this gamma correction mapping (TODO: cite official source):
 
 $$
 \begin{array}{ccl}
 Y &=& \begin{cases}
-x/12.92 & x \leq 0.04045 \\
+x/12.92 && 0 &\leq x \leq& 0.04045 \\
 \left( \dfrac { x + 0.055 } { 1.055 }
-\right) ^ {2.4} & x > 0.04045
+\right) ^ {2.4} && 0.04045 &< x \leq& 1
 \end{cases}
 \\ \\
 &\approx&
@@ -119,7 +173,9 @@ $$
 # CIE XYZ
 
 In 1931, the CIE XYZ color space was published. XYZ gives quantitative
-predictions about how humans perceive different light spectra.
+predictions about how humans perceive different light spectra. However, the
+"X", "Y", and "Z" components don't directly correspond to anything fundamentally
+happening in our eyes.
 
 ## Color Matching Functions
 
