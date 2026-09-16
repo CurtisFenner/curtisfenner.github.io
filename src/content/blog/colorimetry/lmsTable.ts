@@ -36,12 +36,18 @@ export const xyz10Table = xyz10Cells.slice(1)
 	.map(([wavelengthNm, x10, y10, z10]) => {
 		return Object.freeze({
 			wavelengthNm: parseFloat(wavelengthNm),
-			x: parseFloat(x10),
-			y: parseFloat(y10),
-			z: parseFloat(z10),
+			X: parseFloat(x10),
+			Y: parseFloat(y10),
+			Z: parseFloat(z10),
 		});
 	});
 
+/**
+ * Converts from CIE xyY to XYZ.
+ *
+ * This is a simple relabeling and is independent of the particular curves
+ * (1931 vs 1964, 2-deg vs 10-deg, etc)
+ */
 export function fromChromaticity(p: { x: number, y: number, Y?: number }) {
 	const Y = p.y ?? 1;
 	return Object.freeze({
@@ -51,6 +57,41 @@ export function fromChromaticity(p: { x: number, y: number, Y?: number }) {
 		Y,
 		Z: (1 - p.x - p.y) * Y / p.y,
 	});
+}
+
+/**
+ * Given in CIE 1931 2-degree xyY.
+ *
+ * @see https://www.itu.int/rec/R-REC-BT.709-5-200204-S/en
+ */
+export const rec709Primaries = Object.freeze({
+	white: fromChromaticity({
+		x: 0.3127,
+		y: 0.3290,
+		Y: 1,
+	}),
+	red: fromChromaticity({
+		x: 0.640,
+		y: 0.330,
+		Y: 0.2126,
+	}),
+	green: fromChromaticity({
+		x: 0.300,
+		y: 0.600,
+		Y: 0.7152,
+	}),
+	blue: fromChromaticity({
+		x: 0.150,
+		y: 0.060,
+		Y: 0.0722,
+	}),
+});
+
+/**
+ * Approximate gamma mapping, using the v^2.2 approximation.
+ */
+export function srgbLinearToMapped(v: number): number {
+	return Math.pow(v, 1 / 2.2);
 }
 
 /**
@@ -98,6 +139,29 @@ export function d65Energy(p: { wavelengthNm: number }) {
 	};
 }
 
+export function cieXYZ64Response(p: { wavelengthNm: number }) {
+	// TODO: Optimize using binary search
+	for (let i = 0; i + 1 < xyz10Table.length; i++) {
+		const a = xyz10Table[i];
+		const b = xyz10Table[i + 1];
+		const t = (p.wavelengthNm - a.wavelengthNm) / (b.wavelengthNm - a.wavelengthNm);
+		if (0 <= t && t <= 1) {
+			return {
+				X: t * b.X + (1 - t) * a.X,
+				Y: t * b.Y + (1 - t) * a.Y,
+				Z: t * b.Z + (1 - t) * a.Z,
+			}
+		}
+	}
+
+	// TODO: Make ends continuous instead of jumping to 0
+	return {
+		X: 0,
+		Y: 0,
+		Z: 0,
+	};
+}
+
 export function integrateLmsResponse(
 	f: (p: { wavelengthNm: number }) => { energy: number },
 	options: { lowNm?: number, highNm?: number, stepNm?: number } = {},
@@ -137,3 +201,5 @@ export const D65_WHITEPOINT = Object.freeze({
 	energyM: d65Integral.energyM / d65IntegralMax,
 	energyS: d65Integral.energyS / d65IntegralMax,
 });
+
+// TODO: How different are CIE 1964 10-deg and 1931 2-deg?

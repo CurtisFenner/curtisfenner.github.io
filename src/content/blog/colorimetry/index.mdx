@@ -85,6 +85,12 @@ It corresponds roughly to the color of typical mid-day sun.
 The "D" refers to "Daylight"; the "65" refers to
 having a **color temperature** of about 6500 K.
 
+Below visualizes the spectrum of D65, displayed on top of a mid-gray. Note that
+an sRGB monitor cannot accurately reproduce the spectral colors of the desired
+brightness on top of black.
+
+<br />
+
 <Spectrum />
 
 # sRGB
@@ -103,7 +109,7 @@ chemicals which glow with a specific spectrums of light.
 
 The recommended target colors for these phosphors was defined in
 [ITU-R Recommendation 709](https://en.wikipedia.org/wiki/Rec._709), commonly
-just called **Rec. 709**.
+just called **Rec. 709** (1993).
 
 Rather than define the full spectrum of phosphors, Rec. 709 just defines their
 **chromaticities** using CIE 1931 2-degree xyY.
@@ -176,6 +182,28 @@ In 1931, the CIE XYZ color space was published. XYZ gives quantitative
 predictions about how humans perceive different light spectra. However, the
 "X", "Y", and "Z" components don't directly correspond to anything fundamentally
 happening in our eyes.
+
+Rather, XYZ is constructed to be a _linear basis_ for the "real" LMS color space
+being detected by human eyes. At the time XYZ was constructed, it wasn't
+possible to confirm the particular curves for the L, M, and S cones; however,
+it _was_ possible to accurately construct fictitious linear _combinations_ of
+those.
+
+XYZ was roughly constructed through these principles:
+* X(&lambda;), Y(&lambda;), and Z(&lambda;) should be linear combinations of
+  the experimentally measured color-matching-functions
+  $\bar x(\lambda)$, $\bar y(\lambda)$, and $\bar z(\lambda)$.
+* X(&lambda;), Y(&lambda;), and Z(&lambda;)
+  should always be non-negative across the entire visible spectrum
+	* The color matching functions derived experimentally necessarily
+	  had negative values on their range
+* Y(&lambda;) should be fixed to the **luminous efficiency function**. This was a
+  previously measured curve that answered how "bright" each frequency of light
+  appeared to observers. (it's harder to read by blue light than
+  red light of the same wattage; similarly it's even easier to read by green
+  light).
+* X/Y/Z should be scaled so that the _equal energy illuminant_ would have a
+  chromaticity of x=y=z=1/3 (X=1, Y=1, Z=1)
 
 ## Color Matching Functions
 
