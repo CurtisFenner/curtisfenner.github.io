@@ -68,7 +68,7 @@ export function Spectrum(p: {}) {
 	return <svg
 		viewBox={`0 0 ${svgViewBox.width} ${svgViewBox.height}`}
 		xmlns="http://www.w3.org/2000/svg"
-		style={{ border: "1px solid black", display: "block" }}>
+		style={{ background: blackCssColor, border: "1px solid black", display: "block" }}>
 		<defs>
 			<linearGradient id={gradientId}>
 				<stop offset="0%" stopColor={blackCssColor} />
