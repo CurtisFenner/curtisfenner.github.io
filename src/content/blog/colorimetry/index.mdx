@@ -31,19 +31,78 @@ For example, [http://www.cvrl.org/cones.htm](http://www.cvrl.org/cones.htm):
 
 These are called the "response functions" for each of the cones.
 
+# CIE XYZ
+
+In 1931, the CIE XYZ color space was published. XYZ gives quantitative
+predictions about how humans perceive different light spectra. However, the
+"X", "Y", and "Z" components don't directly correspond to anything fundamentally
+happening in our eyes.
+
+Rather, XYZ is constructed to be a _linear basis_ for the "real" LMS color space
+being detected by human eyes. At the time XYZ was constructed, it wasn't
+possible to confirm the particular curves for the L, M, and S cones; however,
+it _was_ possible to accurately construct fictitious linear _combinations_ of
+those.
+
+XYZ was roughly constructed through these principles:
+* X(&lambda;), Y(&lambda;), and Z(&lambda;) should be linear combinations of
+  the experimentally measured color-matching-functions
+  $\bar r(\lambda)$, $\bar g(\lambda)$, and $\bar b(\lambda)$.
+* X(&lambda;), Y(&lambda;), and Z(&lambda;)
+  should always be non-negative across the entire visible spectrum
+	* The color matching functions derived experimentally necessarily
+	  had negative values on their range
+* Y(&lambda;) should be fixed to the **luminous efficiency function**. This was a
+  previously measured curve that answered how "bright" each frequency of light
+  appeared to observers. (it's harder to read by blue light than
+  red light of the same wattage; similarly it's even easier to read by green
+  light).
+* X/Y/Z should be scaled so that the _equal energy illuminant_ would have a
+  chromaticity of x=y=z=1/3 (X=1, Y=1, Z=1)
+
+## Color Matching Functions
+
+
+The experimenters have volunteers play a color matching "game" where they
+adjusted the brightness of red, green, and blue lamps to match different
+colors.
+
+import { ColorMatchingExperiment } from "./ColorMatchingExperiment"
+
+<ColorMatchingExperiment client:load />
+
+In the 1930s, it was not straightforward to generate arbitrary wavelengths of
+light in a laboratory. To ensure their results were reproducible, they chose
+"primary" red/green/blue colors that were easy to reproduce in a lab:
+
+* red: roughly 700nm
+	* An exact "red" frequency could not be generated, but because color
+	  perception doesn't change much in the very-red region, it doesn't make
+	  much of a difference.
+* green: 546.1 nm
+	* Mercury vapor lamp
+* blue: 435.8 nm
+	* Also a mercury vapor lamp
+
+After averaging all of the participant's results, this resulted in a graph of
+"color matching functions" that looked like this:
+
+import { ColorMatchingFromLMS } from "./ColorMatchingFromLMS"
+
+<ColorMatchingFromLMS />
+
 # White Balance
 
-These let us
-compare activations of a single type of cone for different wavelengths, but
-they don't directly tell us how the different types of cones relate to each
-other to make colors.
+How do the distinct qualia of the L-, M-, and S-cones get related to each other?
 
-To do that, we first have to define a **white point**: the mix of L, M, and S
-responses that we will consider "colorless". In real life, we do that
-with context: in a room with "warm" incandescent lighting, we still consider
-plain copy paper to be "white" (colorless) despite the yellowish light bouncing
-off of it. Our eyes will adjust what we consider to be "colorless" based on how
-the environment we are in is lit.
+To understand whether or not a combination is "pink" or "green" or "orange", we
+compare them to some relative combination of L/M/S that we consider "colorless"
+or "gray".
+
+In real life, we do that with context: in a room with "warm" incandescent
+lighting, we still consider plain copy paper to be "white" (colorless) despite
+the yellowish light bouncing off of it. Our eyes will adjust what we consider to
+be "colorless" based on how the environment we are in is lit.
 
 Therefore, we typically associate _white points_ with _different types of
 illumination_.
@@ -52,10 +111,11 @@ illumination_.
 
 When things get really hot, they start to glow. You can see this in a campfire,
 where the coals at the bottom of the fire glow a deep, dim red when they are
-cooling off. When they get hotter, they will start to glow orange, and then
-yellow, and then white. This has actually been known by smiths and ceramicists
-for millennia; they could judge whether the kiln or forge was the right
-temperature from observing the color of the coals.
+starting to heat up. When they get hotter, they will start to glow orange, and
+then yellow, and then white. This has actually been known by smiths and
+ceramicists for millennia; they could judge whether the kiln or forge had
+reached (or overshot) the desired temperature just from observing the color
+the coals.
 
 It turns out there is a scientific explanation for this phenomenon, called
 black-body radiation. Curiously, it predicts that more or less _any_ material
@@ -76,6 +136,23 @@ of sunlight is about 6000 K. On earth, sunlight is filtered through the
 atmosphere, which can dramatically change its color. The
 "correlated color temperature" of sunlight thus varies between about 5000K to
 7000K, with 6500K being typical for overcast noon daylight.
+
+> Note that the common understanding of "warm lighting" being red or orange,
+> and "cool lighting" being blue or teal, is _opposite_ the literal color
+> temperature. So don't confuse "warm" lighting with "high color temperature"!
+>
+> This inversion is natural because in real life, we don't really encounter
+> fires that are particularly hot, in terms of color-temperature.
+> Until around 5000 K, black-body radiation is decidedly red/orange;
+> only after about 6000 K does it start to leave the "warm tones" range of hues.
+>
+> However, a fire that hot would also be so bright that you could not really
+> appreciate its hue. Therefore correlating greenish, tealish, or blueish
+> lighting with a "color temperature" is really a theoretical exercise. Actually
+> producing these colors through black-body radiation is totally impractical,
+> even in a laboratory.
+>
+> Most colors and most spectra are not black body radiation!
 
 ## Standard Illuminants
 
@@ -176,55 +253,3 @@ x ^ {2.2}
 \end{array}
 $$
 
-# CIE XYZ
-
-In 1931, the CIE XYZ color space was published. XYZ gives quantitative
-predictions about how humans perceive different light spectra. However, the
-"X", "Y", and "Z" components don't directly correspond to anything fundamentally
-happening in our eyes.
-
-Rather, XYZ is constructed to be a _linear basis_ for the "real" LMS color space
-being detected by human eyes. At the time XYZ was constructed, it wasn't
-possible to confirm the particular curves for the L, M, and S cones; however,
-it _was_ possible to accurately construct fictitious linear _combinations_ of
-those.
-
-XYZ was roughly constructed through these principles:
-* X(&lambda;), Y(&lambda;), and Z(&lambda;) should be linear combinations of
-  the experimentally measured color-matching-functions
-  $\bar x(\lambda)$, $\bar y(\lambda)$, and $\bar z(\lambda)$.
-* X(&lambda;), Y(&lambda;), and Z(&lambda;)
-  should always be non-negative across the entire visible spectrum
-	* The color matching functions derived experimentally necessarily
-	  had negative values on their range
-* Y(&lambda;) should be fixed to the **luminous efficiency function**. This was a
-  previously measured curve that answered how "bright" each frequency of light
-  appeared to observers. (it's harder to read by blue light than
-  red light of the same wattage; similarly it's even easier to read by green
-  light).
-* X/Y/Z should be scaled so that the _equal energy illuminant_ would have a
-  chromaticity of x=y=z=1/3 (X=1, Y=1, Z=1)
-
-## Color Matching Functions
-
-In the 1930s, it was not straightforward to generate arbitrary wavelengths of
-light in a laboratory. To ensure their results were reproducible, they chose
-"primary" red/green/blue colors that were easy to reproduce in a lab:
-
-* red: roughly 700nm
-	* An exact "red" frequency could not be generated, but because color
-	  perception doesn't change much in the very-red region, it doesn't make
-	  much of a difference.
-* green: 546.1 nm
-	* Mercury vapor lamp
-* blue: 435.8 nm
-	* Also a mercury vapor lamp
-
-The experimenters have volunteers play a color matching "game" where they
-adjusted the brightness of red, green, and blue lamps to match different
-colors. This resulted in a graph of "color matching functions" that looked like
-this:
-
-import { ColorMatchingFromLMS } from "./ColorMatchingFromLMS"
-
-<ColorMatchingFromLMS />

@@ -1,11 +1,11 @@
 import { mat3, vec3 } from "gl-matrix";
-import { cieXYZ64Response, D65_WHITEPOINT, lmsResponse, rec709Primaries, srgbLinearToMapped } from "./lmsTable.ts";
-
+import { useState } from "react";
+import { cieXYZ64Response, rec709Primaries, srgbLinearToMapped } from "./lmsTable.ts";
 
 export function Spectrum(p: {}) {
 	const LOW_NM = 380;
 	const HIGH_NM = 700;
-	const STEP = 4;
+	const STEP = 1;
 
 	const sRGBColorPrimary = mat3.fromValues(
 		rec709Primaries.red.X,
@@ -32,9 +32,7 @@ export function Spectrum(p: {}) {
 		);
 
 		bars.push({
-			nm,
-			leftLabel: wavelengthNm,
-			rightLabel: wavelengthNm + STEP,
+			wavelengthNm: nm,
 			linearR,
 			linearG,
 			linearB,
@@ -49,35 +47,44 @@ export function Spectrum(p: {}) {
 	const whiteNeeded = -Math.min(0, ...values);
 	const max = Math.max(...values);
 
-	const RANGE_NM = HIGH_NM - LOW_NM;
-	return <div style={{
-		position: "relative",
-		height: "6em",
-		background: "black",
-		border: "1px solid black",
-	}}>
-		{bars.flatMap(bar => {
-			const out = [];
-			{
-				// Add gray to avoid negative values.
-				const r = 100 * srgbLinearToMapped((whiteNeeded + bar.linearR) / (max + whiteNeeded));
-				const g = 100 * srgbLinearToMapped((whiteNeeded + bar.linearG) / (max + whiteNeeded));
-				const b = 100 * srgbLinearToMapped((whiteNeeded + bar.linearB) / (max + whiteNeeded));
+	const barToCssColor = (bar: { linearR: number, linearG: number, linearB: number }) => {
+		const r = 100 * srgbLinearToMapped((whiteNeeded + bar.linearR) / (max + whiteNeeded));
+		const g = 100 * srgbLinearToMapped((whiteNeeded + bar.linearG) / (max + whiteNeeded));
+		const b = 100 * srgbLinearToMapped((whiteNeeded + bar.linearB) / (max + whiteNeeded));
 
-				const color = `rgb(${r.toFixed(1)}% ${g.toFixed(1)}% ${b.toFixed(1)}%)`;
-				const onGray = <div key={bar.leftLabel} style={{
-					position: "absolute",
-					background: color,
-					left: (100 * (bar.leftLabel - LOW_NM) / RANGE_NM).toFixed(2) + "%",
-					right: (100 - 100 * (bar.rightLabel - LOW_NM) / RANGE_NM).toFixed(2) + "%",
-					height: "100%",
-				}}
-					title={`${bar.nm.toFixed(0)} nm`}>
-				</div>;
-				out.push(onGray);
-			}
+		return `rgb(${r.toFixed(1)}% ${g.toFixed(1)}% ${b.toFixed(1)}%)`;
+	};
 
-			return out;
-		})}
-	</div>;
+	const cssColors = bars.map(bar => {
+		return {
+			wavelengthNm: bar.wavelengthNm,
+			cssColor: barToCssColor(bar),
+		};
+	});
+	const blackCssColor = barToCssColor({ linearR: 0, linearG: 0, linearB: 0 });
+
+	const svgViewBox = { width: 640, height: 100 };
+	const [gradientId] = useState(`spectrum-${crypto.randomUUID()}`);
+	return <svg
+		viewBox={`0 0 ${svgViewBox.width} ${svgViewBox.height}`}
+		xmlns="http://www.w3.org/2000/svg"
+		style={{ border: "1px solid black", display: "block" }}>
+		<defs>
+			<linearGradient id={gradientId}>
+				<stop offset="0%" stopColor={blackCssColor} />
+				{
+					cssColors.map(x => {
+						const offset = (x.wavelengthNm - LOW_NM) / (HIGH_NM - LOW_NM);
+						return <stop
+							key={x.wavelengthNm}
+							offset={`${(100 * offset).toFixed(2)}%`}
+							stopColor={x.cssColor}
+						/>;
+					})
+				}
+				<stop offset="100%" stopColor={blackCssColor} />
+			</linearGradient>
+		</defs>
+		<rect width={svgViewBox.width} height={svgViewBox.height} fill={`url(#${gradientId})`} />
+	</svg>;
 }
