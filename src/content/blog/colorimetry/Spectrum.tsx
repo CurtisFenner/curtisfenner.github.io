@@ -1,48 +1,24 @@
-import { mat3, vec3 } from "gl-matrix";
 import { useState } from "react";
-import { cieXYZ64Response, rec709Primaries, srgbLinearToMapped } from "./lmsTable.ts";
+import { cieXYZ64Response, srgbLinearToMapped } from "./lmsTable.ts";
+import { cieXYZTosRGB } from "./srgb.ts";
 
 export function Spectrum(p: {}) {
 	const LOW_NM = 380;
 	const HIGH_NM = 700;
 	const STEP = 1;
 
-	const sRGBColorPrimary = mat3.fromValues(
-		rec709Primaries.red.X,
-		rec709Primaries.red.Y,
-		rec709Primaries.red.Z,
-		rec709Primaries.green.X,
-		rec709Primaries.green.Y,
-		rec709Primaries.green.Z,
-		rec709Primaries.blue.X,
-		rec709Primaries.blue.Y,
-		rec709Primaries.blue.Z,
-	);
-
-	const cieXYZTosRGB = mat3.invert(mat3.create(), sRGBColorPrimary)!;
-
 	const bars = [];
 	for (let wavelengthNm = LOW_NM; wavelengthNm < HIGH_NM; wavelengthNm += STEP) {
-		const nm = wavelengthNm + STEP / 2;
-		const { X, Y, Z } = cieXYZ64Response({ wavelengthNm });
-		const [linearR, linearG, linearB] = vec3.transformMat3(
-			vec3.create(),
-			vec3.fromValues(X, Y, Z),
-			cieXYZTosRGB
-		);
-
 		bars.push({
-			wavelengthNm: nm,
-			linearR,
-			linearG,
-			linearB,
+			wavelengthNm,
+			sRGB: cieXYZTosRGB(cieXYZ64Response({ wavelengthNm })),
 		});
 	}
 
 	const values = [
-		...bars.map(c => c.linearR),
-		...bars.map(c => c.linearG),
-		...bars.map(c => c.linearB),
+		...bars.map(c => c.sRGB.linearR),
+		...bars.map(c => c.sRGB.linearG),
+		...bars.map(c => c.sRGB.linearB),
 	];
 	const whiteNeeded = -Math.min(0, ...values);
 	const max = Math.max(...values);
@@ -58,7 +34,7 @@ export function Spectrum(p: {}) {
 	const cssColors = bars.map(bar => {
 		return {
 			wavelengthNm: bar.wavelengthNm,
-			cssColor: barToCssColor(bar),
+			cssColor: barToCssColor(bar.sRGB),
 		};
 	});
 	const blackCssColor = barToCssColor({ linearR: 0, linearG: 0, linearB: 0 });

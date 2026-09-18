@@ -62,18 +62,27 @@ XYZ was roughly constructed through these principles:
 
 ## Color Matching Functions
 
-
 The experimenters have volunteers play a color matching "game" where they
 adjusted the brightness of red, green, and blue lamps to match different
 colors.
 
-import { ColorMatchingExperiment } from "./ColorMatchingExperiment"
+import { ColorMatchingLab } from "./ColorMatchingExperiment"
 
-<ColorMatchingExperiment client:load />
+<ColorMatchingLab client:load />
 
-In the 1930s, it was not straightforward to generate arbitrary wavelengths of
-light in a laboratory. To ensure their results were reproducible, they chose
-"primary" red/green/blue colors that were easy to reproduce in a lab:
+The left screen was illuminated by random frequencies of light. These could be
+generated using a prism or diffraction grating.
+
+The right screen was illuminated by three lamps which could be controlled by
+the participant. Each lamp was tuned to emit only one precise wavelength of
+light. In order for the matches to be made, sometimes a "negative" brightness
+of the red/green/blue lamps is required. To simulate a "negative" brightness,
+the lamp is instead shined on the _left_ screen instead of the right.
+
+In the 1930s, it was not straightforward to generate arbitrary
+wavelengths of light precisely in a laboratory. To ensure their results were
+reproducible, they chose "primary" red/green/blue colors that were easy to
+reproduce in a lab:
 
 * red: roughly 700nm
 	* An exact "red" frequency could not be generated, but because color
@@ -90,6 +99,10 @@ After averaging all of the participant's results, this resulted in a graph of
 import { ColorMatchingFromLMS } from "./ColorMatchingFromLMS"
 
 <ColorMatchingFromLMS />
+
+## Linear Algebra on Color Matching Functions
+
+
 
 # White Balance
 
